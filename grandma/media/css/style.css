@@ -24,3 +24,33 @@
 	color: black;
 	padding: 3px;
 }
+
+table#apps td {
+	padding: 6px 0;
+}
+
+.help_text {
+	color: #777;
+	font-size: 11px;
+	clear: both;
+	margin-left: 24px;
+}
+
+.check {
+	float: left;
+}
+
+.check input {
+	width: 20px;
+	vertical-align: top;
+}
+
+.check label {
+	font-size: 16px;
+	color: #000;
+	margin-left: 4px;
+}
+
+table#start th label {
+	vertical-align: middle;
+}

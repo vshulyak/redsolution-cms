@@ -3,14 +3,15 @@
 
 {% block content %}
 <form method="post" enctype="multipart/form-data" action="">
-    <table>
+    <table id="apps">
         {% for field in form %}
-            <tr><td>
-                {{ field.label_tag }}
-                {% if field.help_text %}<div class="help_text">{{ field.help_text }}</div>{% endif %}
-                {% if field.errors %}<div class="errors_text">{{ field.errors }}</div>{% endif %}
-                {{ field }}
-            </td></tr>
+            <tr>
+                <td>
+                    <div class="check">{{ field }}{{ field.label_tag }}</div>
+                    {% if field.help_text %}<div class="help_text">{{ field.help_text }}</div>{% endif %}
+                    {% if field.errors %}<div class="errors_text">{{ field.errors }}</div>{% endif %}
+                </td>
+            </tr>
         {% endfor %}
     </table>
     <a href="{% url index %}" class="button-link floated-button">{% trans 'Back' %}</a>
