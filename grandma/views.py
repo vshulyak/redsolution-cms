@@ -157,4 +157,5 @@ def build(request):
 def done(request):
     return HttpResponse()
 
-
+def wait(requst):
+    return render_to_response('grandma/wait.html')

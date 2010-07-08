@@ -24,4 +24,5 @@ urlpatterns += patterns(
     url(r'^custom/$', 'grandma.views.custom', name='custom'),
     url(r'^build/$', 'grandma.views.build', name='build'),
     url(r'^done/$', 'grandma.views.done', name='done'),
+    url(r'^wait/$', 'grandma.views.wait', name='wait'),
 )
