@@ -1,14 +1,15 @@
 import os
 import subprocess
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.forms.models import inlineformset_factory, modelform_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from grandma.importpath import importpath
-from grandma.models import get_grandma_settings
+from grandma.models import GrandmaSettings, GrandmaApplication
 from grandma.forms import GrandmaSettingsForm
 
 
@@ -85,7 +86,7 @@ def load_applications():
     """
     paths = []
     modules = []
-    grandma_settings = get_grandma_settings()
+    grandma_settings = GrandmaSettings.get_settings()
     for application in grandma_settings.applications.filter(install=True):
         path = load_application(application.application)
         if path is not None:
@@ -115,7 +116,33 @@ def load():
     subprocess.Popen('python manage_apps.py runserver 127.0.0.1:8001').wait()
 
 def index(request):
-    grandma_settings = get_grandma_settings()
+    grandma_settings = GrandmaSettings.get_settings()
+    grandma_settings_class = modelform_factory(GrandmaSettings)
+    if request.method == 'POST':
+        form = grandma_settings_class(data=request.POST, files=request.FILES, instance=grandma_settings)
+        if form.is_valid():
+            form.save(commit=True)
+            return HttpResponseRedirect(reverse('apps'))
+    else:
+        form = grandma_settings_class(instance=grandma_settings)
+    return render_to_response('grandma/index.html', {
+        'form': form,
+    }, context_instance=RequestContext(request))
+
+def apps(request):
+    grandma_settings = GrandmaSettings.get_settings()
+    applications = list_applications()
+    recommended = list_recommended()
+    for application in applications:
+        install = application in recommended
+        try:
+            app = grandma_settings.applications.get(application=application)
+        except ObjectDoesNotExist:
+            grandma_settings.applications.create(application=application, install=install)
+        else:
+            app.install = install
+            app.save()
+
     if request.method == 'POST':
         form = GrandmaSettingsForm(data=request.POST, files=request.FILES)
         if form.is_valid():
@@ -123,25 +150,6 @@ def index(request):
             return HttpResponseRedirect(reverse('apps'))
     else:
         form = GrandmaSettingsForm(instance=grandma_settings)
-    return render_to_response('grandma/index.html', {
-        'form': form,
-    }, context_instance=RequestContext(request))
-
-def apps(request):
-    grandma_settings = get_grandma_settings()
-    applications = list_applications()
-    recommended = list_recommended()
-    for application in applications:
-        grandma_settings.applications.add(application=application, install=application in recommended)
-
-
-    if request.method == 'POST':
-        form = GrandmaSettingsForm(data=request.POST, files=request.FILES)
-        if form.is_valid():
-            form.save(commit=True)
-            return HttpResponseRedirect(reverse('apps'))
-    else:
-        form = GrandmaSettingsForm(instance=settings)
     return render_to_response('grandma/apps.html', {
         'form': form,
     }, context_instance=RequestContext(request))

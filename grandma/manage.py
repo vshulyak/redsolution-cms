@@ -2,8 +2,8 @@
 import os
 import sys
 sys.path[0:0] = [
-  os.path.abspath('.'),
-  os.path.abspath(os.path.join('..', 'parts', 'django'))
+    os.path.abspath('.'),
+    os.path.abspath(os.path.join('..', 'parts', 'django'))
 ]
 
 from django.core.management import execute_manager

@@ -1,5 +1,7 @@
 {% load i18n %}
 <form method="post" enctype="multipart/form-data" action="">
-{{ form }}
-<input type="submit" value="{% trans 'next' %}" />
+<table>
+{{ form.as_table }}
+</table>
+<input type="submit" value="{% trans 'Next' %}" />
 </form>
