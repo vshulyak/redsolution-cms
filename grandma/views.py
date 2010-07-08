@@ -1,7 +1,6 @@
 import os
 import subprocess
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.forms.models import inlineformset_factory, modelform_factory
 from django.http import HttpResponse, HttpResponseRedirect
@@ -10,9 +9,6 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from grandma.importpath import importpath
 from grandma.models import GrandmaSettings, GrandmaApplication
-from grandma.forms import GrandmaSettingsForm
-
-
 
 def list_applications():
     """
@@ -122,6 +118,7 @@ def index(request):
         form = grandma_settings_class(data=request.POST, files=request.FILES, instance=grandma_settings)
         if form.is_valid():
             form.save(commit=True)
+            GrandmaApplication.objects.filter(settings=grandma_settings).delete()
             return HttpResponseRedirect(reverse('apps'))
     else:
         form = grandma_settings_class(instance=grandma_settings)
@@ -131,27 +128,25 @@ def index(request):
 
 def apps(request):
     grandma_settings = GrandmaSettings.get_settings()
-    applications = list_applications()
-    recommended = list_recommended()
-    for application in applications:
-        install = application in recommended
-        try:
-            app = grandma_settings.applications.get(application=application)
-        except ObjectDoesNotExist:
-            grandma_settings.applications.create(application=application, install=install)
-        else:
-            app.install = install
-            app.save()
+    if not grandma_settings.applications.count():
+        applications = list_applications()
+        recommended = list_recommended()
+        for application in applications:
+            grandma_settings.applications.create(
+                application=application, install=application in recommended)
+
+    grandma_application_class = inlineformset_factory(
+        GrandmaSettings, GrandmaApplication, extra=0, can_delete=False)
 
     if request.method == 'POST':
-        form = GrandmaSettingsForm(data=request.POST, files=request.FILES)
-        if form.is_valid():
-            form.save(commit=True)
-            return HttpResponseRedirect(reverse('apps'))
+        grandma_application_formset = grandma_application_class(request.POST, request.FILES, instance=grandma_settings)
+        if grandma_application_formset.is_valid():
+            grandma_application_formset.save()
+            return HttpResponseRedirect(reverse('custom'))
     else:
-        form = GrandmaSettingsForm(instance=grandma_settings)
+        grandma_application_formset = grandma_application_class(instance=grandma_settings)
     return render_to_response('grandma/apps.html', {
-        'form': form,
+        'grandma_application_formset': grandma_application_formset,
     }, context_instance=RequestContext(request))
 
 def custom(request):
