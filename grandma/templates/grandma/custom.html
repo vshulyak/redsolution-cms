@@ -1,0 +1,19 @@
+{% extends "grandma/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" action="">
+    <table>
+        {% for field in form %}
+            <tr><td>
+                {{ field.label_tag }}
+                {% if field.help_text %}<div class="help_text">{{ field.help_text }}</div>{% endif %}
+                {% if field.errors %}<div class="errors_text">{{ field.errors }}</div>{% endif %}
+                {{ field }}
+            </td></tr>
+        {% endfor %}
+    </table>
+    <a href="{% url index %}" class="button-link floated-button">{% trans 'Back' %}</a>
+    <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
+</form>
+{% endblock %}
