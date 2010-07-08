@@ -1,12 +1,8 @@
 {% load i18n %}
 <form method="post" enctype="multipart/form-data" action="">
 <table>
-<tr><th>{% trans 'Application' %}</th><th>{% trans 'Install' %}</th></tr>
-{% for form in grandma_application_formset.forms %}
-<tr><td><label for="{{ form.install.auto_id }}">{{ form.initial.application }}</label>{{ form.application.as_hidden }}{{ form.id }}</td><td>{{ form.install }}</td></tr>
-{% endfor %}
+{{ form }}
 </table>
-{{ grandma_application_formset.management_form }}
 <a href="{% url index %}">{% trans 'Back' %}</a>
 <input type="submit" value="{% trans 'Next' %}" />
 </form>

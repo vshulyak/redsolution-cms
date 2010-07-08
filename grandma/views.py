@@ -9,26 +9,7 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from grandma.importpath import importpath
 from grandma.models import GrandmaSettings, GrandmaApplication
-
-def list_applications():
-    """
-    Load list of available application.
-    """
-    return [
-        'grandma_plugins_django_pages_cms',
-        'grandma_plugins_django_easy_news',
-        'grandma_plugins_django_config',
-        'grandma_plugins_django_tinymce',
-        'grandma_plugins_django_tinymce_attachment',
-        'grandma_plugins_django_seo',
-        'grandma_plugins_django_hex_storage',
-        'grandma_plugins_django_chunks',
-        'grandma_plugins_django_trusted_html',
-        'grandma_plugins_django_model_urls',
-        'grandma_plugins_django_url_methods',
-        'grandma_plugins_django_menu_proxy',
-        'grandma_plugins_django_imagekit',
-    ]
+from grandma.forms import GrandmaApplicationsForm
 
 def list_recommended():
     """
@@ -44,6 +25,31 @@ def list_recommended():
         'grandma_plugins_django_menu_proxy',
         'grandma_plugins_django_imagekit',
     ]
+
+def list_applications():
+    """
+    Load list of available application.
+    """
+    grandma_settings = GrandmaSettings.objects.get_settings()
+    recommended = list_recommended()
+    for package in [
+        'grandma_plugins_django_pages_cms',
+        'grandma_plugins_django_easy_news',
+        'grandma_plugins_django_config',
+        'grandma_plugins_django_tinymce',
+        'grandma_plugins_django_tinymce_attachment',
+        'grandma_plugins_django_seo',
+        'grandma_plugins_django_hex_storage',
+        'grandma_plugins_django_chunks',
+        'grandma_plugins_django_trusted_html',
+        'grandma_plugins_django_model_urls',
+        'grandma_plugins_django_url_methods',
+        'grandma_plugins_django_menu_proxy',
+        'grandma_plugins_django_imagekit',
+    ]:
+        grandma_settings.applications.create(
+            install=package in recommended, package=package,
+            name=package.replace('grandma_plugins_', ''), description=package.replace('_', ' '))
 
 def load_application(name):
     """
@@ -82,7 +88,7 @@ def load_applications():
     """
     paths = []
     modules = []
-    grandma_settings = GrandmaSettings.get_settings()
+    grandma_settings = GrandmaSettings.objects.get_settings()
     for application in grandma_settings.applications.filter(install=True):
         path = load_application(application.application)
         if path is not None:
@@ -112,7 +118,7 @@ def load():
     subprocess.Popen('python manage_apps.py runserver 127.0.0.1:8001').wait()
 
 def index(request):
-    grandma_settings = GrandmaSettings.get_settings()
+    grandma_settings = GrandmaSettings.objects.get_settings()
     grandma_settings_class = modelform_factory(GrandmaSettings)
     if request.method == 'POST':
         form = grandma_settings_class(data=request.POST, files=request.FILES, instance=grandma_settings)
@@ -127,26 +133,19 @@ def index(request):
     }, context_instance=RequestContext(request))
 
 def apps(request):
-    grandma_settings = GrandmaSettings.get_settings()
+    grandma_settings = GrandmaSettings.objects.get_settings()
     if not grandma_settings.applications.count():
-        applications = list_applications()
-        recommended = list_recommended()
-        for application in applications:
-            grandma_settings.applications.create(
-                application=application, install=application in recommended)
-
-    grandma_application_class = inlineformset_factory(
-        GrandmaSettings, GrandmaApplication, extra=0, can_delete=False)
+        list_applications()
 
     if request.method == 'POST':
-        grandma_application_formset = grandma_application_class(request.POST, request.FILES, instance=grandma_settings)
-        if grandma_application_formset.is_valid():
-            grandma_application_formset.save()
+        form = GrandmaApplicationsForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse('custom'))
     else:
-        grandma_application_formset = grandma_application_class(instance=grandma_settings)
+        form = GrandmaApplicationsForm()
     return render_to_response('grandma/apps.html', {
-        'grandma_application_formset': grandma_application_formset,
+        'form': form,
     }, context_instance=RequestContext(request))
 
 def custom(request):

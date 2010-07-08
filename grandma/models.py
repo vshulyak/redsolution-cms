@@ -3,17 +3,17 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+class SettingsManager(models.Manager):
+    def get_settings(self):
+        if self.get_query_set().count():
+            return self.get_query_set()[0]
+        else:
+            self.get_query_set().create()
+
 class BaseSettings(models.Model):
     class Meta:
         abstract = True
-
-    @classmethod
-    def get_settings(cls):
-        query = cls.objects.all()
-        if query.count():
-            return query[0]
-        else:
-            cls.objects.create()
+    objects = SettingsManager()
 
 class GrandmaSettings(BaseSettings):
     project_name = models.CharField(max_length=50, verbose_name=_('Project name'), default='example')
@@ -27,8 +27,10 @@ class GrandmaSettings(BaseSettings):
 class GrandmaApplication(models.Model):
     class Meta:
         unique_together = (
-            ('settings', 'application',),
+            ('settings', 'package',),
         )
     settings = models.ForeignKey(GrandmaSettings, related_name='applications')
-    application = models.CharField(verbose_name=_('Application'), max_length=255)
     install = models.BooleanField(verbose_name=_('Install'))
+    package = models.CharField(verbose_name=_('Package'), max_length=255)
+    name = models.CharField(verbose_name=_('Name'), max_length=255)
+    description = models.TextField(verbose_name=_('Name'))
