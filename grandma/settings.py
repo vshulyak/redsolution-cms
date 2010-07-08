@@ -80,8 +80,6 @@ INSTALLED_APPS = [
     'grandma',
 ]
 
-GRANDMA_APPS = [
-    'config.grandma_setup',
-]
-
-INSTALLED_APPS += GRANDMA_APPS
+#INSTALLED_APPS += [
+#    'config.grandma_setup',
+#]

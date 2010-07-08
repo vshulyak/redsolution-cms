@@ -1,10 +1,8 @@
 from settings import *
 
-GRANDMA_APPS = [{ % for module in modules % }
-    '{{ module }}', { % endfor % }
+INSTALLED_APPS += [{% for application in grandma_settings.applications.all %}{% if application.path %}{% for setup in application.setups.all %}
+    '{{ setup.module }}',{% endfor %}{% endif %}{% endfor %}
 ]
-
-INSTALLED_APPS += GRANDMA_APPS
 
 ROOT_URLCONF = 'grandma.urls_apps'
 

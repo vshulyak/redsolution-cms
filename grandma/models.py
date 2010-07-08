@@ -44,7 +44,13 @@ class GrandmaApplication(models.Model):
             ('settings', 'package',),
         )
     settings = models.ForeignKey(GrandmaSettings, related_name='applications')
-    install = models.BooleanField(verbose_name=_('Install'))
+    selected = models.BooleanField(verbose_name=_('Selected'))
     package = models.CharField(verbose_name=_('Package'), max_length=255)
-    name = models.CharField(verbose_name=_('Name'), max_length=255)
-    description = models.TextField(verbose_name=_('Name'))
+    verbose_name = models.CharField(verbose_name=_('Verbose name'), max_length=255)
+    description = models.TextField(verbose_name=_('Description'))
+    path = models.CharField(verbose_name=_('Installed to path'), max_length=255, blank=True, null=True)
+
+class GrandmaSetup(models.Model):
+    application = models.ForeignKey(GrandmaApplication, related_name='setups')
+    module = models.CharField(verbose_name=_('Module name'), max_length=255)
+    has_view = models.BooleanField(verbose_name=_('Has view'))

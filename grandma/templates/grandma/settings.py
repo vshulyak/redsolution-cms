@@ -33,7 +33,7 @@ UPLOAD_DIR = 'upload'
 MEDIA_URL = '/media/'
 UPLOAD_URL = os.path.join(MEDIA_URL, UPLOAD_DIR)
 
-ADMIN_MEDIA_PREFIX = '/media/admin/'
+ADMIN_MEDIA_PREFIX = '/admin_media/'
 
 SECRET_KEY = 'i*1gdd^(gvx70fb0d5*6!q7^a7r^)=mf)ip+i07%v*lj+=ir@l' # Fix me
 

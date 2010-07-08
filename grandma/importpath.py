@@ -28,5 +28,7 @@ def importpath(path, error_text=None):
             if error_text is not None:
                 raise ImproperlyConfigured('Error: %s can import "%s"' % (error_text, path))
             else:
+                if exception is None:
+                    raise ImportError(path)
                 raise exception
     return result

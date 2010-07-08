@@ -8,11 +8,11 @@ class GrandmaApplicationsForm(forms.Form):
         grandma_settings = GrandmaSettings.objects.get_settings()
         for application in grandma_settings.applications.all():
             self.fields['application_%d' % application.id] = forms.BooleanField(
-                required=False, label=application.name, initial=application.install,
+                required=False, label=application.verbose_name, initial=application.selected,
                 help_text=application.description)
 
     def save(self):
         grandma_settings = GrandmaSettings.objects.get_settings()
         for application in grandma_settings.applications.all():
-            application.install = self.cleaned_data['application_%d' % application.id]
+            application.selected = self.cleaned_data['application_%d' % application.id]
             application.save()

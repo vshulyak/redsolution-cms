@@ -26,5 +26,5 @@ urlpatterns += patterns(
     url(r'^custom$', 'grandma.views.custom', name='custom'),
     url(r'^build$', 'grandma.views.build', name='build'),
     url(r'^done$', 'grandma.views.done', name='done'),
-    (r'^custom/config$', include('config.grandma_setup.urls')),
+#    (r'^custom/config$', include('config.grandma_setup.urls')),
 )
