@@ -3,6 +3,7 @@
 *.sqlite
 .project
 .pydevproject
+.settings
 .installed.cfg
 bin/*
 downloads/*

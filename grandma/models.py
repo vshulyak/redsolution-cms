@@ -17,19 +17,24 @@ def get_last_settings(model):
         return model()
 
 class GrandmaSettings(BaseSettings):
-    project_name = models.CharField(max_length=50, verbose_name=_('project name'), default='example')
-    database_engine = models.CharField(max_length=50, verbose_name=_('database engine'), default='sqlite')
-    database_name = models.CharField(max_length=50, verbose_name=_('database name'), default='example.sqlite')
-    database_user = models.CharField(max_length=50, verbose_name=_('database user'), default='', blank=True)
-    database_password = models.CharField(max_length=50, verbose_name=_('database password'), default='', blank=True)
-    database_host = models.CharField(max_length=50, verbose_name=_('database host'), default='', blank=True)
-    database_port = models.IntegerField(verbose_name=_('database port'), default=0, blank=True)
+    project_name = models.CharField(max_length=50, verbose_name=_('Project name'), default='example')
+    database_engine = models.CharField(max_length=50, verbose_name=_('Database engine'), default='sqlite')
+    database_name = models.CharField(max_length=50, verbose_name=_('Database name'), default='example.sqlite')
+    database_user = models.CharField(max_length=50, verbose_name=_('Database user'), default='', blank=True)
+    database_password = models.CharField(max_length=50, verbose_name=_('Database password'), default='', blank=True)
+    database_host = models.CharField(max_length=50, verbose_name=_('Database host'), default='localhost', blank=True)
+    database_port = models.IntegerField(verbose_name=_('Database port'), default=5432, blank=True)
 
-class GrandmaInstalledApps(models.Model):
+class GrandmaApplication(models.Model):
     class Meta:
         unique_together = (
             ('settings', 'name',),
         )
-    settings = models.ForeignKey(GrandmaSettings, related_name='installed_apps')
-    selected = models.BooleanField(verbose_name=_('Selected'))
-    name = models.CharField(verbose_name=_('Module name'), max_length=255)
+    settings = models.ForeignKey(GrandmaSettings, related_name='applications')
+    application = models.CharField(verbose_name=_('Application'), max_length=255)
+    install = models.BooleanField(verbose_name=_('Install'))
+
+def get_grandma_settings():
+    grandma_settings = get_last_settings(GrandmaSettings)
+    grandma_settings.save()
+    return grandma_settings
