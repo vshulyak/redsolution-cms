@@ -1,8 +1,12 @@
+{% extends "grandma/base.html" %}
 {% load i18n %}
+
+{% block content %}
 <form method="post" enctype="multipart/form-data" action="">
-<table>
-{{ form }}
-</table>
-<a href="{% url index %}">{% trans 'Back' %}</a>
-<input type="submit" value="{% trans 'Next' %}" />
+    <table>
+        {{ form }}
+    </table>
+    <a href="{% url index %}" class="button-link floated-button">{% trans 'Back' %}</a>
+    <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
 </form>
+{% endblock %}

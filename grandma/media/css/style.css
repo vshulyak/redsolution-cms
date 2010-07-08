@@ -1,0 +1,26 @@
+.button-link {
+	background: url(/media/img/nav-bg.gif) repeat-x center bottom;
+	padding: 4px 5px;
+	border-top: 1px solid #ddd;
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #aaa;
+	border-bottom: 1px solid #aaa;
+	color: #000 !important;
+	font-family: "Lucida Grande",Verdana,Arial,sans-serif;
+	font-size: 11px;
+	cursor: default;
+}
+
+.floated-button {
+	float: left;
+	margin: 6px 6px 0 0;
+}
+
+.input-bg {
+	background: url(/media/img/nav-bg.gif) repeat-x scroll center bottom;
+	border-color: #DDDDDD #AAAAAA #AAAAAA #DDDDDD;
+	border-style: solid;
+	border-width: 1px;
+	color: black;
+	padding: 3px;
+}
