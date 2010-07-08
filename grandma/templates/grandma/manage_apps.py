@@ -5,8 +5,9 @@ sys.path.extend([{ % for path in paths % }
     '{{ path }}', { % endfor % }
 ])
 sys.path[0:0] = [
-  os.path.abspath('.'),
-  os.path.abspath(os.path.join('..', 'parts', 'django'))
+    os.path.abspath('.'),
+    os.path.abspath(__file__),
+    os.path.abspath(os.path.join('..', 'parts', 'django'))
 ]
 
 from django.core.management import execute_manager
@@ -17,4 +18,4 @@ except ImportError:
     sys.exit(1)
 
 if __name__ == "__main__":
-    execute_manager(settings)
+    execute_manager(settings_apps)

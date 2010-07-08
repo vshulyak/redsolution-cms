@@ -79,3 +79,9 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'grandma',
 ]
+
+GRANDMA_APPS = [
+    'config.grandma_setup',
+]
+
+INSTALLED_APPS += GRANDMA_APPS

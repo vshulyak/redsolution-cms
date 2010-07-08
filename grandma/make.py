@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from grandma.importpath import importpath
+from grandma.models import GrandmaSettings
+from django.template.loader import render_to_string
+import os
 
 class BaseMake():
     def __init__(self):
@@ -53,7 +56,33 @@ class BaseMake():
 
 class Make(BaseMake):
     def make(self):
-        pass
+        grandma_settings = GrandmaSettings.objects.get_settings()
+        data = render_to_string('grandma/buildout.cfg', {
+            'grandma_settings': grandma_settings,
+        })
+        grandma_settings.append_to(os.path.join('..', 'buildout.cfg'), data)
+        data = render_to_string('grandma/develop.cfg', {
+            'grandma_settings': grandma_settings,
+        })
+        grandma_settings.append_to(os.path.join('..', 'develop.cfg'), data)
+        # bootstrap
+        grandma_settings.append_to('__init__.py', '')
+        data = render_to_string('grandma/development.py', {
+            'grandma_settings': grandma_settings,
+        })
+        grandma_settings.append_to('development.py', data)
+        data = render_to_string('grandma/production.py', {
+            'grandma_settings': grandma_settings,
+        })
+        grandma_settings.append_to('production.py', data)
+        data = render_to_string('grandma/settings.py', {
+            'grandma_settings': grandma_settings,
+        })
+        grandma_settings.append_to('settings.py', data)
+        data = render_to_string('grandma/urls.py', {
+            'grandma_settings': grandma_settings,
+        })
+        grandma_settings.append_to('urls.py', data)
 
 def make():
     """
@@ -67,14 +96,8 @@ def make():
             continue
         make_objects.append(make_class())
     for make_object in make_objects:
-        if not make_object.premade:
-            make_object.premake()
-            make_object.premade = True
+        make_object.premake()
     for make_object in make_objects:
-        if not make_object.made:
-            make_object.make()
-            make_object.made = True
+        make_object.make()
     for make_object in make_objects:
-        if not make_object.postmade:
-            make_object.postmake()
-            make_object.postmade = True
+        make_object.postmake()

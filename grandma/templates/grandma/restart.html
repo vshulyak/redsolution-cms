@@ -7,16 +7,17 @@
 $(function(){
     function timer() {
         $.ajax({
-            url: "{% url wait %}",
+            url: "http://127.0.0.1:8001/{% url started %}",
             error: function() {
                 setTimeout(timer, 1000);
             },             
             success: function(data) {
-            	window.location = "{% url custom %}"
+            	window.location = "http://127.0.0.1:8001/{% url custom %}"
             }
         });
     }
     setTimeout(timer, 1000);
 });
 </script>
+{% trans 'Wait please...' %}
 {% endblock %}

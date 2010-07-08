@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import os
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-class SettingsManager(models.Manager):
+class BaseSettingsManager(models.Manager):
     def get_settings(self):
         if self.get_query_set().count():
             return self.get_query_set()[0]
@@ -13,16 +14,29 @@ class SettingsManager(models.Manager):
 class BaseSettings(models.Model):
     class Meta:
         abstract = True
-    objects = SettingsManager()
+    objects = BaseSettingsManager()
 
 class GrandmaSettings(BaseSettings):
-    project_name = models.CharField(max_length=50, verbose_name=_('Project name'), default='example')
-    database_engine = models.CharField(max_length=50, verbose_name=_('Database engine'), default='sqlite')
-    database_name = models.CharField(max_length=50, verbose_name=_('Database name'), default='example.sqlite')
-    database_user = models.CharField(max_length=50, verbose_name=_('Database user'), default='', blank=True)
-    database_password = models.CharField(max_length=50, verbose_name=_('Database password'), default='', blank=True)
-    database_host = models.CharField(max_length=50, verbose_name=_('Database host'), default='localhost', blank=True)
-    database_port = models.IntegerField(verbose_name=_('Database port'), default=5432, blank=True, null=True)
+    DATABASE_ENGINES = [
+        ('postgresql_psycopg2', 'postgresql_psycopg2',),
+        ('postgresql', 'postgresql',),
+        ('mysql', 'mysql',),
+        ('sqlite3', 'sqlite3',),
+        ('oracle', 'oracle',),
+    ]
+
+    project_path = models.CharField(verbose_name=_('Project path'), max_length=255, default=lambda: os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+    project_name = models.CharField(verbose_name=_('Project name'), max_length=50, default='example')
+    database_engine = models.CharField(verbose_name=_('Database engine'), max_length=50, choices=DATABASE_ENGINES, default='sqlite3')
+    database_name = models.CharField(verbose_name=_('Database name'), max_length=50, default='example.sqlite')
+    database_user = models.CharField(verbose_name=_('Database user'), max_length=50, blank=True, default='')
+    database_password = models.CharField(verbose_name=_('Database password'), max_length=50, blank=True, default='')
+    database_host = models.CharField(verbose_name=_('Database host'), max_length=50, blank=True, default='')
+    database_port = models.IntegerField(verbose_name=_('Database port'), blank=True, null=True)
+
+    def append_to(self, file_name, data):
+        file_name = os.path.join(self.project_path, self.project_name, file_name)
+        open(file_name, 'a+').write(data)
 
 class GrandmaApplication(models.Model):
     class Meta:

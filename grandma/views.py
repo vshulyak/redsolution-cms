@@ -33,30 +33,37 @@ def list_applications():
     grandma_settings = GrandmaSettings.objects.get_settings()
     recommended = list_recommended()
     for package in [
-        'grandma_plugins_django_pages_cms',
-        'grandma_plugins_django_easy_news',
-        'grandma_plugins_django_config',
-        'grandma_plugins_django_tinymce',
-        'grandma_plugins_django_tinymce_attachment',
-        'grandma_plugins_django_seo',
-        'grandma_plugins_django_hex_storage',
-        'grandma_plugins_django_chunks',
-        'grandma_plugins_django_trusted_html',
-        'grandma_plugins_django_model_urls',
-        'grandma_plugins_django_url_methods',
-        'grandma_plugins_django_menu_proxy',
-        'grandma_plugins_django_imagekit',
+        'attachment',
+        'seo',
+#        'grandma_plugins_django_pages_cms',
+#        'grandma_plugins_django_easy_news',
+#        'grandma_plugins_django_config',
+#        'grandma_plugins_django_tinymce',
+#        'grandma_plugins_django_tinymce_attachment',
+#        'grandma_plugins_django_seo',
+#        'grandma_plugins_django_hex_storage',
+#        'grandma_plugins_django_chunks',
+#        'grandma_plugins_django_trusted_html',
+#        'grandma_plugins_django_model_urls',
+#        'grandma_plugins_django_url_methods',
+#        'grandma_plugins_django_menu_proxy',
+#        'grandma_plugins_django_imagekit',
     ]:
         grandma_settings.applications.create(
             install=package in recommended, package=package,
             name=package.replace('grandma_plugins_', ''), description=package.replace('_', ' '))
+
+def list():
+    grandma_settings = GrandmaSettings.objects.get_settings()
+    if not grandma_settings.applications.count():
+        list_applications()
 
 def load_application(name):
     """
     Load application with specified name.
     Return path to the application or None if loading failed.
     """
-    return os.path.abspath(os.path.join('setup_eggs', name))
+    return os.path.abspath(os.path.join('parts', name))
 
 def find_grandma_setups(path):
     """
@@ -115,11 +122,11 @@ def load():
         })
     )
     subprocess.Popen('python manage_apps.py syncdb').wait()
-    subprocess.Popen('python manage_apps.py runserver 127.0.0.1:8001').wait()
+    subprocess.Popen('python manage_apps.py runserver 127.0.0.1:8001')
 
 def index(request):
     grandma_settings = GrandmaSettings.objects.get_settings()
-    grandma_settings_class = modelform_factory(GrandmaSettings)
+    grandma_settings_class = modelform_factory(GrandmaSettings, exclude=['project_path'])
     if request.method == 'POST':
         form = grandma_settings_class(data=request.POST, files=request.FILES, instance=grandma_settings)
         if form.is_valid():
@@ -133,22 +140,28 @@ def index(request):
     }, context_instance=RequestContext(request))
 
 def apps(request):
-    grandma_settings = GrandmaSettings.objects.get_settings()
-    if not grandma_settings.applications.count():
-        list_applications()
+    list()
 
     if request.method == 'POST':
         form = GrandmaApplicationsForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('custom'))
+            return HttpResponseRedirect(reverse('restart'))
     else:
         form = GrandmaApplicationsForm()
     return render_to_response('grandma/apps.html', {
         'form': form,
     }, context_instance=RequestContext(request))
 
+def restart(request):
+
+    return render_to_response('grandma/restart.html')
+
+def started(requst):
+    return HttpResponse()
+
 def custom(request):
+    load()
     return HttpResponse()
 
 def build(request):
@@ -156,6 +169,3 @@ def build(request):
 
 def done(request):
     return HttpResponse()
-
-def wait(requst):
-    return render_to_response('grandma/wait.html')

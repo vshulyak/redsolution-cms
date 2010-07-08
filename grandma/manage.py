@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 import os
 import sys
+current_dir = os.path.basename(__file__)
+sys.path.extend([
+    os.path.abspath(os.path.join(current_dir, '..', 'parts', 'django-config')),
+])
 sys.path[0:0] = [
-    os.path.abspath('.'),
-    os.path.abspath(os.path.join('..', 'parts', 'django'))
+    os.path.abspath(current_dir),
+    os.path.abspath(os.path.join(current_dir, '..', 'parts', 'django'))
 ]
 
 from django.core.management import execute_manager

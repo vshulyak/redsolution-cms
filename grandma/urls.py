@@ -20,9 +20,11 @@ if settings.DEBUG:
 urlpatterns += patterns(
     '',
     url(r'^$', 'grandma.views.index', name='index'),
-    url(r'^apps/$', 'grandma.views.apps', name='apps'),
-    url(r'^custom/$', 'grandma.views.custom', name='custom'),
-    url(r'^build/$', 'grandma.views.build', name='build'),
-    url(r'^done/$', 'grandma.views.done', name='done'),
-    url(r'^wait/$', 'grandma.views.wait', name='wait'),
+    url(r'^apps$', 'grandma.views.apps', name='apps'),
+    url(r'^restart$', 'grandma.views.restart', name='restart'),
+    url(r'^started$', 'grandma.views.started', name='started'),
+    url(r'^custom$', 'grandma.views.custom', name='custom'),
+    url(r'^build$', 'grandma.views.build', name='build'),
+    url(r'^done$', 'grandma.views.done', name='done'),
+    (r'^custom/config$', include('config.grandma_setup.urls')),
 )
