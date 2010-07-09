@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 from grandma.importpath import importpath
 from grandma.models import GrandmaSettings, GrandmaSetup
 from grandma.forms import GrandmaApplicationsForm
+from grandma.make import AlreadyMadeException
 
 #'grandma_plugins_django_pages_cms',
 #'grandma_plugins_django_easy_news',
@@ -187,11 +188,20 @@ def custom(request):
         except OSError:
             pass
         for make_object in make_objects:
-            make_object.premake()
+            try:
+                make_object.premake()
+            except AlreadyMadeException:
+                pass
         for make_object in make_objects:
-            make_object.make()
+            try:
+                make_object.make()
+            except AlreadyMadeException:
+                pass
         for make_object in make_objects:
-            make_object.postmake()
+            try:
+                make_object.postmake()
+            except AlreadyMadeException:
+                pass
         return HttpResponseRedirect(reverse('build'))
     return render_to_response('grandma/custom.html', {
         'grandma_settings': grandma_settings,
