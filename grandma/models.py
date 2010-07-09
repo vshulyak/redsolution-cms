@@ -3,6 +3,7 @@
 import os
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string
 
 class BaseSettingsManager(models.Manager):
     def get_settings(self):
@@ -34,9 +35,11 @@ class GrandmaSettings(BaseSettings):
     database_host = models.CharField(verbose_name=_('Database host'), max_length=50, blank=True, default='')
     database_port = models.IntegerField(verbose_name=_('Database port'), blank=True, null=True)
 
-    def append_to(self, file_name, data):
+    def render_to(self, file_name, template_name, dictionary={}, mode='a+'):
         file_name = os.path.join(self.project_path, self.project_name, file_name)
-        open(file_name, 'a+').write(data)
+        dictionary['grandma_settings'] = self
+        open(file_name, mode).write(render_to_string(template_name, dictionary))
+
 
 class GrandmaApplication(models.Model):
     class Meta:
@@ -44,13 +47,17 @@ class GrandmaApplication(models.Model):
             ('settings', 'package',),
         )
     settings = models.ForeignKey(GrandmaSettings, related_name='applications')
+
     selected = models.BooleanField(verbose_name=_('Selected'))
     package = models.CharField(verbose_name=_('Package'), max_length=255)
+    version = models.CharField(verbose_name=_('Package version'), max_length=50)
     verbose_name = models.CharField(verbose_name=_('Verbose name'), max_length=255)
     description = models.TextField(verbose_name=_('Description'))
     path = models.CharField(verbose_name=_('Installed to path'), max_length=255, blank=True, null=True)
+    ok = models.BooleanField(verbose_name=_('Download OK'), default=False)
+
 
 class GrandmaSetup(models.Model):
     application = models.ForeignKey(GrandmaApplication, related_name='setups')
     module = models.CharField(verbose_name=_('Module name'), max_length=255)
-    has_view = models.BooleanField(verbose_name=_('Has view'))
+    has_urls = models.BooleanField(verbose_name=_('Has view'))
