@@ -21,6 +21,7 @@ urlpatterns += patterns(
     '',
     url(r'^$', 'grandma.views.index', name='index'),
     url(r'^apps$', 'grandma.views.apps', name='apps'),
+    url(r'^load$', 'grandma.views.load', name='load'),
     url(r'^restart/(?P<hash>\w{8})$', 'grandma.views.restart', name='restart'),
     url(r'^started$', 'grandma.views.started', name='started'),
     url(r'^custom$', 'grandma.views.custom', name='custom'),

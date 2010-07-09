@@ -6,29 +6,23 @@
 <script type="text/javascript">
 $(function(){
     function ping() {
-        console.log("ajax");
         $.ajax({
             url: "{% url started %}",
             error: function(a, b, c) {
-                console.log("error");
                 setTimeout(ping, 1000);
             },             
             success: function(data) {
-                console.log("{% url custom %}");
             	window.location = "{% url custom %}";
             }
         });
     }
     function restart() {
-        console.log("{% url restart hash %}");
         $.ajax({
             url: "{% url restart hash %}",
             error: function(data) {
-                console.log("Send-error");
                 setTimeout(ping, 5000);
             },
             success: function(data) {
-                console.log("Send-success");
                 setTimeout(ping, 5000);
             }
         });

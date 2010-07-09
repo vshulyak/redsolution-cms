@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from grandma.importpath import importpath
-from grandma.models import GrandmaSettings, GrandmaApplication, GrandmaSetup
+from grandma.models import GrandmaSettings, GrandmaSetup
 from grandma.forms import GrandmaApplicationsForm
 
 #'grandma_plugins_django_pages_cms',
@@ -103,39 +103,54 @@ def apps(request):
         form = GrandmaApplicationsForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            load_applications()
-            grandma_settings = GrandmaSettings.objects.get_settings()
-            grandma_dir = os.path.dirname(os.path.abspath(__file__))
-            hash = '%08x' % random.randint(0, 0x100000000)
-            for file_name in ['manage_%s.py', 'settings_%s.py', 'urls_%s.py', ]:
-                data = render_to_string('grandma/%s' % (file_name % 'apps'), {
-                    'grandma_settings': grandma_settings,
-                    'hash': hash,
-                })
-                open(os.path.join(grandma_dir, file_name % hash), 'w').write(data)
-            subprocess.Popen('python manage_%s.py syncdb --noinput' % hash).wait()
-            return render_to_response('grandma/restart.html', {
-                'hash': hash,
-            }, context_instance=RequestContext(request))
+            return HttpResponseRedirect(reverse('load'))
     else:
         form = GrandmaApplicationsForm()
     return render_to_response('grandma/apps.html', {
         'form': form,
     }, context_instance=RequestContext(request))
 
+def load(request):
+    load_applications()
+    grandma_settings = GrandmaSettings.objects.get_settings()
+    grandma_dir = os.path.dirname(os.path.abspath(__file__))
+    hash = '%08x' % random.randint(0, 0x100000000)
+    for file_name in ['manage_%s.py', 'settings_%s.py', 'urls_%s.py', ]:
+        data = render_to_string('grandma/%s' % (file_name % 'apps'), {
+            'grandma_settings': grandma_settings,
+            'hash': hash,
+        })
+        open(os.path.join(grandma_dir, file_name % hash), 'w').write(data)
+    manage_name = os.path.join(grandma_dir, 'manage_%s.py' % hash)
+    subprocess.Popen('python %s syncdb --noinput' % manage_name, shell=True).wait()
+    return render_to_response('grandma/load.html', {
+        'hash': hash,
+    }, context_instance=RequestContext(request))
 
 def restart(request, hash):
-    open('manage.py', 'w').write(open('manage_%s.py' % hash).read())
+    grandma_dir = os.path.dirname(os.path.abspath(__file__))
+    source = os.path.join(grandma_dir, 'manage_%s.py' % hash)
+    destination = os.path.join(grandma_dir, 'manage.py')
+    open(destination, 'w').write(open(source).read())
     return HttpResponse()
 
 def started(requst):
     return HttpResponse()
 
 def custom(request):
-    return HttpResponse(content='YES')
+    if request.method == 'POST':
+#        make()
+        return HttpResponseRedirect(reverse('build'))
+    grandma_settings = GrandmaSettings.objects.get_settings()
+    return render_to_response('grandma/custom.html', {
+        'grandma_settings': grandma_settings,
+    }, context_instance=RequestContext(request))
 
 def build(request):
-    return HttpResponse()
+    grandma_settings = GrandmaSettings.objects.get_settings()
+    return render_to_response('grandma/build.html', {
+        'grandma_settings': grandma_settings,
+    }, context_instance=RequestContext(request))
 
 def done(request):
     return HttpResponse()

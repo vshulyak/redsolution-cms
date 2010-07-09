@@ -21,10 +21,11 @@ urlpatterns += patterns(
     '',
     url(r'^$', 'grandma.views.index', name='index'),
     url(r'^apps$', 'grandma.views.apps', name='apps'),
+    url(r'^load$', 'grandma.views.load', name='load'),
     url(r'^restart/(?P<hash>\w{8})$', 'grandma.views.restart', name='restart'),
     url(r'^started$', 'grandma.views.started', name='started'),
     url(r'^custom$', 'grandma.views.custom', name='custom'),
     url(r'^build$', 'grandma.views.build', name='build'),
-    url(r'^done$', 'grandma.views.done', name='done'),{% for module in modules %}
-    (r'^custom/{{ module }}$', include('{{ module }}.grandma_setup.urls')),{% endfor %}
+    url(r'^done$', 'grandma.views.done', name='done'),{% for application in grandma_settings.applications.all %}{% if application.path %}{% for setup in application.setups.all %}{% if setup.has_view %}
+    (r'^custom/{{ setup.module }}$', include('{{ setup.module }}.urls')),{% endif %}{% endfor %}{% endif %}{% endfor %}
 )

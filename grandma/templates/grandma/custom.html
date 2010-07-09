@@ -5,13 +5,16 @@
 <form method="post" enctype="multipart/form-data" action="">
     <table>
         <tr><th>{% trans 'Application' %}</th><th>{% trans 'Settings' %}</th></tr>
-        {% for field in form %}
-            <tr><td>
-                {{ field.label_tag }}
-                {% if field.help_text %}<div class="help_text">{{ field.help_text }}</div>{% endif %}
-                {% if field.errors %}<div class="errors_text">{{ field.errors }}</div>{% endif %}
-                {{ field }}
-            </td></tr>
+        {% for application in grandma_settings.applications.all %}
+            <tr>
+                <td>{{ application.verbose_name }}</td>
+                <td>
+                {% for setup in application.setups.all %}
+                    {% if setup.has_view %}
+                        <a href="{% url custom %}/{{ setup.module }}">{% trans 'Settings for' %} {{ setup.module }}</a></td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
         {% endfor %}
     </table>
     <a href="{% url index %}" class="button-link floated-button">{% trans 'Back' %}</a>
