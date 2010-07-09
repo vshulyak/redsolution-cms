@@ -135,7 +135,7 @@ def load(request):
         })
         open(os.path.join(grandma_dir, file_name % hash), 'w').write(data)
     manage_name = os.path.join(grandma_dir, 'manage_%s.py' % hash)
-    subprocess.Popen('python %s syncdb --noinput' % manage_name, shell=True).wait()
+    subprocess.Popen('python %s syncdb --noinput' % manage_name, shell=os.sys.platform != 'win32').wait()
     return render_to_response('grandma/load.html', {
         'hash': hash,
     }, context_instance=RequestContext(request))
