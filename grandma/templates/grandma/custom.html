@@ -10,7 +10,7 @@
                 <td>{{ application.verbose_name }}</td>
                 <td>
                 {% for setup in application.setups.all %}
-                    {% if setup.has_view %}
+                    {% if setup.has_urls %}
                         <a href="{% url custom %}/{{ setup.module }}">{% trans 'Settings for' %} {{ setup.module }}</a></td>
                     {% endif %}
                 {% endfor %}
