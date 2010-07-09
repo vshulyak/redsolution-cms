@@ -169,6 +169,7 @@ def custom(request):
         for package in grandma_settings.applications.filter(ok=True):
             for entry_point in package.setups.all():
                 applications.append(entry_point.module)
+        print applications
         make_objects = []
         for application in applications:
             try:
@@ -176,6 +177,7 @@ def custom(request):
             except ImportError:
                 continue
             make_objects.append(make_class())
+        print make_objects
         try:
             os.mkdir(os.path.join(grandma_settings.project_path, grandma_settings.project_name))
         except OSError:
@@ -202,9 +204,19 @@ def custom(request):
 
 def build(request):
     grandma_settings = GrandmaSettings.objects.get_settings()
+    if request.method == 'POST':
+        grandma_dir = os.path.dirname(os.path.abspath(__file__))
+        bootstrap_name = os.path.join(grandma_dir, '..', 'bootstrap.py')
+        subprocess.Popen('python %s' % bootstrap_name, shell=os.sys.platform != 'win32').wait()
+        buildout_name = os.path.join(grandma_dir, '..', 'bin', 'buildout')
+        subprocess.Popen('python %s' % buildout_name, shell=os.sys.platform != 'win32').wait()
+        return HttpResponseRedirect(reverse('done'))
     return render_to_response('grandma/build.html', {
         'grandma_settings': grandma_settings,
     }, context_instance=RequestContext(request))
 
 def done(request):
-    return HttpResponse()
+    grandma_settings = GrandmaSettings.objects.get_settings()
+    return render_to_response('grandma/done.html', {
+        'grandma_settings': grandma_settings,
+    }, context_instance=RequestContext(request))

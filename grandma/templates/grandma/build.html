@@ -2,5 +2,9 @@
 {% load i18n %}
 
 {% block content %}
-<p>{% trans 'Now run ``python bootstart.py``. Then ``bin/buildout -c develop.cfg``.'  %}</p>
+<form method="post" enctype="multipart/form-data" action="">
+    <p>{% trans 'Now we ready to run ``python bootstart.py`` and ``bin/buildout``.' %}</p>
+    <a href="{% url custom %}" class="button-link floated-button">{% trans 'Back' %}</a>
+    <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
+</form>
 {% endblock %}

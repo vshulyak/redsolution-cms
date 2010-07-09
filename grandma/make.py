@@ -34,7 +34,7 @@ class BaseMake(object):
         """
         Called to make() settings for this application.
         """
-        if not self.made:
+        if self.made:
             raise AlreadyMadeException
         self.made = True
 
@@ -42,7 +42,7 @@ class BaseMake(object):
         """
         Called after all make() for all applications.
         """
-        if not self.postmade:
+        if self.postmade:
             raise AlreadyMadeException
         self.postmade = True
 
