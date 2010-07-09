@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from django.conf.urls.defaults import patterns, include
+from django.conf.urls.defaults import patterns, include, handler404, handler500
 from django.conf import settings
 from django.contrib import admin
+
+handler404
+handler500
 
 admin.autodiscover()
 urlpatterns = patterns('')
@@ -16,11 +19,9 @@ urlpatterns += patterns('',
 )
 
 urlpatterns += patterns('',
-    (r'^', include('attachment.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^robots.txt$', 'django.views.generic.simple.direct_to_template', {'template': 'robots.txt', 'mimetype': 'text/plain'}),
 )
-
 
 #pages_dict = {
 #    'queryset': Page.objects.exclude(status=Page.DRAFT),
