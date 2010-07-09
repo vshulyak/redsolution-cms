@@ -1,11 +1,19 @@
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-from grandma.importpath import importpath
-from grandma.models import GrandmaSettings
-from django.template.loader import render_to_string
 import os
 
-class BaseMake():
+from grandma.models import GrandmaSettings
+
+class AlreadyMadeException(Exception):
+    """
+    Exception raise if function in Make class was called twice.
+    """
+
+class BaseMake(object):
+    """
+    Base class for all Make classes.
+    You MUST call super method before any action in overridden functions.
+    Functions can raise ``AlreadyMadeException`` if function was already called. 
+    """
+
     def __init__(self):
         """
         Create make object.
@@ -16,48 +24,31 @@ class BaseMake():
 
     def premake(self):
         """
-        Call it immediately before make project for this application.
+        Called immediately before make() for all applications.
         """
-        if not self.premade:
-            self._premake()
-            self.premade = True
+        if self.premade:
+            raise AlreadyMadeException
+        self.premade = True
 
     def make(self):
         """
-        Call it to make project for this application.
+        Called to make() settings for this application.
         """
         if not self.made:
-            self._make()
-            self.made = True
+            raise AlreadyMadeException
+        self.made = True
 
     def postmake(self):
         """
-        Call it after project was made for this application.
+        Called after all make() for all applications.
         """
         if not self.postmade:
-            self._postmake()
-            self.postmade = True
-
-    def _premake(self):
-        """
-        Called immediately before make project for this application.
-        You can override it.
-        """
-
-    def _make(self):
-        """
-        Called to make project for this application.
-        You can override it.
-        """
-
-    def _postmake(self):
-        """
-        Called after project was made for this application.
-        You can override it.
-        """
+            raise AlreadyMadeException
+        self.postmade = True
 
 class Make(BaseMake):
     def make(self):
+        super(Make, self).make()
         grandma_settings = GrandmaSettings.objects.get_settings()
         grandma_settings.render_to(os.path.join('..', 'buildout.cfg'), 'grandma/buildout.cfg', {}, 'w')
         grandma_settings.render_to(os.path.join('..', 'develop.cfg'), 'grandma/develop.cfg', {}, 'w')
