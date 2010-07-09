@@ -54,3 +54,11 @@ table#apps td {
 table#start th label {
 	vertical-align: middle;
 }
+
+td.center {
+	text-align: center;
+}
+
+table.table-margin {
+	margin-top: 24px;
+}
