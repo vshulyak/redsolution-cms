@@ -56,8 +56,13 @@ class GrandmaApplication(models.Model):
     path = models.CharField(verbose_name=_('Installed to path'), max_length=255, blank=True, null=True)
     ok = models.BooleanField(verbose_name=_('Download OK'), default=False)
 
+    def __unicode__(self):
+        return self.package
 
 class GrandmaSetup(models.Model):
     application = models.ForeignKey(GrandmaApplication, related_name='setups')
     module = models.CharField(verbose_name=_('Module name'), max_length=255)
     has_urls = models.BooleanField(verbose_name=_('Has view'))
+
+    def __unicode__(self):
+        return 'Setup module %s' % self.module
