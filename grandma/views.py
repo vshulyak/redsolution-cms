@@ -11,46 +11,27 @@ from django.template.loader import render_to_string
 from grandma.importpath import importpath
 from grandma.models import GrandmaSettings, GrandmaSetup
 from grandma.forms import GrandmaApplicationsForm
+from grandma.packages import search_index, install
 
-#'grandma_plugins_django_pages_cms',
-#'grandma_plugins_django_easy_news',
-#'grandma_plugins_django_config',
-#'grandma_plugins_django_tinymce',
-#'grandma_plugins_django_tinymce_attachment',
-#'grandma_plugins_django_seo',
-#'grandma_plugins_django_hex_storage',
-#'grandma_plugins_django_chunks',
-#'grandma_plugins_django_trusted_html',
-#'grandma_plugins_django_model_urls',
-#'grandma_plugins_django_url_methods',
-#'grandma_plugins_django_menu_proxy',
-#'grandma_plugins_django_imagekit',
 
 def list_applications():
     """
     List applications.
     """
     grandma_settings = GrandmaSettings.objects.get_settings()
+    all_packages = search_index('grandma')
+
     if not grandma_settings.applications.count():
-        for package in [
-            'django-attachment',
-            'django-config',
-            'django-seo',
-        ]:
+        for package in all_packages:
             grandma_settings.applications.create(
-                selected=False, package=package,
-                verbose_name=package.replace('django-', ''),
-                description='Description for %s' % package)
+                selected=False,
+                package=package['name'],
+                version=package['version'],
+                verbose_name=package['name'].replace('django-', '').replace('grandma.', ''),
+                description=package['summary']
+            )
 
-def load_application(package):
-    """
-    Load application with specified name.
-    Return path to the application or None if loading failed.
-    """
-    grandma_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.abspath(os.path.join(grandma_dir, '..', 'parts', package))
-
-def find_setups(package):
+def find_entry_points(package):
     """
     Find entry point in package for grandma_setup.
     """
@@ -58,29 +39,36 @@ def find_setups(package):
 
 def load_applications():
     """
-    Load applications.
+    Downloads package to egg and imports it to sys.path
+    TODO: Raise download error if download failed
     """
     grandma_settings = GrandmaSettings.objects.get_settings()
     GrandmaSetup.objects.all().delete()
-    for application in grandma_settings.applications.filter(selected=True):
-        application.path = load_application(application.package)
-        application.save()
-    for application in grandma_settings.applications.exclude(path=None):
-        sys.path.append(application.path)
-    for application in grandma_settings.applications.exclude(path=None):
-        for module in find_setups(application.package):
-            try:
-                importpath(module)
-            except ImportError:
-                continue
-            try:
-                importpath(module + '.urls')
-            except ImportError:
-                has_view = False
-            else:
-                has_view = True
-            GrandmaSetup.objects.create(
-                application=application, module=module, has_view=has_view)
+    selected_packages = grandma_settings.applications.filter(selected=True)
+    # prepare modules...
+    modules_to_download = [{'name': package.package, 'version': package.version}
+        for package in selected_packages]
+    workset = install(modules_to_download)
+    # Now fetch entry points and import modules
+    for package in selected_packages:
+        distr = workset.by_key[package.package]
+        distr.activate()
+        entry_points = distr.get_entry_info(None, 'grandma_setup')
+
+        if entry_points:
+            for ep_name, entry_point in entry_points.iteritems():
+                try:
+                    importpath(entry_point.module_name)
+                except ImportError:
+                    continue
+                try:
+                    importpath(entry_point.module_name + '.urls')
+                except ImportError:
+                    has_urls = False
+                else:
+                    has_urls = True
+                GrandmaSetup.objects.create(
+                    application=package, module=entry_point.module_name, has_urls=has_urls)
 
 def index(request):
     """
@@ -170,18 +158,16 @@ def custom(request):
     grandma_settings = GrandmaSettings.objects.get_settings()
     if request.method == 'POST':
         applications = ['grandma']
-        for application in grandma_settings.applications.exclude(path=None):
-            for setup in application.setups.all():
-                applications.append(setup.module)
+        for package in grandma_settings.applications.filter(ok=True):
+            for entry_point in package.setups.all():
+                applications.append(entry_point.module)
         make_objects = []
         for application in applications:
             try:
                 make_class = importpath('.'.join([application, 'make', 'Make']))
             except ImportError:
-                print '.'.join([application, 'make', 'Make'])
                 continue
             make_objects.append(make_class())
-        print make_objects
         try:
             os.mkdir(os.path.join(grandma_settings.project_path, grandma_settings.project_name))
         except OSError:

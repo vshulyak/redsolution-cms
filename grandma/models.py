@@ -40,19 +40,24 @@ class GrandmaSettings(BaseSettings):
         dictionary['grandma_settings'] = self
         open(file_name, mode).write(render_to_string(template_name, dictionary))
 
+
 class GrandmaApplication(models.Model):
     class Meta:
         unique_together = (
             ('settings', 'package',),
         )
     settings = models.ForeignKey(GrandmaSettings, related_name='applications')
+
     selected = models.BooleanField(verbose_name=_('Selected'))
     package = models.CharField(verbose_name=_('Package'), max_length=255)
+    version = models.CharField(verbose_name=_('Package version'), max_length=50)
     verbose_name = models.CharField(verbose_name=_('Verbose name'), max_length=255)
     description = models.TextField(verbose_name=_('Description'))
     path = models.CharField(verbose_name=_('Installed to path'), max_length=255, blank=True, null=True)
+    ok = models.BooleanField(verbose_name=_('Download OK'), default=False)
+
 
 class GrandmaSetup(models.Model):
     application = models.ForeignKey(GrandmaApplication, related_name='setups')
     module = models.CharField(verbose_name=_('Module name'), max_length=255)
-    has_view = models.BooleanField(verbose_name=_('Has view'))
+    has_urls = models.BooleanField(verbose_name=_('Has view'))
