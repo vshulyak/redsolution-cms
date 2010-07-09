@@ -1,0 +1,5 @@
+Title=Grandma-CMS
+Path=Grandma-CMS
+Setup=cmd /c python grandma\manage.py syncdb --noinput&python grandma\manage.py runserver
+Shortcut=D,"C:\Program Files\Internet Explorer\iexplore.exe" http://127.0.0.1:8000,,,Grandma-CMS
+//del "..\grandma-cms.exe"&winrar.exe a -mdg -m5 -s -ibck -dh -ep1 -kb -r -sfx -z"install.sfx" -iicon"grandma\media\img\favicon.ico" "..\grandma-cms.exe" "grandma" "parts"
