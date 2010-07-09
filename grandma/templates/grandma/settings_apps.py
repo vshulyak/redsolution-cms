@@ -4,5 +4,4 @@ INSTALLED_APPS += [{% for application in grandma_settings.applications.all %}{% 
     '{{ setup.module }}',{% endfor %}{% endif %}{% endfor %}
 ]
 
-ROOT_URLCONF = 'grandma.urls_apps'
-
+ROOT_URLCONF = 'grandma.urls_{{ hash }}'

@@ -1,5 +1,6 @@
 import os
 import sys
+import random
 import subprocess
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
@@ -102,25 +103,30 @@ def apps(request):
         form = GrandmaApplicationsForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('restart'))
+            load_applications()
+            grandma_settings = GrandmaSettings.objects.get_settings()
+            grandma_dir = os.path.dirname(os.path.abspath(__file__))
+            hash = '%08x' % random.randint(0, 0x100000000)
+            for file_name in ['manage_%s.py', 'settings_%s.py', 'urls_%s.py', ]:
+                data = render_to_string('grandma/%s' % (file_name % 'apps'), {
+                    'grandma_settings': grandma_settings,
+                    'hash': hash,
+                })
+                open(os.path.join(grandma_dir, file_name % hash), 'w').write(data)
+            subprocess.Popen('python manage_%s.py syncdb --noinput' % hash).wait()
+            return render_to_response('grandma/restart.html', {
+                'hash': hash,
+            }, context_instance=RequestContext(request))
     else:
         form = GrandmaApplicationsForm()
     return render_to_response('grandma/apps.html', {
         'form': form,
     }, context_instance=RequestContext(request))
 
-def restart(request):
-    load_applications()
-    grandma_settings = GrandmaSettings.objects.get_settings()
-    grandma_dir = os.path.dirname(os.path.abspath(__file__))
-    for file_name in ['manage_apps.py', 'settings_apps.py', 'urls_apps.py', ]:
-        data = render_to_string('grandma/%s' % file_name, {
-            'grandma_settings': grandma_settings,
-        })
-        open(os.path.join(grandma_dir, file_name), 'w').write(data)
-    subprocess.Popen('python manage_apps.py syncdb --noinput').wait()
-    subprocess.Popen('python manage_apps.py runserver 127.0.0.1:8001')
-    return render_to_response('grandma/restart.html')
+
+def restart(request, hash):
+    open('manage.py', 'w').write(open('manage_%s.py' % hash).read())
+    return HttpResponse()
 
 def started(requst):
     return HttpResponse()

@@ -4,21 +4,37 @@
 {% block content %}
 <script type="text/javascript" src="/media/js/jquery-1.3.2.min.js"></script>
 <script type="text/javascript">
-/*$(function(){
-    function timer() {
-        alert('start');
+$(function(){
+    function ping() {
+        console.log("ajax");
         $.ajax({
-            url: "http://127.0.0.1:8001/{% url started %}",
-            error: function() {
-                setTimeout(timer, 1000);
+            url: "{% url started %}",
+            error: function(a, b, c) {
+                console.log("error");
+                setTimeout(ping, 1000);
             },             
             success: function(data) {
-            	window.location = "http://127.0.0.1:8001/{% url custom %}";
+                console.log("{% url custom %}");
+            	window.location = "{% url custom %}";
             }
         });
     }
-    setTimeout(timer, 5000);
-});*/
+    function restart() {
+        console.log("{% url restart hash %}");
+        $.ajax({
+            url: "{% url restart hash %}",
+            error: function(data) {
+                console.log("Send-error");
+                setTimeout(ping, 5000);
+            },
+            success: function(data) {
+                console.log("Send-success");
+                setTimeout(ping, 5000);
+            }
+        });
+    }
+    restart();
+});
 </script>
-{% trans 'Wait please...' %}
+<a href="{% url custom %}">{% trans 'Wait please...' %}</a>
 {% endblock %}

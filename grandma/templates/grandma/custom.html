@@ -4,6 +4,7 @@
 {% block content %}
 <form method="post" enctype="multipart/form-data" action="">
     <table>
+        <tr><th>{% trans 'Application' %}</th><th>{% trans 'Settings' %}</th></tr>
         {% for field in form %}
             <tr><td>
                 {{ field.label_tag }}
