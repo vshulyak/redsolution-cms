@@ -54,6 +54,11 @@ def load_applications():
     for package in selected_packages:
         distr = workset.by_key[package.package]
         distr.activate()
+
+        package.ok = True
+        package.path = distr.location
+        package.save()
+
         entry_points = distr.get_entry_info(None, 'grandma_setup')
 
         if entry_points:
@@ -69,7 +74,9 @@ def load_applications():
                 else:
                     has_urls = True
                 GrandmaSetup.objects.create(
-                    application=package, module=entry_point.module_name, has_urls=has_urls)
+                    application=package,
+                    module=entry_point.module_name,
+                    has_urls=has_urls)
 
 def index(request):
     """

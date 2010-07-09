@@ -2,7 +2,7 @@
 import os
 import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.extend([{% for application in grandma_settings.applications.all %}{% if application.path %}
+sys.path.extend([{% for application in grandma_settings.applications.all %}{% if application.ok %}
     r'{{ application.path }}',{% endif %}{% endfor %}
 ])
 sys.path[0:0] = [
