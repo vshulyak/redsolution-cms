@@ -83,3 +83,6 @@ INSTALLED_APPS = [
 #INSTALLED_APPS += [
 #    'config.grandma_setup',
 #]
+
+# Packaging issue
+PARTS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'parts')

@@ -1,16 +1,43 @@
 # -*- coding: utf-8 -*-
 from xmlrpc_urllib2_transport import ProxyTransport
-from zc.buildout import easy_install
+from django.conf import settings
+from pkg_resources import Distribution
 import xmlrpclib
 import os
 
-
 def search_index(query):
+    # Using PYPI XMLRPC improved serach
     client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi', transport=ProxyTransport())
     return client.search({'name': query})
 
+def update_pythonpath(abspath):
+    if 'PYTHONPATH' in os.environ:
+        os.environ['PYTHONPATH'] += '%s%s' % (os.pathsep, abspath)
+    else:
+        os.environ['PYTHONPATH'] = '%s' % abspath
 
-def install(modules, path='parts'):
+def get_bulidout(abspath):
+    # include parts dir into environment PYTHONPATH so setuptools can 
+    # search modules there
+    update_pythonpath(abspath)
+    try:
+        from setuptools.command import easy_install
+    except ImportError:
+        try:
+            from ez_setup import main
+            main(['--install-dir=%s' % abspath, ])
+        except SystemExit:
+            pass
+        else:
+            from setuptools.command import easy_install
+
+    easy_install.main(['--install-dir=%s' % abspath, 'zc.buildout'])
+
+    egg_name = filter(lambda x: 'zc.buildout' in x, os.listdir(abspath))[0]
+    bulidout_dist = Distribution.from_location(os.path.join(abspath, egg_name), 'zc.buildout')
+    bulidout_dist.activate()
+
+def install(modules):
     '''
     Install module in givan path
     Module sould be dictionary object, returned by xmlrpc server pypi:
@@ -26,17 +53,13 @@ def install(modules, path='parts'):
     terminology:
          http://mail.python.org/pipermail/distutils-sig/2005-June/004652.html
     '''
-
     # make path absolute
-    if not path.startswith('/'):
-        abspath = os.path.join(os.path.dirname(__file__), path)
-    else:
-        abspath = path
-    if not os.path.exists(path):
-        os.makedirs(path)
+    abspath = settings.PARTS_DIR
+    get_bulidout()
+    import zc.buildout
 
-    return easy_install.install(['%s==%s' % (module_['name'], module_['version'])
-        for module_ in modules], path)
+    return zc.buildout.easy_install.install(['%s==%s' % (module_['name'], module_['version'])
+        for module_ in modules], abspath)
 
 def test():
     print 'Searching module mptt'
