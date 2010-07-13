@@ -12,8 +12,8 @@ def search_index(query):
 
 def install(modules, path='parts'):
     '''
-    Install module in givan path
-    Module sould be dictionary object, returned by xmlrpc server pypi:
+    Install module in given path
+    Module should be dictionary object, returned by xmlrpc server pypi:
     Example:
         {'_pypi_ordering': 16,
          'name': 'django-tools',
@@ -32,11 +32,11 @@ def install(modules, path='parts'):
         abspath = os.path.join(os.path.dirname(__file__), path)
     else:
         abspath = path
-    if not os.path.exists(path):
-        os.makedirs(path)
+    if not os.path.exists(abspath):
+        os.makedirs(abspath)
 
     return easy_install.install(['%s==%s' % (module_['name'], module_['version'])
-        for module_ in modules], path)
+        for module_ in modules], abspath)
 
 def test():
     print 'Searching module mptt'

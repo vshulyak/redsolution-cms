@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, include, url, handler404, handler500
 from django.conf import settings
+
+handler404
+handler500
 
 urlpatterns = patterns('')
 
@@ -27,5 +30,4 @@ urlpatterns += patterns(
     url(r'^custom$', 'grandma.views.custom', name='custom'),
     url(r'^build$', 'grandma.views.build', name='build'),
     url(r'^done$', 'grandma.views.done', name='done'),
-#    (r'^custom/config$', include('config.grandma_setup.urls')),
 )

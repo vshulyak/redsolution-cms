@@ -26,6 +26,6 @@ urlpatterns += patterns(
     url(r'^started$', 'grandma.views.started', name='started'),
     url(r'^custom$', 'grandma.views.custom', name='custom'),
     url(r'^build$', 'grandma.views.build', name='build'),
-    url(r'^done$', 'grandma.views.done', name='done'),{% for application in grandma_settings.applications.all %}{% if application.path %}{% for setup in application.setups.all %}{% if setup.has_urls %}
-    (r'^custom/{{ setup.module }}$', include('{{ setup.module }}.urls')),{% endif %}{% endfor %}{% endif %}{% endfor %}
+    url(r'^done$', 'grandma.views.done', name='done'),{% for package in grandma_settings.packages.all %}{% if package.ok %}{% for entry_point in package.entry_points.all %}{% if entry_point.has_urls %}
+    (r'^custom/{{ entry_point.module }}$', include('{{ entry_point.module }}.urls')),{% endif %}{% endfor %}{% endif %}{% endfor %}
 )

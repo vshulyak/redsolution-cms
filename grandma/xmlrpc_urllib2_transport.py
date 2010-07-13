@@ -69,7 +69,7 @@ def checkProxySetting():
 
     match = re.search('(http://)?([\w/-/.]+):([\w/-/.]+)(\@)?([\w/-/.]+)?:?([\w/-/.]+)?', http_proxy)
     if not match:
-       raise Exception("Proxy format not recognised: [%s]" % http_proxy)
+        raise Exception("Proxy format not recognised: [%s]" % http_proxy)
     else:
         groups = match.groups()
         if not groups[3]:

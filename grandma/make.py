@@ -24,7 +24,7 @@ class BaseMake(object):
 
     def premake(self):
         """
-        Called immediately before make() for all applications.
+        Called immediately before make() for all packages.
         """
         if self.premade:
             raise AlreadyMadeException
@@ -32,7 +32,7 @@ class BaseMake(object):
 
     def make(self):
         """
-        Called to make() settings for this application.
+        Called to make() settings for this package.
         """
         if self.made:
             raise AlreadyMadeException
@@ -40,7 +40,7 @@ class BaseMake(object):
 
     def postmake(self):
         """
-        Called after all make() for all applications.
+        Called after all make() for all packages.
         """
         if self.postmade:
             raise AlreadyMadeException

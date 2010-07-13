@@ -4,6 +4,7 @@ import os
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
+from django.core.exceptions import ObjectDoesNotExist
 
 class BaseSettingsManager(models.Manager):
     def get_settings(self):
@@ -40,13 +41,18 @@ class GrandmaSettings(BaseSettings):
         dictionary['grandma_settings'] = self
         open(file_name, mode).write(render_to_string(template_name, dictionary))
 
+    def package_was_installed(self, package_name):
+        try:
+            return self.packages.get(package=package_name).ok
+        except ObjectDoesNotExist:
+            return False
 
-class GrandmaApplication(models.Model):
+class GrandmaPackage(models.Model):
     class Meta:
         unique_together = (
             ('settings', 'package',),
         )
-    settings = models.ForeignKey(GrandmaSettings, related_name='applications')
+    settings = models.ForeignKey(GrandmaSettings, related_name='packages')
 
     selected = models.BooleanField(verbose_name=_('Selected'))
     package = models.CharField(verbose_name=_('Package'), max_length=255)
@@ -59,10 +65,10 @@ class GrandmaApplication(models.Model):
     def __unicode__(self):
         return self.package
 
-class GrandmaSetup(models.Model):
-    application = models.ForeignKey(GrandmaApplication, related_name='setups')
+class GrandmaEntryPoint(models.Model):
+    package = models.ForeignKey(GrandmaPackage, related_name='entry_points')
     module = models.CharField(verbose_name=_('Module name'), max_length=255)
-    has_urls = models.BooleanField(verbose_name=_('Has view'))
+    has_urls = models.BooleanField(verbose_name=_('Has urls'))
 
     def __unicode__(self):
-        return 'Setup module %s' % self.module
+        return 'Entry point %s' % self.module
