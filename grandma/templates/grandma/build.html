@@ -4,7 +4,7 @@
 {% block content %}
 <form method="post" enctype="multipart/form-data" action="">
     <p>{% trans 'Now we ready to run ``python bootstart.py`` and ``bin/buildout``.' %}</p>
-    <a href="{% url custom %}" class="button-link floated-button">{% trans 'Back' %}</a>
+    <input type="button" value="{% trans 'Back' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url custom %}';"/>
     <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
 </form>
 {% endblock %}

@@ -1,5 +1,4 @@
 import os
-import shutil
 import random
 import subprocess
 from django.core.urlresolvers import reverse
@@ -132,8 +131,7 @@ def load(request):
             'grandma_settings': grandma_settings,
             'hash': hash,
         })
-        open(os.path.join(grandma_dir, '%s_%s.py' % (file_name % hash)), 'w').write(data)
-    shutil.copy2('grandma.sqlite' , 'grandma_%s.sqlite' % hash)
+        open(os.path.join(grandma_dir, '%s_%s.py' % (file_name, hash)), 'w').write(data)
     manage_name = os.path.join(grandma_dir, 'manage_%s.py' % hash)
     subprocess.Popen('python %s syncdb --noinput' % manage_name, shell=os.sys.platform != 'win32').wait()
     return render_to_response('grandma/load.html', {
