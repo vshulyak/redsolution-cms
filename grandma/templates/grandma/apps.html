@@ -14,7 +14,7 @@
             </tr>
         {% endfor %}
     </table>
-    <a href="{% url index %}" class="button-link floated-button">{% trans 'Back' %}</a>
+    <input type="button" value="{% trans 'Back' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url index %}';"/>
     <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
 </form>
 {% endblock %}

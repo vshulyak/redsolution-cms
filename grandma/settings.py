@@ -6,17 +6,17 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('RedSolution', 'src@redsolution.ru'),
 )
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'grandma.sqlite'             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASE_ENGINE = 'sqlite3'
+DATABASE_NAME = 'grandma.sqlite'
+DATABASE_USER = ''
+DATABASE_PASSWORD = ''
+DATABASE_HOST = ''
+DATABASE_PORT = ''
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -79,7 +79,3 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'grandma',
 ]
-
-#INSTALLED_APPS += [
-#    'config.grandma_setup',
-#]

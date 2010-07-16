@@ -1,40 +1,37 @@
 # -*- coding: utf-8 -*-
 
-from django.conf.urls.defaults import patterns, include, handler404, handler500
+from django.conf.urls.defaults import patterns, include, url, handler404, handler500
 from django.conf import settings
-from django.contrib import admin
 
 handler404
 handler500
 
-admin.autodiscover()
 urlpatterns = patterns('')
 
 if settings.DEBUG:
-    pass
+    from django.contrib import admin
+    admin.autodiscover()
 
-urlpatterns += patterns('',
-    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-     {'document_root': settings.MEDIA_ROOT}),
+    urlpatterns += patterns('',
+        (r'^admin/', include(admin.site.urls)),
+    )
+    urlpatterns += patterns('',
+        (r'^media/(?P<path>.*)$', 'django.views.static.serve',
+            {'document_root': settings.MEDIA_ROOT}),
+    )
+
+urlpatterns += patterns(
+    '',
+    url(r'^$', 'grandma.views.index', name='index'),
+    url(r'^apps$', 'grandma.views.apps', name='apps'),
+    url(r'^load$', 'grandma.views.load', name='load'),
+    url(r'^restart/(?P<hash>\w{8})$', 'grandma.views.restart', name='restart'),
+    url(r'^started$', 'grandma.views.started', name='started'),
+    url(r'^custom$', 'grandma.views.custom', name='custom'),
+    url(r'^build$', 'grandma.views.build', name='build'),
+    url(r'^done$', 'grandma.views.done', name='done'),
 )
 
-urlpatterns += patterns('',
-    (r'^admin/', include(admin.site.urls)),
-    (r'^robots.txt$', 'django.views.generic.simple.direct_to_template', {'template': 'robots.txt', 'mimetype': 'text/plain'}),
+urlpatterns += patterns('',{% for package in grandma_settings.packages.all %}{% if package.ok %}{% for entry_point in package.entry_points.all %}{% if entry_point.has_urls %}
+    (r'^custom/{{ entry_point.module }}$', include('{{ entry_point.module }}.urls')),{% endif %}{% endfor %}{% endif %}{% endfor %}
 )
-
-#pages_dict = {
-#    'queryset': Page.objects.exclude(status=Page.DRAFT),
-#    'date_field': 'last_modification_date',
-#}
-#
-#news_dict = {
-#    'queryset': News.objects.filter(show=True),
-#    'date_field': 'date',
-#}
-#
-#sitemaps = {
-#    'pages': GenericSitemap(pages_dict),
-#    'news': GenericSitemap(news_dict),
-#}
-#    (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
