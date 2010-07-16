@@ -12,6 +12,9 @@ from grandma.models import GrandmaSettings, GrandmaEntryPoint
 from grandma.forms import GrandmaPackagesForm
 from grandma.packages import search_index, install
 from grandma.make import AlreadyMadeException
+from django.conf import settings
+
+CONFIG_FILES = ['manage', 'settings', 'urls', ]
 
 def list_packages():
     """
@@ -126,10 +129,12 @@ def load(request):
     grandma_settings = GrandmaSettings.objects.get_settings()
     grandma_dir = os.path.dirname(os.path.abspath(__file__))
     hash = '%08x' % random.randint(0, 0x100000000)
-    for file_name in ['manage', 'settings', 'urls', ]:
+    prev_hash = getattr(settings, 'CURRENT_HASH', None)
+    for file_name in CONFIG_FILES:
         data = render_to_string('grandma/%s.py' % (file_name), {
             'grandma_settings': grandma_settings,
             'hash': hash,
+            'prev_hash': prev_hash,
         })
         open(os.path.join(grandma_dir, '%s_%s.py' % (file_name, hash)), 'w').write(data)
     manage_name = os.path.join(grandma_dir, 'manage_%s.py' % hash)
@@ -161,6 +166,17 @@ def custom(request):
     User can go to detail settings for packages or can ask to make project.
     Make files for new project.
     """
+    try:
+        prev_hash = settings.PREV_HASH
+        grandma_dir = os.path.dirname(os.path.abspath(__file__))
+        for file_name in ['manage', 'settings', 'urls', ]:
+            for extention in ['py', 'pyc']:
+                try:
+                    os.remove(os.path.join(grandma_dir, '%s_%s.%s' % (file_name, prev_hash, extention)))
+                except OSError:
+                    pass
+    except AttributeError:
+        pass
     grandma_settings = GrandmaSettings.objects.get_settings()
     if request.method == 'POST':
         entry_points = ['grandma']

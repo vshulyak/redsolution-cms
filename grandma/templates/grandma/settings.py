@@ -5,3 +5,7 @@ INSTALLED_APPS += [{% for package in grandma_settings.packages.all %}{% if packa
 ]
 
 ROOT_URLCONF = 'grandma.urls_{{ hash }}'
+
+CURRENT_HASH = '{{ hash }}'
+{% if prev_hash %}PREV_HASH = '{{ prev_hash }}'
+{% endif %}
