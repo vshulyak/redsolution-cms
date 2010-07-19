@@ -52,6 +52,12 @@ class GrandmaSettings(BaseSettings):
         except ObjectDoesNotExist:
             return False
 
+
+class PackageManager(models.Manager):
+    def ok(self):
+        return self.get_query_set().filter(ok=True)
+
+
 class GrandmaPackage(models.Model):
     class Meta:
         unique_together = (
@@ -59,13 +65,15 @@ class GrandmaPackage(models.Model):
         )
     settings = models.ForeignKey(GrandmaSettings, related_name='packages')
 
-    selected = models.BooleanField(verbose_name=_('Selected'))
+    selected = models.BooleanField(verbose_name=_('Selected'), default=False)
     package = models.CharField(verbose_name=_('Package'), max_length=255)
     version = models.CharField(verbose_name=_('Package version'), max_length=50)
     verbose_name = models.CharField(verbose_name=_('Verbose name'), max_length=255)
     description = models.TextField(verbose_name=_('Description'))
     path = models.CharField(verbose_name=_('Installed to path'), max_length=255, blank=True, null=True)
     ok = models.BooleanField(verbose_name=_('Download OK'), default=False)
+
+    objects = PackageManager()
 
     def __unicode__(self):
         return self.package

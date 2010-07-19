@@ -5,7 +5,7 @@
 <form method="post" enctype="multipart/form-data" action="">
     <table>
         <tr><th>{% trans 'Packages' %}</th><th>{% trans 'Settings' %}</th></tr>
-        {% for package in grandma_settings.packages.all %}
+        {% for package in grandma_settings.packages.ok %}
             <tr>
                 <td>{{ package.verbose_name }}</td>
                 <td>
