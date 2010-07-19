@@ -1,5 +1,5 @@
 from django.contrib import admin
-from grandma.models import GrandmaSettings, GrandmaPackage, GrandmaEntryPoint
+from grandma.models import GrandmaSettings, GrandmaPackage, GrandmaEntryPoint, GrandmaCreatedModel
 
 try:
     admin.site.register(GrandmaSettings)
@@ -15,5 +15,10 @@ class GrandmaPackageForm(admin.ModelAdmin):
 
 try:
     admin.site.register(GrandmaPackage, GrandmaPackageForm)
+except admin.sites.AlreadyRegistered:
+    pass
+
+try:
+    admin.site.register(GrandmaCreatedModel)
 except admin.sites.AlreadyRegistered:
     pass
