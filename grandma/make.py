@@ -68,6 +68,7 @@ class Make(BaseMake):
         grandma_settings.render_to(os.path.join('..', 'templates', 'head.html'), 'grandma/templates/head.html', {}, 'w')
         grandma_settings.render_to(os.path.join('..', 'templates', 'left.html'), 'grandma/templates/left.html', {}, 'w')
         grandma_settings.render_to(os.path.join('..', 'templates', 'right.html'), 'grandma/templates/right.html', {}, 'w')
+        grandma_settings.render_to(os.path.join('..', 'templates', 'top.html'), 'grandma/templates/top.html', {}, 'w')
 
         grandma_settings.render_to(os.path.join('..', 'media', 'css', 'base.css'), 'grandma/media/css/base.css', {}, 'w')
         grandma_settings.render_to(os.path.join('..', 'media', 'css', 'style.css'), 'grandma/media/css/style.css', {}, 'w')
