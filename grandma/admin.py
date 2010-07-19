@@ -12,6 +12,8 @@ from django.utils.translation import ungettext, ugettext_lazy
 from django.utils.encoding import force_unicode
 
 from grandma.models import GrandmaSettings, GrandmaPackage, GrandmaEntryPoint, GrandmaCreatedModel
+from django.http import Http404
+from django.utils.html import escape
 
 try:
     admin.site.register(GrandmaSettings)
@@ -68,7 +70,7 @@ class GrandmaBaseAdmin(admin.ModelAdmin):
         )
         return urlpatterns
 
-    def change_view(self, request):
+    def change_view(self, request, **kwargs):
         "The 'change' admin view for this model"
         model = self.model
         opts = model._meta
@@ -82,7 +84,7 @@ class GrandmaBaseAdmin(admin.ModelAdmin):
             obj = None
 
         if obj is None:
-            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_unicode(opts.verbose_name), 'key': escape(object_id)})
+            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_unicode(opts.verbose_name), 'key': escape(kwargs.get('object_id', ''))})
 
         if request.method == 'POST' and request.POST.has_key("_saveasnew"):
             return self.add_view(request, form_url='../add/')
