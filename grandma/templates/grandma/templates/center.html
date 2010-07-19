@@ -1,2 +1,3 @@
-<h1>{% block content_title %}{% endblock %}</h1>
+{% load grandma_tags %}{% raw %}<h1>{% block content_title %}{% endblock %}</h1>
 <div id="center-content">{% block content %}{% endblock %}</div>
+{% endraw %}

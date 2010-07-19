@@ -27,7 +27,8 @@ class GrandmaSettings(BaseSettings):
         ('oracle', 'oracle',),
     ]
 
-    project_path = models.CharField(verbose_name=_('Project path'), max_length=255, default=lambda: os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+    grandma_dir = models.CharField(verbose_name=_('Grandma dir'), max_length=255, default=lambda: os.path.abspath(os.path.dirname(__file__)))
+    project_dir = models.CharField(verbose_name=_('Project dir'), max_length=255, default=lambda: os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
     project_name = models.CharField(verbose_name=_('Project name'), max_length=50, default='example')
     database_engine = models.CharField(verbose_name=_('Database engine'), max_length=50, choices=DATABASE_ENGINES, default='sqlite3')
     database_name = models.CharField(verbose_name=_('Database name'), max_length=50, default='example.sqlite')
@@ -37,7 +38,11 @@ class GrandmaSettings(BaseSettings):
     database_port = models.IntegerField(verbose_name=_('Database port'), blank=True, null=True)
 
     def render_to(self, file_name, template_name, dictionary={}, mode='a+'):
-        file_name = os.path.join(self.project_path, self.project_name, file_name)
+        file_name = os.path.join(self.project_dir, self.project_name, file_name)
+        try:
+            os.makedirs(os.path.dirname(file_name))
+        except OSError:
+            pass
         dictionary['grandma_settings'] = self
         open(file_name, mode).write(render_to_string(template_name, dictionary))
 

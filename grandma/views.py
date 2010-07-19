@@ -85,7 +85,7 @@ def index(request):
     Saves base settings.
     """
     grandma_settings = GrandmaSettings.objects.get_settings()
-    grandma_settings_class = modelform_factory(GrandmaSettings, exclude=['project_path'])
+    grandma_settings_class = modelform_factory(GrandmaSettings, exclude=['grandma_dir', 'project_dir'])
     if request.method == 'POST':
         form = grandma_settings_class(data=request.POST, files=request.FILES, instance=grandma_settings)
         if form.is_valid():
@@ -127,7 +127,6 @@ def load(request):
     uninstall_packages()
     load_packages()
     grandma_settings = GrandmaSettings.objects.get_settings()
-    grandma_dir = os.path.dirname(os.path.abspath(__file__))
     hash = '%08x' % random.randint(0, 0x100000000)
     prev_hash = getattr(settings, 'CURRENT_HASH', None)
     for file_name in CONFIG_FILES:
@@ -136,8 +135,8 @@ def load(request):
             'hash': hash,
             'prev_hash': prev_hash,
         })
-        open(os.path.join(grandma_dir, '%s_%s.py' % (file_name, hash)), 'w').write(data)
-    manage_name = os.path.join(grandma_dir, 'manage_%s.py' % hash)
+        open(os.path.join(grandma_settings.grandma_dir, '%s_%s.py' % (file_name, hash)), 'w').write(data)
+    manage_name = os.path.join(grandma_settings.grandma_dir, 'manage_%s.py' % hash)
     subprocess.Popen('python %s syncdb --noinput' % manage_name, shell=os.sys.platform != 'win32').wait()
     return render_to_response('grandma/load.html', {
         'hash': hash,
@@ -148,9 +147,9 @@ def restart(request, hash):
     User can`t see it. It will be called by javascript.
     Rewrite manage.py for current server, so server will be restarted.
     """
-    grandma_dir = os.path.dirname(os.path.abspath(__file__))
-    source = os.path.join(grandma_dir, 'manage_%s.py' % hash)
-    destination = os.path.join(grandma_dir, 'manage.py')
+    grandma_settings = GrandmaSettings.objects.get_settings()
+    source = os.path.join(grandma_settings.grandma_dir, 'manage_%s.py' % hash)
+    destination = os.path.join(grandma_settings.grandma_dir, 'manage.py')
     open(destination, 'w').write(open(source).read())
     return HttpResponse()
 
@@ -166,18 +165,17 @@ def custom(request):
     User can go to detail settings for packages or can ask to make project.
     Make files for new project.
     """
+    grandma_settings = GrandmaSettings.objects.get_settings()
     try:
         prev_hash = settings.PREV_HASH
-        grandma_dir = os.path.dirname(os.path.abspath(__file__))
         for file_name in ['manage', 'settings', 'urls', ]:
             for extention in ['py', 'pyc']:
                 try:
-                    os.remove(os.path.join(grandma_dir, '%s_%s.%s' % (file_name, prev_hash, extention)))
+                    os.remove(os.path.join(grandma_settings.grandma_dir, '%s_%s.%s' % (file_name, prev_hash, extention)))
                 except OSError:
                     pass
     except AttributeError:
         pass
-    grandma_settings = GrandmaSettings.objects.get_settings()
     if request.method == 'POST':
         entry_points = ['grandma']
         for package in grandma_settings.packages.filter(ok=True):
@@ -190,10 +188,6 @@ def custom(request):
             except ImportError:
                 continue
             make_objects.append(make_class())
-        try:
-            os.mkdir(os.path.join(grandma_settings.project_path, grandma_settings.project_name))
-        except OSError:
-            pass
         for make_object in make_objects:
             try:
                 make_object.premake()
@@ -217,10 +211,9 @@ def custom(request):
 def build(request):
     grandma_settings = GrandmaSettings.objects.get_settings()
     if request.method == 'POST':
-        grandma_dir = os.path.dirname(os.path.abspath(__file__))
-        bootstrap_name = os.path.join(grandma_dir, '..', 'bootstrap.py')
+        bootstrap_name = os.path.join(grandma_settings.grandma_dir, '..', 'bootstrap.py')
         subprocess.Popen('python %s' % bootstrap_name, shell=os.sys.platform != 'win32').wait()
-        buildout_name = os.path.join(grandma_dir, '..', 'bin', 'buildout')
+        buildout_name = os.path.join(grandma_settings.grandma_dir, '..', 'bin', 'buildout')
         subprocess.Popen('python %s -c develop.cfg' % buildout_name, shell=os.sys.platform != 'win32').wait()
         return HttpResponseRedirect(reverse('done'))
     return render_to_response('grandma/build.html', {
