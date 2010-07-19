@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext, ugettext_lazy
 from django.utils.encoding import force_unicode
 
-from grandma.models import GrandmaSettings, GrandmaPackage, GrandmaEntryPoint
+from grandma.models import GrandmaSettings, GrandmaPackage, GrandmaEntryPoint, GrandmaCreatedModel
 
 try:
     admin.site.register(GrandmaSettings)
@@ -30,6 +30,10 @@ try:
 except admin.sites.AlreadyRegistered:
     pass
 
+try:
+    admin.site.register(GrandmaCreatedModel)
+except admin.sites.AlreadyRegistered:
+    pass
 
 HORIZONTAL, VERTICAL = 1, 2
 # returns the <ul> class for a given radio_admin field

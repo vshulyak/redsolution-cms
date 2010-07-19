@@ -8,7 +8,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from grandma.importpath import importpath
-from grandma.models import GrandmaSettings, GrandmaEntryPoint
+from grandma.models import GrandmaSettings, GrandmaEntryPoint, \
+    GrandmaCreatedModel
 from grandma.forms import GrandmaPackagesForm
 from grandma.packages import search_index, install
 from grandma.make import AlreadyMadeException
@@ -75,8 +76,11 @@ def load_packages():
 
 def uninstall_packages():
     grandma_settings = GrandmaSettings.objects.get_settings()
-    for _ in grandma_settings.packages.filter(selected=False, ok=True):
-        pass
+    if not grandma_settings.packages.filter(selected=False, ok=True).count() and \
+        not grandma_settings.packages.filter(selected=True, ok=False).count():
+        return
+    for model in GrandmaCreatedModel.objects.all():
+        importpath(model.name).objects.all().delete()
 
 def index(request):
     """
@@ -85,6 +89,8 @@ def index(request):
     Saves base settings.
     """
     grandma_settings = GrandmaSettings.objects.get_settings()
+    grandma_settings.initialized = True
+    grandma_settings.save()
     grandma_settings_class = modelform_factory(GrandmaSettings, exclude=['grandma_dir', 'project_dir'])
     if request.method == 'POST':
         form = grandma_settings_class(data=request.POST, files=request.FILES, instance=grandma_settings)
@@ -103,7 +109,6 @@ def apps(request):
     Fetches list of available packages. 
     Saves settings.
     """
-    uninstall_packages()
     list_packages()
     if request.method == 'POST':
         form = GrandmaPackagesForm(request.POST, request.FILES)

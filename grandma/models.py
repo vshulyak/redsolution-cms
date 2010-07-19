@@ -5,13 +5,14 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.signals import post_syncdb
 
 class BaseSettingsManager(models.Manager):
     def get_settings(self):
         if self.get_query_set().count():
             return self.get_query_set()[0]
         else:
-            self.get_query_set().create()
+            return self.get_query_set().create()
 
 class BaseSettings(models.Model):
     class Meta:
@@ -27,6 +28,7 @@ class GrandmaSettings(BaseSettings):
         ('oracle', 'oracle',),
     ]
 
+    initialized = models.BooleanField(verbose_name=_('Grandma was initialized'), default=False)
     grandma_dir = models.CharField(verbose_name=_('Grandma dir'), max_length=255, default=lambda: os.path.abspath(os.path.dirname(__file__)))
     project_dir = models.CharField(verbose_name=_('Project dir'), max_length=255, default=lambda: os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
     project_name = models.CharField(verbose_name=_('Project name'), max_length=50, default='example')
@@ -85,3 +87,17 @@ class GrandmaEntryPoint(models.Model):
 
     def __unicode__(self):
         return 'Entry point %s' % self.module
+
+class GrandmaCreatedModel(models.Model):
+    name = models.CharField(verbose_name=_('Name'), max_length=100, unique=True)
+
+    def __unicode__(self):
+        return self.name
+
+def add_created_model(created_models, **kwargs):
+    grandma_settings = GrandmaSettings.objects.get_settings()
+    if grandma_settings.initialized:
+        for model in created_models:
+            GrandmaCreatedModel.objects.get_or_create(name='%s.%s' % (model.__module__, model.__name__))
+
+post_syncdb.connect(add_created_model)
