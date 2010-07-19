@@ -32,6 +32,6 @@ urlpatterns += patterns(
     url(r'^done$', 'grandma.views.done', name='done'),
 )
 
-urlpatterns += patterns('',{% for package in grandma_settings.packages.all %}{% if package.ok %}{% for entry_point in package.entry_points.all %}{% if entry_point.has_urls %}
-    (r'^custom/{{ entry_point.module }}$', include('{{ entry_point.module }}.urls')),{% endif %}{% endfor %}{% endif %}{% endfor %}
+urlpatterns += patterns('',{% for package in grandma_settings.packages.installed %}{% for entry_point in package.entry_points.has_urls %}
+    (r'^custom/{{ entry_point.module }}$', include('{{ entry_point.module }}.urls')),{% endfor %}{% endfor %}
 )

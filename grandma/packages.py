@@ -27,16 +27,12 @@ def install(modules, path='parts'):
          http://mail.python.org/pipermail/distutils-sig/2005-June/004652.html
     '''
 
-    # make path absolute
-    if not path.startswith('/'):
-        abspath = os.path.join(os.path.dirname(__file__), path)
-    else:
-        abspath = path
-    if not os.path.exists(abspath):
-        os.makedirs(abspath)
+    path = os.path.abspath(path)
+    if not os.path.exists(path):
+        os.makedirs(path)
 
     return easy_install.install(['%s==%s' % (module_['name'], module_['version'])
-        for module_ in modules], abspath)
+        for module_ in modules], path)
 
 def test():
     print 'Searching module mptt'

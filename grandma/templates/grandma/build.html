@@ -3,7 +3,15 @@
 
 {% block content %}
 <form method="post" enctype="multipart/form-data" action="">
-    <p>{% trans 'Now we ready to run ``python bootstart.py`` and ``bin/buildout``.' %}</p>
+    <table>
+    {{ form }}
+    </table>
+    <p>{% trans 'Now we ready to initialize your project. To do it we will execute:' %}</p>
+    <pre>
+python {{ bootstart }}
+{{ buildout }} -c develop.cfg
+{{ django }} --noinput
+    </pre>
     <input type="button" value="{% trans 'Back' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url custom %}';"/>
     <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
 </form>

@@ -5,14 +5,12 @@
 <form method="post" enctype="multipart/form-data" action="">
     <table>
         <tr><th>{% trans 'Packages' %}</th><th>{% trans 'Settings' %}</th></tr>
-        {% for package in grandma_settings.packages.ok %}
+        {% for package in grandma_settings.packages.installed %}
             <tr>
                 <td>{{ package.verbose_name }}</td>
                 <td>
-                {% for entry_point in package.entry_points.all %}
-                    {% if entry_point.has_urls %}
-                        <a href="{% url custom %}/{{ entry_point.module }}">{% trans 'Settings for' %} {{ entry_point.module }}</a></td>
-                    {% endif %}
+                {% for entry_point in package.entry_points.has_urls %}
+                    <a href="{% url custom %}/{{ entry_point.module }}">{% trans 'Settings for' %} {{ entry_point.module }}</a></td>
                 {% endfor %}
             </tr>
         {% endfor %}

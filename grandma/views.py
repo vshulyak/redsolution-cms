@@ -1,6 +1,7 @@
 import os
 import random
 import subprocess
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
 from django.http import HttpResponse, HttpResponseRedirect
@@ -10,10 +11,9 @@ from django.template.loader import render_to_string
 from grandma.importpath import importpath
 from grandma.models import GrandmaSettings, GrandmaEntryPoint, \
     GrandmaCreatedModel
-from grandma.forms import GrandmaPackagesForm
+from grandma.forms import GrandmaPackagesForm, UserCreationForm
 from grandma.packages import search_index, install
 from grandma.make import AlreadyMadeException
-from django.conf import settings
 
 CONFIG_FILES = ['manage', 'settings', 'urls', ]
 
@@ -45,14 +45,14 @@ def load_packages():
     # prepare modules...
     modules_to_download = [{'name': package.package, 'version': package.version, }
         for package in selected_packages]
-    workset = install(modules_to_download)
+    workset = install(modules_to_download, os.path.join(grandma_settings.project_dir, 'eggs'))
     # Now fetch entry points and import modules
     for package in selected_packages:
         distr = workset.by_key[package.package]
         distr.activate()
 
-        package.ok = True
         package.path = distr.location
+        package.installed = True
         package.save()
 
         entry_points = distr.get_entry_info(None, 'grandma_setup')
@@ -76,8 +76,8 @@ def load_packages():
 
 def uninstall_packages():
     grandma_settings = GrandmaSettings.objects.get_settings()
-    if not grandma_settings.packages.filter(selected=False, ok=True).count() and \
-        not grandma_settings.packages.filter(selected=True, ok=False).count():
+    if not grandma_settings.packages.filter(selected=False, installed=True).count() and \
+        not grandma_settings.packages.filter(selected=True, installed=False).count():
         return
     for model in GrandmaCreatedModel.objects.all():
         importpath(model.name).objects.all().delete()
@@ -91,7 +91,7 @@ def index(request):
     grandma_settings = GrandmaSettings.objects.get_settings()
     grandma_settings.initialized = True
     grandma_settings.save()
-    grandma_settings_class = modelform_factory(GrandmaSettings, exclude=['grandma_dir', 'project_dir'])
+    grandma_settings_class = modelform_factory(GrandmaSettings, exclude=['grandma_dir', 'project_dir', 'initialized'])
     if request.method == 'POST':
         form = grandma_settings_class(data=request.POST, files=request.FILES, instance=grandma_settings)
         if form.is_valid():
@@ -183,7 +183,7 @@ def custom(request):
         pass
     if request.method == 'POST':
         entry_points = ['grandma']
-        for package in grandma_settings.packages.filter(ok=True):
+        for package in grandma_settings.packages.installed():
             for entry_point in package.entry_points.all():
                 entry_points.append(entry_point.module)
         make_objects = []
@@ -216,17 +216,42 @@ def custom(request):
 def build(request):
     grandma_settings = GrandmaSettings.objects.get_settings()
     if request.method == 'POST':
-        bootstrap_name = os.path.join(grandma_settings.grandma_dir, '..', 'bootstrap.py')
-        subprocess.Popen('python %s' % bootstrap_name, shell=os.sys.platform != 'win32').wait()
-        buildout_name = os.path.join(grandma_settings.grandma_dir, '..', 'bin', 'buildout')
-        subprocess.Popen('python %s -c develop.cfg' % buildout_name, shell=os.sys.platform != 'win32').wait()
-        return HttpResponseRedirect(reverse('done'))
+        form = UserCreationForm(data=request.POST, files=request.FILES)
+        if form.is_valid():
+            bootstrap_name = os.path.join(grandma_settings.grandma_dir, '..', 'bootstrap.py')
+            subprocess.Popen('python %s' % bootstrap_name, shell=os.sys.platform != 'win32').wait()
+            buildout_name = os.path.join(grandma_settings.grandma_dir, '..', 'bin', 'buildout')
+            subprocess.Popen('python %s -c develop.cfg' % buildout_name, shell=os.sys.platform != 'win32').wait()
+            django_name = os.path.join(grandma_settings.grandma_dir, '..', 'bin', 'django')
+            subprocess.Popen('python %s syncdb --noinput' % django_name, shell=os.sys.platform != 'win32').wait()
+#            TODO: here we must createsuperuser. Subprocess does not works. May be we need to use pexpect.
+#            create = subprocess.Popen('python %s createsuperuser' % django_name, shell=os.sys.platform != 'win32',
+#                stdin=subprocess.PIPE)
+#            create.stdin.write('%s\n' % form.cleaned_data['username'])
+#            create.stdin.write('%s\n' % form.cleaned_data['email'])
+#            create.stdin.write('%s\n' % form.cleaned_data['password1'])
+#            create.stdin.write('%s\n' % form.cleaned_data['password1'])
+#            create.stdin.close()
+#            create.wait()
+
+#            TODO: here we want to execute new server. But view will not return until subprocess will die.
+#            Maybe we need to start execution in separate view by AJAX.
+#            Or maybe we need to replace manage.py.
+#            subprocess.Popen('python %s runserver 127.0.0.1:8001' % django_name, shell=os.sys.platform != 'win32')
+            return HttpResponseRedirect(reverse('done'))
+    else:
+        form = UserCreationForm()
     return render_to_response('grandma/build.html', {
         'grandma_settings': grandma_settings,
+        'bootstart': os.path.join(grandma_settings.project_dir, 'bootstrap.py'),
+        'buildout': os.path.join(grandma_settings.project_dir, 'bin', 'buildout'),
+        'django': os.path.join(grandma_settings.project_dir, 'bin', 'django'),
+        'form': form,
     }, context_instance=RequestContext(request))
 
 def done(request):
     grandma_settings = GrandmaSettings.objects.get_settings()
     return render_to_response('grandma/done.html', {
         'grandma_settings': grandma_settings,
+        'django': os.path.join(grandma_settings.project_dir, 'bin', 'django'),
     }, context_instance=RequestContext(request))

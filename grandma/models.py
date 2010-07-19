@@ -50,15 +50,14 @@ class GrandmaSettings(BaseSettings):
 
     def package_was_installed(self, package_name):
         try:
-            return self.packages.get(package=package_name).ok
+            return self.packages.get(package=package_name).installed
         except ObjectDoesNotExist:
             return False
 
 
 class PackageManager(models.Manager):
-    def ok(self):
-        return self.get_query_set().filter(ok=True)
-
+    def installed(self):
+        return self.get_query_set().filter(installed=True)
 
 class GrandmaPackage(models.Model):
     class Meta:
@@ -73,17 +72,23 @@ class GrandmaPackage(models.Model):
     verbose_name = models.CharField(verbose_name=_('Verbose name'), max_length=255)
     description = models.TextField(verbose_name=_('Description'))
     path = models.CharField(verbose_name=_('Installed to path'), max_length=255, blank=True, null=True)
-    ok = models.BooleanField(verbose_name=_('Download OK'), default=False)
+    installed = models.BooleanField(verbose_name=_('Was successfully installed'), default=False)
 
     objects = PackageManager()
 
     def __unicode__(self):
         return self.package
 
+class EntryPointManager(models.Manager):
+    def has_urls(self):
+        return self.get_query_set().filter(has_urls=True)
+
 class GrandmaEntryPoint(models.Model):
     package = models.ForeignKey(GrandmaPackage, related_name='entry_points')
     module = models.CharField(verbose_name=_('Module name'), max_length=255)
     has_urls = models.BooleanField(verbose_name=_('Has urls'))
+
+    objects = EntryPointManager()
 
     def __unicode__(self):
         return 'Entry point %s' % self.module
