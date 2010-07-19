@@ -80,7 +80,13 @@ def uninstall_packages():
         not grandma_settings.packages.filter(selected=True, installed=False).count():
         return
     for model in GrandmaCreatedModel.objects.all():
-        importpath(model.name).objects.all().delete()
+        try:
+            importpath(model.name).objects.all().delete()
+        except:
+            pass
+    for package in grandma_settings.packages.installed():
+        package.installed = False
+        package.save()
 
 def index(request):
     """
