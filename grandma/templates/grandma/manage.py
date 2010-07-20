@@ -7,7 +7,8 @@ sys.path.extend([{% for package in grandma_settings.packages.installed %}
 ])
 sys.path[0:0] = [
     os.path.abspath(current_dir),
-    os.path.abspath(os.path.join(current_dir, '..', 'parts', 'django'))
+    os.path.abspath(os.path.join(current_dir, '..', 'parts', 'django')),
+    os.path.abspath(os.path.join(current_dir, '..', 'parts', 'pexpect')),
 ]
 
 from django.core.management import execute_manager
