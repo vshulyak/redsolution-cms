@@ -5,11 +5,11 @@ import os
 gettext_noop = lambda s: s
 
 ADMINS = (
-#    ('webmaster', 'webmaster@redsolution.ru'),
+#    ('src', 'src@redsolution.ru'),
 )
 
 MANAGERS = (
-#    ('luxedoors', 'intel92@yandex.ru'),
+#    ('manager', 'manager@redsolution.ru'),
 )
 
 EMAIL_SUBJECT_PREFIX = '[{{ grandma_settings.project_name }}]'
@@ -42,7 +42,6 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
-#    'modelurl.middleware.ModelUrlMiddleware',
 ]
 
 ROOT_URLCONF = '{{ grandma_settings.project_name }}.urls'
