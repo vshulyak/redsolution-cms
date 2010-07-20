@@ -14,6 +14,7 @@ from grandma.models import GrandmaSettings, GrandmaEntryPoint, \
 from grandma.forms import GrandmaPackagesForm, UserCreationForm
 from grandma.packages import search_index, install
 from grandma.make import AlreadyMadeException
+import pexpect
 
 CONFIG_FILES = ['manage', 'settings', 'urls', ]
 
@@ -230,15 +231,17 @@ def build(request):
             subprocess.Popen('python %s -c develop.cfg' % buildout_name, shell=os.sys.platform != 'win32').wait()
             django_name = os.path.join(grandma_settings.grandma_dir, '..', 'bin', 'django')
             subprocess.Popen('python %s syncdb --noinput' % django_name, shell=os.sys.platform != 'win32').wait()
-#            TODO: here we must createsuperuser. Subprocess does not works. May be we need to use pexpect.
-#            create = subprocess.Popen('python %s createsuperuser' % django_name, shell=os.sys.platform != 'win32',
-#                stdin=subprocess.PIPE)
-#            create.stdin.write('%s\n' % form.cleaned_data['username'])
-#            create.stdin.write('%s\n' % form.cleaned_data['email'])
-#            create.stdin.write('%s\n' % form.cleaned_data['password1'])
-#            create.stdin.write('%s\n' % form.cleaned_data['password1'])
-#            create.stdin.close()
-#            create.wait()
+#            create superuser
+            child = pexpect.spawn('python %s createsuperuser' % django_name)
+            child.expect("Username.*")
+            child.sendline(form.cleaned_data['username'])
+            child.expect("E-mail.*")
+            child.sendline(form.cleaned_data['email'])
+            child.expect("Password.*")
+            child.sendline(form.cleaned_data['password1'])
+            child.expect("Password.*")
+            child.sendline(form.cleaned_data['password1'])
+            child.expect("Superuser.*")
 
 #            TODO: here we want to execute new server. But view will not return until subprocess will die.
 #            Maybe we need to start execution in separate view by AJAX.
