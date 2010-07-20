@@ -1,17 +1,18 @@
+from django import template
 from django.contrib import admin
 from django.contrib.admin import helpers
-from django import template
-from django.forms.formsets import all_valid
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import transaction
+from django.forms.formsets import all_valid
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render_to_response
+from django.utils.encoding import force_unicode
+from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-from django.utils.encoding import force_unicode
-
-from grandma.models import GrandmaSettings, GrandmaPackage, GrandmaEntryPoint, GrandmaCreatedModel
-from django.http import Http404
-from django.utils.html import escape
+from grandma.models import GrandmaSettings, GrandmaPackage, GrandmaEntryPoint, \
+    GrandmaCreatedModel
 
 try:
     admin.site.register(GrandmaSettings)
@@ -150,9 +151,6 @@ class GrandmaBaseAdmin(admin.ModelAdmin):
         return self.render_change_form(request, context, change=True, obj=obj)
     change_view = transaction.commit_on_success(change_view)
 
-    def message_user(self, *args, **kwargs):
-        pass
-
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         opts = self.model._meta
         app_label = opts.app_label
@@ -178,3 +176,7 @@ class GrandmaBaseAdmin(admin.ModelAdmin):
             "admin/%s/change_form.html" % app_label,
             "admin/change_form.html"
         ], context, context_instance=context_instance)
+
+    def response_change(self, request, obj):
+        ''' No messages, no continues'''
+        return HttpResponseRedirect(reverse('custom'))

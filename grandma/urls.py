@@ -30,4 +30,6 @@ urlpatterns += patterns(
     url(r'^custom$', 'grandma.views.custom', name='custom'),
     url(r'^build$', 'grandma.views.build', name='build'),
     url(r'^done$', 'grandma.views.done', name='done'),
+    url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog',
+        {'packages': ('django.conf',)}, name='admin_jsi18n'),
 )
