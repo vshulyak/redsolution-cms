@@ -189,6 +189,12 @@ def custom(request):
         pass
     if request.method == 'POST':
         entry_points = ['grandma']
+        grandma_settings.head_blocks.all().delete()
+        grandma_settings.top_blocks.all().delete()
+        grandma_settings.left_blocks.all().delete()
+        grandma_settings.center_blocks.all().delete()
+        grandma_settings.right_blocks.all().delete()
+        grandma_settings.bottom_blocks.all().delete()
         for package in grandma_settings.packages.installed():
             for entry_point in package.entry_points.all():
                 entry_points.append(entry_point.module)

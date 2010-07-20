@@ -1,1 +1,30 @@
 @import url('base.css');
+
+#top-container {
+    width: 100%;
+    background: #ECE;
+}
+
+#left-container {
+    width: 20%;
+    background: #CEE;
+    float: left;
+}
+
+#center-container {
+    width: 60%;
+    background: #CEC;
+    float: left;
+}
+
+#right-container {
+    width: 20%;
+    background: #EEC;
+    float: left;
+}
+
+#bottom-container {
+    width: 100%;
+    background: #CCE;
+    clear: both;
+}
