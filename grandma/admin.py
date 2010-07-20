@@ -1,14 +1,12 @@
 from django.contrib import admin
 from django.contrib.admin import helpers
-from django import forms, template
+from django import template
 from django.forms.formsets import all_valid
-from django.forms.models import modelform_factory, modelformset_factory, inlineformset_factory
 from django.contrib.contenttypes.models import ContentType
-from django.db import models, transaction
-from django.shortcuts import get_object_or_404, render_to_response
+from django.db import transaction
+from django.shortcuts import render_to_response
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-from django.utils.translation import ungettext, ugettext_lazy
 from django.utils.encoding import force_unicode
 
 from grandma.models import GrandmaSettings, GrandmaPackage, GrandmaEntryPoint, GrandmaCreatedModel
@@ -109,15 +107,13 @@ class GrandmaBaseAdmin(admin.ModelAdmin):
                                   instance=new_object, prefix=prefix)
                 formsets.append(formset)
 
-            from django.forms.formsets import all_valid
-
             if all_valid(formsets) and form_validated:
                 self.save_model(request, new_object, form, change=True)
                 form.save_m2m()
                 for formset in formsets:
                     self.save_formset(request, form, formset, change=True)
 
-                change_message = self.construct_change_message(request, form, formsets)
+                self.construct_change_message(request, form, formsets)
                 return self.response_change(request, new_object)
 
         else:
@@ -154,6 +150,8 @@ class GrandmaBaseAdmin(admin.ModelAdmin):
         return self.render_change_form(request, context, change=True, obj=obj)
     change_view = transaction.commit_on_success(change_view)
 
+    def message_user(self, *args, **kwargs):
+        pass
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         opts = self.model._meta
