@@ -46,7 +46,9 @@ class GrandmaSettings(BaseSettings):
         except OSError:
             pass
         dictionary['grandma_settings'] = self
-        open(file_name, mode).write(render_to_string(template_name, dictionary))
+        value = render_to_string(template_name, dictionary)
+        value = value.encode('utf-8')
+        open(file_name, mode).write(value)
 
     def package_was_installed(self, package_name):
         try:
