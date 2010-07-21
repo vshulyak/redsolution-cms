@@ -63,7 +63,9 @@ class GrandmaSettings(BaseSettings):
         except OSError:
             pass
         dictionary['grandma_settings'] = self
-        open(file_name, mode).write(render_to_string(template_name, dictionary))
+        value = render_to_string(template_name, dictionary)
+        value = value.encode('utf-8')
+        open(file_name, mode).write(value)
 
     def package_was_installed(self, package_name):
         try:
@@ -109,6 +111,48 @@ class GrandmaEntryPoint(models.Model):
 
     def __unicode__(self):
         return 'Entry point %s' % self.module
+
+class GrandmaHeadBlock(models.Model):
+    settings = models.ForeignKey(GrandmaSettings, related_name='head_blocks')
+    html = models.TextField(verbose_name=_('Html to be inserted'))
+
+    def __unicode__(self):
+        return self.html
+
+class GrandmaTopBlock(models.Model):
+    settings = models.ForeignKey(GrandmaSettings, related_name='top_blocks')
+    html = models.TextField(verbose_name=_('Html to be inserted'))
+
+    def __unicode__(self):
+        return self.html
+
+class GrandmaLeftBlock(models.Model):
+    settings = models.ForeignKey(GrandmaSettings, related_name='left_blocks')
+    html = models.TextField(verbose_name=_('Html to be inserted'))
+
+    def __unicode__(self):
+        return self.html
+
+class GrandmaCenterBlock(models.Model):
+    settings = models.ForeignKey(GrandmaSettings, related_name='center_blocks')
+    html = models.TextField(verbose_name=_('Html to be inserted'))
+
+    def __unicode__(self):
+        return self.html
+
+class GrandmaRightBlock(models.Model):
+    settings = models.ForeignKey(GrandmaSettings, related_name='right_blocks')
+    html = models.TextField(verbose_name=_('Html to be inserted'))
+
+    def __unicode__(self):
+        return self.html
+
+class GrandmaBottomBlock(models.Model):
+    settings = models.ForeignKey(GrandmaSettings, related_name='bottom_blocks')
+    html = models.TextField(verbose_name=_('Html to be inserted'))
+
+    def __unicode__(self):
+        return self.html
 
 class GrandmaCreatedModel(models.Model):
     name = models.CharField(verbose_name=_('Name'), max_length=100, unique=True)

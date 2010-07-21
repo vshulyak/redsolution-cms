@@ -1,12 +1,32 @@
 {% load grandma_tags %}{% raw %}<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>{% include "head.html" %}</head>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="{% block keywords %}{% endblock %}" />
+<meta name="description" content="{% block description %}{% endblock %}" />
+<title>{% block title %}{% endblock %}</title>
+<link rel="stylesheet" type="text/css" media="screen" href="/media/css/style.css" />
+<link rel="shortcut icon" href="/media/img/favicon.ico" />
+{% block head %}{% endblock %}{% endraw %}{% for html in grandma_settings.head_blocks.all %}{{ html }}
+{% endfor %}
+</head>
 <body>
-<div id="top-include">{% include "top.html" %}</div>
-<div id="left-include">{% include "left.html" %}</div>
-<div id="center-include">{% include "center.html" %}</div>
-<div id="right-include">{% include "right.html" %}</div>
-<div id="bottom-include">{% include "bottom.html" %}</div>
+<div id="top-container">&nbsp;
+{% for html in grandma_settings.top_blocks.all %}{{ html }}
+{% endfor %}</div>
+<div id="left-container">&nbsp;
+{% for html in grandma_settings.left_blocks.all %}{{ html }}
+{% endfor %}</div>
+<div id="center-container">{% for html in grandma_settings.center_blocks.all %}{{ html }}
+{% endfor %}{% raw %}<h1 id="content-title">{% block content_title %}{% endblock %}</h1>
+<div id="center-content">{% block content %}{% endblock %}</div>
+{% endraw %}
+</div>
+<div id="right-container">&nbsp;
+{% for html in grandma_settings.right_blocks.all %}{{ html }}
+{% endfor %}</div>
+<div id="bottom-container">&nbsp;
+{% for html in grandma_settings.bottom_blocks.all %}{{ html }}
+{% endfor %}</div>
 </body>
 </html>
-{% endraw %}
