@@ -56,7 +56,7 @@ class GrandmaSettings(BaseSettings):
              Use 'w' to override old content.
         """
         if isinstance(file_name, (tuple, list)):
-            file_name = os.path.join(file_name)
+            file_name = os.path.join(*file_name)
         file_name = os.path.join(self.project_dir, self.project_name, file_name)
         try:
             os.makedirs(os.path.dirname(file_name))

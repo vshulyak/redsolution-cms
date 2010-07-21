@@ -53,17 +53,16 @@ def load_packages():
         distr.activate()
 
         package.path = distr.location
-        package.installed = True
-        package.save()
-
         entry_points = distr.get_entry_info(None, 'grandma_setup')
 
+        installed = True
         if entry_points:
             for _, entry_point in entry_points.iteritems():
                 try:
                     importpath(entry_point.module_name)
                 except ImportError:
-                    continue
+                    installed = False
+                    break
                 try:
                     importpath(entry_point.module_name + '.urls')
                 except ImportError:
@@ -74,6 +73,9 @@ def load_packages():
                     package=package,
                     module=entry_point.module_name,
                     has_urls=has_urls)
+
+        package.installed = installed
+        package.save()
 
 def uninstall_packages():
     grandma_settings = GrandmaSettings.objects.get_settings()
