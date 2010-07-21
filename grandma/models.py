@@ -40,6 +40,23 @@ class GrandmaSettings(BaseSettings):
     database_port = models.IntegerField(verbose_name=_('Database port'), blank=True, null=True)
 
     def render_to(self, file_name, template_name, dictionary={}, mode='a+'):
+        """
+        ``file_name`` is relative path to destination file.
+            It can be list or tuple to be os.path.joined
+            To make settings.py use: 'settings.py'
+            To make template use: ['..', 'templates', 'base.html']
+            To make media use: ['..', 'media', 'css', 'style.css']
+        
+        ``template_name`` is name of template to be rendered.
+        
+        ``dictionary`` is context dictionary.
+            ``grandma_settings`` variable always will be add to context.
+        
+         ``mode`` is mode in witch destination file will be opened.
+             Use 'w' to override old content.
+        """
+        if isinstance(file_name, (tuple, list)):
+            file_name = os.path.join(file_name)
         file_name = os.path.join(self.project_dir, self.project_name, file_name)
         try:
             os.makedirs(os.path.dirname(file_name))
