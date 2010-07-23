@@ -20,7 +20,7 @@ CONFIG_FILES = ['manage', 'settings', 'urls', ]
 
 def list_packages():
     """
-    List packages.
+    Creates objects in GrandmaPackages model for all modules at PYPI
     """
     grandma_settings = GrandmaSettings.objects.get_settings()
     all_packages = search_index('grandma')
@@ -37,10 +37,11 @@ def list_packages():
 
 def load_packages():
     """
-    Downloads package to egg and imports it to sys.path
+    Downloads packages to eggs and imports them to sys.path
     TODO: Raise download error if download failed
     """
     grandma_settings = GrandmaSettings.objects.get_settings()
+    # delete all old entry points, because we reset all settings at step 2
     GrandmaEntryPoint.objects.all().delete()
     selected_packages = grandma_settings.packages.filter(selected=True)
     # prepare modules...
@@ -78,6 +79,10 @@ def load_packages():
         package.save()
 
 def uninstall_packages():
+    '''
+    Removes all records in all tables, from all modules.
+    Set installed to False in all records in GrandmaPackages
+    '''
     grandma_settings = GrandmaSettings.objects.get_settings()
     if not grandma_settings.packages.filter(selected=False, installed=True).count() and \
         not grandma_settings.packages.filter(selected=True, installed=False).count():
@@ -149,7 +154,8 @@ def load(request):
             'hash': hash,
             'prev_hash': prev_hash,
         })
-        open(os.path.join(grandma_settings.grandma_dir, '%s_%s.py' % (file_name, hash)), 'w').write(data)
+        open(os.path.join(grandma_settings.grandma_dir,
+            '%s_%s.py' % (file_name, hash)), 'w').write(data)
     manage_name = os.path.join(grandma_settings.grandma_dir, 'manage_%s.py' % hash)
     subprocess.Popen('python %s syncdb --noinput' % manage_name, shell=os.sys.platform != 'win32').wait()
     return render_to_response('grandma/load.html', {
