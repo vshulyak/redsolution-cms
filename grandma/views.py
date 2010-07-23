@@ -260,7 +260,7 @@ def build(request):
         form = UserCreationForm()
     return render_to_response('grandma/build.html', {
         'grandma_settings': grandma_settings,
-        'bootstart': os.path.join(grandma_settings.project_dir, 'bootstrap.py'),
+        'bootstrap': os.path.join(grandma_settings.project_dir, 'bootstrap.py'),
         'buildout': os.path.join(grandma_settings.project_dir, 'bin', 'buildout'),
         'django': os.path.join(grandma_settings.project_dir, 'bin', 'django'),
         'form': form,

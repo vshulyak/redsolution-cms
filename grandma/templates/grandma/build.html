@@ -8,7 +8,7 @@
     </table>
     <p>{% trans 'Now we ready to initialize your project. To do it we will execute:' %}</p>
     <pre>
-python {{ bootstart }}
+python {{ bootstrap }}
 {{ buildout }} -c develop.cfg
 {{ django }} --noinput
     </pre>
