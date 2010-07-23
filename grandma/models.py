@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 import os
+from os.path import abspath, join, dirname
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
@@ -29,8 +29,7 @@ class GrandmaSettings(BaseSettings):
     ]
 
     initialized = models.BooleanField(verbose_name=_('Grandma was initialized'), default=False)
-    grandma_dir = models.CharField(verbose_name=_('Grandma dir'), max_length=255, default=lambda: os.path.abspath(os.path.dirname(__file__)))
-    project_dir = models.CharField(verbose_name=_('Project dir'), max_length=255, default=lambda: os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+    grandma_dir = models.CharField(verbose_name=_('Grandma dir'), max_length=255, default=lambda: abspath(dirname(__file__)))
     project_name = models.CharField(verbose_name=_('Project name'), max_length=50, default='example')
     database_engine = models.CharField(verbose_name=_('Database engine'), max_length=50, choices=DATABASE_ENGINES, default='sqlite3')
     database_name = models.CharField(verbose_name=_('Database name'), max_length=50, default='example.sqlite')
@@ -56,10 +55,10 @@ class GrandmaSettings(BaseSettings):
              Use 'w' to override old content.
         """
         if isinstance(file_name, (tuple, list)):
-            file_name = os.path.join(*file_name)
-        file_name = os.path.join(self.project_dir, self.project_name, file_name)
+            file_name = join(*file_name)
+        file_name = join(self.project_dir, self.project_name, file_name)
         try:
-            os.makedirs(os.path.dirname(file_name))
+            os.makedirs(dirname(file_name))
         except OSError:
             pass
         dictionary['grandma_settings'] = self
@@ -73,6 +72,9 @@ class GrandmaSettings(BaseSettings):
         except ObjectDoesNotExist:
             return False
 
+    @property
+    def project_dir(self):
+        return join(abspath(dirname(dirname(__file__))), self.project_name)
 
 class PackageManager(models.Manager):
     def installed(self):
