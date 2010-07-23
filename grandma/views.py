@@ -47,7 +47,8 @@ def load_packages():
     # prepare modules...
     modules_to_download = [{'name': package.package, 'version': package.version, }
         for package in selected_packages]
-    workset = install(modules_to_download, os.path.join(grandma_settings.project_dir, 'eggs'))
+    workset = install(modules_to_download,
+        os.path.join(os.path.dirname(grandma_settings.grandma_dir), 'eggs'))
     # Now fetch entry points and import modules
     for package in selected_packages:
         distr = workset.by_key[package.package]
@@ -239,11 +240,13 @@ def build(request):
     if request.method == 'POST':
         form = UserCreationForm(data=request.POST, files=request.FILES)
         if form.is_valid():
-            bootstrap_name = os.path.join(grandma_settings.grandma_dir, '..', 'bootstrap.py')
+            prev_dir = os.getcwd()
+            os.chdir(grandma_settings.project_dir)
+            bootstrap_name = os.path.join(grandma_settings.project_dir, 'bootstrap.py')
             subprocess.Popen('python %s' % bootstrap_name, shell=os.sys.platform != 'win32').wait()
-            buildout_name = os.path.join(grandma_settings.grandma_dir, '..', 'bin', 'buildout')
+            buildout_name = os.path.join(grandma_settings.project_dir, 'bin', 'buildout')
             subprocess.Popen('python %s -c develop.cfg' % buildout_name, shell=os.sys.platform != 'win32').wait()
-            django_name = os.path.join(grandma_settings.grandma_dir, '..', 'bin', 'django')
+            django_name = os.path.join(grandma_settings.project_dir, 'bin', 'django')
             subprocess.Popen('python %s syncdb --noinput' % django_name, shell=os.sys.platform != 'win32').wait()
 #            create superuser
             child = pexpect.spawn('python %s createsuperuser' % django_name)
@@ -256,6 +259,8 @@ def build(request):
             child.expect("Password.*")
             child.sendline(form.cleaned_data['password1'])
             child.expect("Superuser.*")
+
+            os.chdir(prev_dir)
 
 #            TODO: here we want to execute new server. But view will not return until subprocess will die.
 #            Maybe we need to start execution in separate view by AJAX.
