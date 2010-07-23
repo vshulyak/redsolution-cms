@@ -7,6 +7,6 @@ rm grandma/urls*.py
 rm grandma/settings*.py
 find . -name *.pyc -delete
 echo 'doing git reset'
-git reset --hard
+git co -- grandma/manage.py grandma/urls.py grandma/settings.py
 echo 'syncing database'
 python grandma/manage.py syncdb --noinput
