@@ -54,6 +54,8 @@ class Make(BaseMake):
         grandma_settings.render_to(os.path.join('..', 'develop.cfg'), 'grandma/project/develop.cfg', {}, 'w')
         grandma_settings.render_to(os.path.join('..', 'bootstrap.py'), 'grandma/project/bootstrap.py', {}, 'w')
         grandma_settings.render_to('__init__.py', 'grandma/project/__init__.py', {}, 'w')
+        grandma_settings.render_to('development.py', 'grandma/project/development.py', {}, 'w')
+        grandma_settings.render_to('production.py', 'grandma/project/production.py', {}, 'w')
         grandma_settings.render_to('settings.py', 'grandma/project/settings.py', {}, 'w')
         grandma_settings.render_to('urls.py', 'grandma/project/urls.py', {}, 'w')
         grandma_settings.render_to('manage.py', 'grandma/project/manage.py', {}, 'w')
