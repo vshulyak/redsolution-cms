@@ -67,18 +67,21 @@ class GrandmaSettings(BaseSettings):
         open(file_name, mode).write(value)
 
     def package_was_installed(self, package_name):
-        try:
-            return self.packages.get(package=package_name).installed
-        except ObjectDoesNotExist:
-            return False
+        return package_name in self.installed_packages
+
+    @property
+    def installed_packages(self):
+        return self.packages.installed().values_list('package', flat=True)
 
     @property
     def project_dir(self):
         return join(abspath(dirname(dirname(__file__))), self.project_name)
 
+
 class PackageManager(models.Manager):
     def installed(self):
         return self.get_query_set().filter(installed=True)
+
 
 class GrandmaPackage(models.Model):
     class Meta:
