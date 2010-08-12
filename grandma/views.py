@@ -48,7 +48,7 @@ def load_packages():
     modules_to_download = [{'name': package.package, 'version': package.version, }
         for package in selected_packages]
     workset = install(modules_to_download,
-        os.path.join(os.path.dirname(grandma_settings.grandma_dir), 'eggs'))
+        os.path.join(os.path.dirname(grandma_settings.grandma_dir), settings.DOWNLOAD_EGGS_TO))
     # Now fetch entry points and import modules
     for package in selected_packages:
         distr = workset.by_key[package.package]
