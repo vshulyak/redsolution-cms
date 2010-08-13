@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.conf.urls.defaults import patterns, include, handler404, handler500
+from django.conf.urls.defaults import patterns, include, handler404, handler500, url
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.sitemaps import GenericSitemap

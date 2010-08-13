@@ -7,26 +7,26 @@
 <title>{% block title %}{% endblock %}</title>
 <link rel="stylesheet" type="text/css" media="screen" href="/media/css/style.css" />
 <link rel="shortcut icon" href="/media/img/favicon.ico" />
-{% block head %}{% endblock %}{% endraw %}{% for html in grandma_settings.head_blocks.all %}{{ html }}
+{% block head %}{% endblock %}{% endraw %}{% for html in cms_settings.head_blocks.all %}{{ html }}
 {% endfor %}
 </head>
 <body>
 <div id="top-container">&nbsp;
-{% for html in grandma_settings.top_blocks.all %}{{ html }}
+{% for html in cms_settings.top_blocks.all %}{{ html }}
 {% endfor %}</div>
 <div id="left-container">&nbsp;
-{% for html in grandma_settings.left_blocks.all %}{{ html }}
+{% for html in cms_settings.left_blocks.all %}{{ html }}
 {% endfor %}</div>
-<div id="center-container">{% for html in grandma_settings.center_blocks.all %}{{ html }}
+<div id="center-container">{% for html in cms_settings.center_blocks.all %}{{ html }}
 {% endfor %}{% raw %}<h1 id="content-title">{% block content_title %}{% endblock %}</h1>
 <div id="center-content">{% block content %}{% endblock %}</div>
 {% endraw %}
 </div>
 <div id="right-container">&nbsp;
-{% for html in grandma_settings.right_blocks.all %}{{ html }}
+{% for html in cms_settings.right_blocks.all %}{{ html }}
 {% endfor %}</div>
 <div id="bottom-container">&nbsp;
-{% for html in grandma_settings.bottom_blocks.all %}{{ html }}
+{% for html in cms_settings.bottom_blocks.all %}{{ html }}
 {% endfor %}</div>
 </body>
 </html>
