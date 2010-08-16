@@ -165,6 +165,17 @@ class GrandmaCreatedModel(models.Model):
     def __unicode__(self):
         return self.name
 
+class ProcessTask(models.Model):
+    task = models.CharField(verbose_name=_('task'), max_length=255)
+    pid = models.IntegerField(verbose_name=_('process pid'), blank=True, null=True)
+    lock = models.BooleanField(verbose_name=_('task inactive'), default=False)
+    executed = models.BooleanField(verbose_name=_('task executed'), default=False)
+    process_finished = models.BooleanField(verbose_name=_('process finished'), default=False)
+    wait = models.BooleanField(verbose_name=_('wait finish'), default=False)
+
+    def __unicode__(self):
+        return self.task
+
 def add_created_model(created_models, **kwargs):
     grandma_settings = GrandmaSettings.objects.get_settings()
     if grandma_settings.initialized:
