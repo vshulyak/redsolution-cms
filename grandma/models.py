@@ -38,7 +38,7 @@ class GrandmaSettings(BaseSettings):
     database_host = models.CharField(verbose_name=_('Database host'), max_length=50, blank=True, default='')
     database_port = models.IntegerField(verbose_name=_('Database port'), blank=True, null=True)
 
-    def render_to(self, file_name, template_name, dictionary={}, mode='a+'):
+    def render_to(self, file_name, template_name, dictionary=None, mode='a+'):
         """
         ``file_name`` is relative path to destination file.
             It can be list or tuple to be os.path.joined
@@ -61,7 +61,10 @@ class GrandmaSettings(BaseSettings):
             os.makedirs(dirname(file_name))
         except OSError:
             pass
+        if dictionary is None:
+            dictionary = {}
         dictionary['grandma_settings'] = self
+        dictionary['cms_settings'] = self
         value = render_to_string(template_name, dictionary)
         value = value.encode('utf-8')
         open(file_name, mode).write(value)

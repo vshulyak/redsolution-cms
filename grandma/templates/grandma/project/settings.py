@@ -12,14 +12,14 @@ MANAGERS = (
 #    ('manager', 'manager@redsolution.ru'),
 )
 
-EMAIL_SUBJECT_PREFIX = '[{{ grandma_settings.project_name }}]'
+EMAIL_SUBJECT_PREFIX = '[{{ cms_settings.project_name }}]'
 
-DATABASE_ENGINE = '{{ grandma_settings.database_engine }}'
-DATABASE_NAME = '{{ grandma_settings.database_name }}'
-DATABASE_USER = '{{ grandma_settings.database_user }}'
-DATABASE_PASSWORD = '{{ grandma_settings.database_password }}'
-DATABASE_HOST = '{{ grandma_settings.database_host }}'
-DATABASE_PORT = '{{ grandma_settings.database_port }}'
+DATABASE_ENGINE = '{{ cms_settings.database_engine }}'
+DATABASE_NAME = '{{ cms_settings.database_name }}'
+DATABASE_USER = '{{ cms_settings.database_user }}'
+DATABASE_PASSWORD = '{{ cms_settings.database_password }}'
+DATABASE_HOST = '{{ cms_settings.database_host }}'
+DATABASE_PORT = '{{ cms_settings.database_port }}'
 
 TIME_ZONE = 'Asia/Yekaterinburg' # Fix me
 
@@ -44,7 +44,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.doc.XViewMiddleware',
 ]
 
-ROOT_URLCONF = '{{ grandma_settings.project_name }}.urls'
+ROOT_URLCONF = '{{ cms_settings.project_name }}.urls'
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -75,7 +75,6 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     'django.core.context_processors.debug',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
-#    'pages.context_processors.media',
 ]
 
 # Server settings
