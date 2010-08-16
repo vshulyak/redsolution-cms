@@ -23,7 +23,7 @@ def list_packages():
     Creates objects in GrandmaPackages model for all modules at PYPI
     """
     grandma_settings = GrandmaSettings.objects.get_settings()
-    all_packages = search_index('grandma')
+    all_packages = search_index('grandma') + search_index('redsolutioncms')
 
     if not grandma_settings.packages.count():
         for package in all_packages:
@@ -31,7 +31,8 @@ def list_packages():
                 selected=False,
                 package=package['name'],
                 version=package['version'],
-                verbose_name=package['name'].replace('django-', '').replace('grandma.', ''),
+                verbose_name=package['name'].replace('django-', '').replace('grandma.', ''
+                    ).replace('redsolutioncms.', ''),
                 description=package['summary']
             )
 
@@ -40,22 +41,24 @@ def load_packages():
     Downloads packages to eggs and imports them to sys.path
     TODO: Raise download error if download failed
     """
-    grandma_settings = GrandmaSettings.objects.get_settings()
+    cms_settings = GrandmaSettings.objects.get_settings()
     # delete all old entry points, because we reset all settings at step 2
     GrandmaEntryPoint.objects.all().delete()
-    selected_packages = grandma_settings.packages.filter(selected=True)
+    selected_packages = cms_settings.packages.filter(selected=True)
     # prepare modules...
     modules_to_download = [{'name': package.package, 'version': package.version, }
         for package in selected_packages]
     workset = install(modules_to_download,
-        os.path.join(os.path.dirname(grandma_settings.grandma_dir), 'eggs'))
+        os.path.join(os.path.dirname(cms_settings.grandma_dir), 'eggs'))
     # Now fetch entry points and import modules
     for package in selected_packages:
         distr = workset.by_key[package.package]
         distr.activate()
 
         package.path = distr.location
-        entry_points = distr.get_entry_info(None, 'grandma_setup')
+        entry_points = distr.get_entry_info(None, 'redsolution_setup')
+        if not entry_points:
+            entry_points = distr.get_entry_info(None, 'grandma_setup')
 
         installed = True
         if entry_points:
