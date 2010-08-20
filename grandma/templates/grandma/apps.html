@@ -1,8 +1,28 @@
 {% extends "grandma/base.html" %}
 {% load i18n %}
 
+{% block script %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	$('#select_all').click(function(){
+		$(':checkbox').attr('checked','checked');
+		return false;
+	});
+	$('#select_none').click(function(){
+		$(':checkbox').removeAttr('checked');
+		return false;
+	});
+});
+</script>
+
+{% endblock %}
+
 {% block content %}
 <form method="post" enctype="multipart/form-data" action="">
+    <p>Select <a href="#" link="self" id="select_all"> all</a>
+    <a href="#" link="self" id="select_none"> none</a>
+    </p>
     <table id="apps">
         {% for field in form %}
             <tr>

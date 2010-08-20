@@ -12,7 +12,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from grandma.models import GrandmaSettings, GrandmaPackage, GrandmaEntryPoint, \
-    GrandmaCreatedModel
+    GrandmaCreatedModel, ProcessTask
 
 try:
     admin.site.register(GrandmaSettings)
@@ -180,3 +180,9 @@ class GrandmaBaseAdmin(admin.ModelAdmin):
     def response_change(self, request, obj):
         ''' No messages, no continues'''
         return HttpResponseRedirect(reverse('custom'))
+
+class ProcessTaskAdmin(admin.ModelAdmin):
+    list_display = ('task', 'pid')
+    pass
+
+admin.site.register(ProcessTask, ProcessTaskAdmin)
