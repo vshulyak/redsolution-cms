@@ -10,7 +10,7 @@
     <pre>
 python {{ bootstrap }}
 {{ buildout }} -c develop.cfg
-{{ django }} --noinput
+{{ django }} syncdb --noinput
     </pre>
     <input type="button" value="{% trans 'Back' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url custom %}';"/>
     <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />

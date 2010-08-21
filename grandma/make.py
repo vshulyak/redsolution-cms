@@ -60,11 +60,11 @@ class Make(BaseMake):
         grandma_settings.render_to('urls.py', 'grandma/project/urls.py', {}, 'w')
         grandma_settings.render_to('manage.py', 'grandma/project/manage.py', {}, 'w')
 
-        grandma_settings.render_to(os.path.join('..', 'templates', 'base.html'), 'grandma/templates/base.html', {}, 'w')
-        grandma_settings.render_to(os.path.join('..', 'templates', '404.html'), 'grandma/templates/404.html', {}, 'w')
-        grandma_settings.render_to(os.path.join('..', 'templates', '500.html'), 'grandma/templates/500.html', {}, 'w')
+        grandma_settings.render_to(os.path.join('..', 'templates', 'base.html'), 'grandma/project/templates/base.html', {}, 'w')
+        grandma_settings.render_to(os.path.join('..', 'templates', '404.html'), 'grandma/project/templates/404.html', {}, 'w')
+        grandma_settings.render_to(os.path.join('..', 'templates', '500.html'), 'grandma/project/templates/500.html', {}, 'w')
 
-        grandma_settings.render_to(os.path.join('..', 'media', 'css', 'base.css'), 'grandma/media/css/base.css', {}, 'w')
-        grandma_settings.render_to(os.path.join('..', 'media', 'css', 'style.css'), 'grandma/media/css/style.css', {}, 'w')
+        grandma_settings.render_to(os.path.join('..', 'media', 'css', 'base.css'), 'grandma/project/media/css/base.css', {}, 'w')
+        grandma_settings.render_to(os.path.join('..', 'media', 'css', 'style.css'), 'grandma/project/media/css/style.css', {}, 'w')
 
 make = Make()

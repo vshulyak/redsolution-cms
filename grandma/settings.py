@@ -79,3 +79,8 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'grandma',
 ]
+
+DOWNLOAD_EGGS_TO = 'eggs'
+DOWNLOAD_REQUIREMENTS_TO = 'parts'
+
+#from settings_additional import *

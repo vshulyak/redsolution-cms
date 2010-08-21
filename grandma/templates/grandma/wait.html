@@ -7,18 +7,18 @@
 $(function(){
     function ping() {
         $.ajax({
-            url: "{% url started %}",
+            url: "{% url started start_task_id %}",
             error: function(a, b, c) {
                 setTimeout(ping, 1000);
             },             
             success: function(data) {
-            	window.location = "{% url custom %}";
+                window.location = "{{ redirect_to }}";
             }
         });
     }
     function restart() {
         $.ajax({
-            url: "{% url restart hash %}",
+            url: "{% url cancel_lock task_id %}",
             error: function(data) {
                 setTimeout(ping, 5000);
             },

@@ -1,13 +1,65 @@
 # -*- coding: utf-8 -*-
 from xmlrpc_urllib2_transport import ProxyTransport
+from django.utils.translation import ugettext as _
 from zc.buildout import easy_install
 import xmlrpclib
 import os
+from grandma.models import GrandmaSettings
+import urllib2
+import re
 
-
-def search_index(query):
+def search_pypi_xmlrpc(query):
     client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi', transport=ProxyTransport())
     return client.search({'name': query})
+
+def search_index(query):
+    cms_settings = GrandmaSettings.objects.get_settings()
+    if not cms_settings.package_index or cms_settings.package_index == 'http://pypi.python.org/simple/':
+        return search_pypi_xmlrpc(query)
+    else:
+        # Work with /simple/ index
+        # http proxy issue
+        proxy_handler = urllib2.ProxyHandler()
+        opener = urllib2.build_opener(proxy_handler)
+        packages = []
+        for line in opener.open(cms_settings.package_index).readlines():
+            # Example:
+            # <a href="/simple/grandma.django-model-url/"/>grandma.django-model-url</a><br />
+            match = re.search('>([\W\w]*)<\/a', line)
+            package = {}
+            if match:
+                # get versions ...
+                package_name = match.groups()[0]
+                url = cms_settings.package_index + '%s/' % package_name
+                versions = set()
+                for version_line in opener.open(url).readlines():
+                    version_match = re.search('>([\W\w]*)<\/a', version_line)
+                    if version_match:
+                        # 3rd regexp, find version string in link body
+                        # *.tar.gz packages
+                        targz_version_match = re.search(
+                            '%s-([\d\.\w]+).tar.gz' % package_name, version_match.groups()[0])
+                        if targz_version_match:
+                            versions.add(targz_version_match.groups()[0])
+                        # *.zip packages
+                        zip_version_match = re.search(
+                            '%s-([\d\.\w]+).zip' % package_name, version_match.groups()[0])
+                        if zip_version_match:
+                            versions.add(zip_version_match.groups()[0])
+                        # python eggs
+                        egg_version_match = re.search(
+                            '%s-([\d\.\w]+).py\d.\d.egg' % package_name, version_match.groups()[0])
+                        if egg_version_match:
+                            versions.add(egg_version_match.groups()[0])
+
+                package['name'] = package_name
+                package['summary'] = _('No description')
+                if versions:
+                    package['version'] = versions.pop()
+
+                packages.append(package)
+
+        return filter(lambda package: query in package['name'], packages)
 
 
 def install(modules, path='parts'):
