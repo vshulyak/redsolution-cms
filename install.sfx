@@ -1,5 +1,5 @@
-Title=Grandma-CMS
-Path=Grandma-CMS
-Setup=cmd /c python grandma\manage.py syncdb --noinput&python grandma\manage.py runserver
-Shortcut=D,"C:\Program Files\Internet Explorer\iexplore.exe" http://127.0.0.1:8000,,,Grandma-CMS
-//del "..\grandma-cms.exe"&winrar.exe a -mdg -m5 -s -ibck -dh -ep1 -kb -r -sfx -z"install.sfx" -iicon"grandma\media\img\favicon.ico" "..\grandma-cms.exe" "grandma" "parts"
+Title=Redsolution-CMS
+Path=Redsolution-CMS
+Setup=cmd /c python redsolutioncms\manage.py syncdb --noinput&python redsolutioncms\manage.py runserver
+Shortcut=D,"C:\Program Files\Internet Explorer\iexplore.exe" http://127.0.0.1:8000,,,Redsolution-CMS
+//del "..\redsolucion-cms.exe"&winrar.exe a -mdg -m5 -s -ibck -dh -ep1 -kb -r -sfx -z"install.sfx" -iicon"redsolutioncms\media\img\favicon.ico" "..\redsolutioncms-cms.exe" "redsolutioncms" "parts"
