@@ -1,6 +1,6 @@
 echo 'Cleaning up working dir'
 echo 'remove cms.slite'
-rm redsolutioncms.sqlite
+rm cms.sqlite
 echo 'remove temporary files'
 rm redsolutioncms/manage*.py
 rm redsolutioncms/urls*.py

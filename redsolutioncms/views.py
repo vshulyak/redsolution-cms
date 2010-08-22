@@ -89,8 +89,10 @@ def load(request):
     ProcessTask.objects.create(task='python redsolutioncms/manage.py syncdb', wait=True)
     ProcessTask.objects.create(task='python redsolutioncms/manage.py runserver')
     return render_to_response('redsolutioncms/wait.html', {
-        'task_id':task.id, 'redirect_to': reverse('custom'),
+        'task_id':task.id,
+        'redirect_to': reverse('custom'),
         'start_task_id':task.id,
+        'title': _('Downloading packages'),
     }, context_instance=RequestContext(request))
 
 def restart(request):
