@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from xmlrpc_urllib2_transport import ProxyTransport
 from django.utils.translation import ugettext as _
-from zc.buildout import easy_install
+#from zc.buildout import easy_install
 import xmlrpclib
 import os
 from redsolutioncms.models import CMSSettings
@@ -11,6 +11,30 @@ import re
 def search_pypi_xmlrpc(query):
     client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi', transport=ProxyTransport())
     return client.search({'name': query})
+
+def update_pythonpath(abspath):
+    if 'PYTHONPATH' in os.environ:
+        os.environ['PYTHONPATH'] += '%s%s' % (os.pathsep, abspath)
+    else:
+        os.environ['PYTHONPATH'] = '%s' % abspath
+
+def easy_install_package(package_spec):
+    # include parts dir into environment PYTHONPATH so setuptools can 
+    # search modules there
+    cms_settings = CMSSettings.objects.get_settings()
+    eggs_path = os.path.abspath(os.path.join(cms_settings.temp_dir, 'eggs'))
+    os.makedirs(eggs_path)
+    
+    update_pythonpath(eggs_path)
+    try:
+        from setuptools.command.easy_install import main
+    except ImportError:
+        from ez_setup import main
+    try:
+        return main(['--install-dir=%s' % eggs_path, '-i %s' % cms_settings.package_index, 
+            package_spec])
+    except SystemExit:
+        pass
 
 def search_index(query):
     cms_settings = CMSSettings.objects.get_settings()
