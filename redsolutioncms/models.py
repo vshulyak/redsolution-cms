@@ -37,15 +37,15 @@ class CMSSettings(BaseSettings):
     database_password = models.CharField(verbose_name=_('Database password'), max_length=50, blank=True, default='')
     database_host = models.CharField(verbose_name=_('Database host'), max_length=50, blank=True, default='')
     database_port = models.IntegerField(verbose_name=_('Database port'), blank=True, null=True)
-#    package_index = None
-    package_index = 'http://127.0.0.1:8008/simple'
+    package_index = 'http://pypi.python.org/simple/'
+#    package_index = 'http://127.0.0.1:8008/simple'
     temp_dir = models.CharField(verbose_name=_('CMS temporaqry dir'), max_length=255)
 
     def __init__(self, *args, **kwds):
         super(CMSSettings, self).__init__(*args, **kwds)
         from tempfile import mkdtemp
         self.temp_dir = mkdtemp(prefix='redsolution_cms')
-        
+
     def render_to(self, file_name, template_name, dictionary=None, mode='a+'):
         """
         ``file_name`` is relative path to destination file.

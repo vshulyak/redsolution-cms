@@ -51,7 +51,7 @@ class Make(BaseMake):
         super(Make, self).make()
         cms_settings = CMSSettings.objects.get_settings()
         cms_settings.render_to(os.path.join('..', 'buildout.cfg'), 'redsolutioncms/project/buildout.cfg', {}, 'w')
-        cms_settings.render_to(os.path.join('..', 'develop.cfg'), 'cms/project/develop.cfg', {}, 'w')
+        cms_settings.render_to(os.path.join('..', 'develop.cfg'), 'redsolutioncms/project/develop.cfg', {}, 'w')
         cms_settings.render_to(os.path.join('..', 'bootstrap.py'), 'redsolutioncms/project/bootstrap.py', {}, 'w')
         cms_settings.render_to('__init__.py', 'redsolutioncms/project/__init__.py', {}, 'w')
         cms_settings.render_to('development.py', 'redsolutioncms/project/development.py', {}, 'w')
