@@ -7,8 +7,8 @@ sys.path.extend([
 sys.path[0:0] = [
     os.path.abspath(current_dir),
     os.path.abspath(os.path.join(current_dir, '..', 'parts', 'django')),
-    os.path.abspath(os.path.join(current_dir, '..', 'parts', 'zc.buildout')),
-    os.path.abspath(os.path.join(current_dir, '..', 'parts', 'pexpect')),
+    os.path.abspath(os.path.join(current_dir, '..', 'eggs', 'zc.buildout-1.5.1-py2.6.egg')),
+    os.path.abspath(os.path.join(current_dir, '..', 'eggs', 'zc.buildout-1.5.1-py2.5.egg')),
 ]
 
 from manage_additional import *

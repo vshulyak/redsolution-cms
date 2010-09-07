@@ -18,6 +18,12 @@ class BaseMake(object):
         """
         Create make object.
         """
+        self.flush()
+
+    def flush(self):
+        """
+        Flush all flags as if project was not made yet. 
+        """
         self.premade = False
         self.made = False
         self.postmade = False

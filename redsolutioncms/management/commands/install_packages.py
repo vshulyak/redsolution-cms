@@ -44,7 +44,7 @@ def load_packages():
         distr.activate()
 
         package.path = distr.location
-        entry_points = distr.get_entry_info(None, 'redsolutioncms_setup')
+        entry_points = distr.get_entry_info(None, 'redsolutioncms')
 
         installed = True
         if entry_points:

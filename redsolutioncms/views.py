@@ -139,10 +139,13 @@ def custom(request):
         make_objects = []
         for entry_point in entry_points:
             try:
-                make_class = importpath('.'.join([entry_point, 'make', 'Make']))
-            except ImportError:
+                make_object = importpath('.'.join([entry_point, 'make', 'make']))
+            except ImportError, error:
+                print 'Entry point %s has no make object.' % entry_point
                 continue
-            make_objects.append(make_class())
+            make_objects.append(make_object)
+        for make_object in make_objects:
+            make_object.flush()
         for make_object in make_objects:
             try:
                 make_object.premake()
