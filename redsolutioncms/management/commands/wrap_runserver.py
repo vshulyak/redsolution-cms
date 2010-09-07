@@ -19,11 +19,18 @@ class Command(BaseCommand):
                     executed=True,
                     process_finished=False)
                 for task in executing_tasks:
-                    try:
-                        os.kill(task.pid, signal.SIG_DFL)
-                    except OSError:
-                        task.process_finished = True
-                        task.save()
+                    if os.sys.platform == 'win32':
+                        import ctypes
+                        PROCESS_TERMINATE = 1
+                        handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, task.pid)
+                        ctypes.windll.kernel32.TerminateProcess(handle, -1)
+                        ctypes.windll.kernel32.CloseHandle(handle)
+                    else:
+                        try:
+                            os.kill(task.pid, signal.SIG_DFL)
+                        except OSError:
+                            task.process_finished = True
+                            task.save()
                 tasks = ProcessTask.objects.filter(executed=False)
                 time.sleep(1)
                 lock_tasks = tasks.filter(lock=True)
@@ -33,8 +40,11 @@ class Command(BaseCommand):
                 if tasks:
                     task = tasks[0]
                     print task.task, 'executing...'
-                    p = subprocess.Popen(task.task, close_fds=True,
-                        shell=os.sys.platform != 'win32', preexec_fn=os.setsid,)
+                    if os.sys.platform == 'win32':
+                        p = subprocess.Popen(task.task, shell=False)
+                    else:
+                        p = subprocess.Popen(task.task, close_fds=True,
+                            shell=True, preexec_fn=os.setsid,)
                     task.pid = p.pid
                     if task.wait:
                         p.wait()
@@ -44,12 +54,19 @@ class Command(BaseCommand):
         except KeyboardInterrupt:
             executing_tasks = ProcessTask.objects.filter(process_finished=False)
             for task in executing_tasks:
-                try:
-                    os.kill(task.pid, signal.SIG_DFL)
-                except OSError:
-                    task.process_finished = True
-                    task.save()
+                if os.sys.platform == 'win32':
+                    import ctypes
+                    PROCESS_TERMINATE = 1
+                    handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, task.pid)
+                    ctypes.windll.kernel32.TerminateProcess(handle, -1)
+                    ctypes.windll.kernel32.CloseHandle(handle)
                 else:
-                    os.killpg(os.getpgid(task.pid), signal.SIGINT)
+                    try:
+                        os.kill(task.pid, signal.SIG_DFL)
+                    except OSError:
+                        task.process_finished = True
+                        task.save()
+                    else:
+                        os.killpg(os.getpgid(task.pid), signal.SIGINT)
             raise KeyboardInterrupt
 
