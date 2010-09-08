@@ -11,9 +11,7 @@ from redsolutioncms.make import AlreadyMadeException
 from redsolutioncms.models import CMSSettings, CMSEntryPoint, \
     CMSCreatedModel, ProcessTask
 from redsolutioncms.packages import search_index, install
-from pexpect import TIMEOUT
 import os
-import pexpect
 from django.utils.translation import ugettext_lazy as _
 
 CONFIG_FILES = ['manage', 'settings', 'urls', ]
@@ -203,24 +201,29 @@ def create_superuser(request):
         form = UserCreationForm(data=request.POST, files=request.FILES)
         if form.is_valid():
             django_name = os.path.join(cms_settings.project_dir, 'bin', 'django')
-            child = pexpect.spawn('python %s createsuperuser' % django_name,
-                timeout=3)
-            child.expect("Username.*")
-            child.sendline(form.cleaned_data['username'])
-            try:
-                child.expect("E-mail.*")
-            except TIMEOUT:
-                from django import forms
-                form.errors['username'] = [_('This username is busy.')]
-            else:
-#                child.expect("E-mail.*")
-                child.sendline(form.cleaned_data['email'])
-                child.expect("Password.*")
-                child.sendline(form.cleaned_data['password1'])
-                child.expect("Password.*")
-                child.sendline(form.cleaned_data['password1'])
-                child.expect("Superuser.*")
+            if os.sys.platform == 'win32':
+                # TODO: do something
                 return HttpResponseRedirect(reverse('done'))
+            else:
+                import pexpect
+                child = pexpect.spawn('python %s createsuperuser' % django_name,
+                    timeout=3)
+                child.expect("Username.*")
+                child.sendline(form.cleaned_data['username'])
+                try:
+                    child.expect("E-mail.*")
+                except pexpect.TIMEOUT:
+                    from django import forms
+                    form.errors['username'] = [_('This username is busy.')]
+                else:
+    #                child.expect("E-mail.*")
+                    child.sendline(form.cleaned_data['email'])
+                    child.expect("Password.*")
+                    child.sendline(form.cleaned_data['password1'])
+                    child.expect("Password.*")
+                    child.sendline(form.cleaned_data['password1'])
+                    child.expect("Superuser.*")
+                    return HttpResponseRedirect(reverse('done'))
     else:
         form = UserCreationForm()
     return render_to_response('redsolutioncms/build.html', {
