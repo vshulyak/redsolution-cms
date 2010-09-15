@@ -9,6 +9,8 @@ sys.path[0:0] = [
     os.path.abspath(os.path.join(current_dir, '..', 'parts', 'django')),
     os.path.abspath(os.path.join(current_dir, '..', 'eggs', 'zc.buildout-1.5.1-py2.6.egg')),
     os.path.abspath(os.path.join(current_dir, '..', 'eggs', 'zc.buildout-1.5.1-py2.5.egg')),
+    os.path.abspath(os.path.join(current_dir, '..', 'eggs', 'setuptools-0.6c12dev_r84273-py2.6.egg')),
+    os.path.abspath(os.path.join(current_dir, '..', 'eggs', 'setuptools-0.6c12dev_r84273-py2.5.egg')),
 ]
 
 from manage_additional import *

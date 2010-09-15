@@ -84,8 +84,8 @@ def load(request):
         lock=True, wait=True)
     ProcessTask.objects.create(task='bin/django install_packages', wait=True)
     ProcessTask.objects.create(task='bin/django change_settings', wait=True)
-    ProcessTask.objects.create(task='python redsolutioncms/manage.py syncdb', wait=True)
-    ProcessTask.objects.create(task='python redsolutioncms/manage.py runserver')
+    ProcessTask.objects.create(task='python redsolutioncms/manage.py syncdb --noinput', wait=True)
+    ProcessTask.objects.create(task='python redsolutioncms/manage.py runserver --noreload')
     return render_to_response('redsolutioncms/wait.html', {
         'task_id':task.id,
         'redirect_to': reverse('custom'),
@@ -102,8 +102,8 @@ def restart(request):
         lock=True, wait=True)
     ProcessTask.objects.create(task='bin/django install_packages', wait=True)
     ProcessTask.objects.create(task='bin/django change_settings', wait=True)
-    ProcessTask.objects.create(task='python redsolutioncms/manage.py syncdb', wait=True)
-    ProcessTask.objects.create(task='python redsolutioncms/manage.py runserver')
+    ProcessTask.objects.create(task='python redsolutioncms/manage.py syncdb --noinput', wait=True)
+    ProcessTask.objects.create(task='python redsolutioncms/manage.py runserver --noreload')
     task.lock = False
     task.save()
     return HttpResponse()
@@ -181,13 +181,13 @@ def build(request):
         wait=True)
     buildout_name = os.path.join(cms_settings.project_dir, 'bin', 'buildout')
     ProcessTask.objects.create(
-        task='python %s -c %s' % (buildout_name, buildout_cfg_name), wait=True)
+        task='%s -c %s' % (buildout_name, buildout_cfg_name), wait=True)
     django_name = os.path.join(cms_settings.project_dir, 'bin', 'django')
     ProcessTask.objects.create(
-        task='python %s syncdb --noinput' % django_name, wait=True)
+        task='%s syncdb --noinput' % django_name, wait=True)
     ProcessTask.objects.create(
-        task='python %s runserver 127.0.0.1:8001' % django_name)
-    ProcessTask.objects.create(task='bin/django runserver')
+        task='%s runserver --noreload 127.0.0.1:8001' % django_name)
+    ProcessTask.objects.create(task='bin/django runserver --noreload')
 
     return render_to_response('redsolutioncms/wait.html',
         {'task_id': task.id, 'redirect_to': reverse('create_superuser'),

@@ -15,7 +15,11 @@ MANAGERS = (
 EMAIL_SUBJECT_PREFIX = '[{{ cms_settings.project_name }}]'
 
 DATABASE_ENGINE = '{{ cms_settings.database_engine }}'
+{% ifequal cms_settings.database_engine 'sqlite3' %}
+DATABASE_NAME = os.path.join(os.path.dirname(os.path.dirname(__file__)), '{{ cms_settings.database_name }}')
+{% else %}
 DATABASE_NAME = '{{ cms_settings.database_name }}'
+{% endifequal %}
 DATABASE_USER = '{{ cms_settings.database_user }}'
 DATABASE_PASSWORD = '{{ cms_settings.database_password }}'
 DATABASE_HOST = '{{ cms_settings.database_host }}'

@@ -8,7 +8,7 @@ import os, signal
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        ProcessTask.objects.create(task='python redsolutioncms/manage.py runserver')
+        ProcessTask.objects.create(task='python redsolutioncms/manage.py runserver --noreload')
         self.wrapper()
 
     def wrapper(self):
@@ -19,12 +19,9 @@ class Command(BaseCommand):
                     executed=True,
                     process_finished=False)
                 for task in executing_tasks:
+#                    check process finished
                     if os.sys.platform == 'win32':
-                        import ctypes
-                        PROCESS_TERMINATE = 1
-                        handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, task.pid)
-                        ctypes.windll.kernel32.TerminateProcess(handle, -1)
-                        ctypes.windll.kernel32.CloseHandle(handle)
+                        pass
                     else:
                         try:
                             os.kill(task.pid, signal.SIG_DFL)
@@ -41,7 +38,9 @@ class Command(BaseCommand):
                     task = tasks[0]
                     print task.task, 'executing...'
                     if os.sys.platform == 'win32':
-                        p = subprocess.Popen(task.task, shell=False)
+                        CREATE_NEW_PROCESS_GROUP = 512
+                        p = subprocess.Popen(task.task,
+                            creationflags=CREATE_NEW_PROCESS_GROUP)
                     else:
                         p = subprocess.Popen(task.task, close_fds=True,
                             shell=True, preexec_fn=os.setsid,)
@@ -54,19 +53,23 @@ class Command(BaseCommand):
         except KeyboardInterrupt:
             executing_tasks = ProcessTask.objects.filter(process_finished=False)
             for task in executing_tasks:
-                if os.sys.platform == 'win32':
-                    import ctypes
-                    PROCESS_TERMINATE = 1
-                    handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, task.pid)
-                    ctypes.windll.kernel32.TerminateProcess(handle, -1)
-                    ctypes.windll.kernel32.CloseHandle(handle)
-                else:
-                    try:
-                        os.kill(task.pid, signal.SIG_DFL)
-                    except OSError:
+                if task.pid:
+                    if os.sys.platform == 'win32':
+                        import ctypes
+                        CTRL_BREAK_EVENT = 1
+                        GenerateConsoleCtrlEvent = ctypes.windll.kernel32.GenerateConsoleCtrlEvent
+                        GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, task.pid)
+                    else:
+                        try:
+                            os.kill(task.pid, signal.SIG_DFL)
+                        except OSError:
+                            pass
+                        else:
+                            os.killpg(os.getpgid(task.pid), signal.SIGINT)
                         task.process_finished = True
                         task.save()
-                    else:
-                        os.killpg(os.getpgid(task.pid), signal.SIGINT)
+            not_executed_tasks = ProcessTask.objects.filter(
+                executed=False)
+            not_executed_tasks.update(executed=True, process_finished=True)
             raise KeyboardInterrupt
 
