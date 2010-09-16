@@ -35,17 +35,18 @@ MEDIA_ROOT = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'media')
 UPLOAD_DIR = 'upload'
 
 MEDIA_URL = '/media/'
-UPLOAD_URL = os.path.join(MEDIA_URL, UPLOAD_DIR)
+UPLOAD_URL = MEDIA_URL + UPLOAD_DIR
 
-ADMIN_MEDIA_PREFIX = '/admin_media/'
+ADMIN_MEDIA_PREFIX = '/media/admin/'
 
 SECRET_KEY = 'i*1gdd^(gvx70fb0d5*6!q7^a7r^)=mf)ip+i07%v*lj+=ir@l' # Fix me
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.doc.XViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.doc.XViewMiddleware',
+    'django.contrib.redirects',
 ]
 
 ROOT_URLCONF = '{{ cms_settings.project_name }}.urls'

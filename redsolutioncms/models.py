@@ -37,8 +37,11 @@ class CMSSettings(BaseSettings):
     database_password = models.CharField(verbose_name=_('Database password'), max_length=50, blank=True, default='')
     database_host = models.CharField(verbose_name=_('Database host'), max_length=50, blank=True, default='')
     database_port = models.IntegerField(verbose_name=_('Database port'), blank=True, null=True)
-    package_index = 'http://pypi.python.org/simple/'
-#    package_index = 'http://127.0.0.1:8008/simple'
+    # set package_index to None, if you want to work with default PYPI
+    # or set to /simple interface of custom package index to 
+    # work with custom index, like this:
+    # package_index = 'http://127.0.0.1:8008/simple'
+    package_index = None
     temp_dir = models.CharField(verbose_name=_('CMS temporaqry dir'), max_length=255)
 
     def __init__(self, *args, **kwds):
