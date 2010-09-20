@@ -46,7 +46,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.doc.XViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.redirects',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
 ]
 
 ROOT_URLCONF = '{{ cms_settings.project_name }}.urls'
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.sites',
     'django.contrib.sitemaps',
+    'django.contrib.redirects',
 ]
 
 TEMPLATE_LOADERS = [
@@ -86,3 +87,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 FORCE_SCRIPT_NAME = ''
 
 CACHE_BACKEND = 'locmem:///?max_entries=5000'
+
+#------------------------------------------------------------------------------
+#           Custom applicaitons settings
+#------------------------------------------------------------------------------
