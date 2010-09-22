@@ -83,4 +83,9 @@ INSTALLED_APPS = [
 DOWNLOAD_EGGS_TO = 'eggs'
 DOWNLOAD_REQUIREMENTS_TO = 'parts'
 
-#from settings_additional import *
+
+try:
+    from settings_additional import *
+except ImportError:
+    print 'Can not import settings_additional!'
+
