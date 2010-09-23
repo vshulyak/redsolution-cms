@@ -89,5 +89,5 @@ FORCE_SCRIPT_NAME = ''
 CACHE_BACKEND = 'locmem:///?max_entries=5000'
 
 #------------------------------------------------------------------------------
-#           Custom applicaitons settings
+#                       Custom applicaitons settings
 #------------------------------------------------------------------------------

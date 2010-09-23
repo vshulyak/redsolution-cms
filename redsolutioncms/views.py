@@ -42,7 +42,7 @@ def index(request):
     cms_settings = CMSSettings.objects.get_settings()
     cms_settings.initialized = True
     cms_settings.save()
-    cms_settings_class = modelform_factory(CMSSettings, exclude=['cms_dir', 'project_dir', 'initialized'])
+    cms_settings_class = modelform_factory(CMSSettings, exclude=['cms_dir', 'project_dir', 'initialized', 'base_template', ])
     if request.method == 'POST':
         form = cms_settings_class(data=request.POST, files=request.FILES, instance=cms_settings)
         if form.is_valid():
@@ -125,12 +125,8 @@ def custom(request):
     cms_settings = CMSSettings.objects.get_settings()
     if request.method == 'POST':
         entry_points = ['redsolutioncms']
-        cms_settings.head_blocks.all().delete()
-        cms_settings.top_blocks.all().delete()
-        cms_settings.left_blocks.all().delete()
-        cms_settings.center_blocks.all().delete()
-        cms_settings.right_blocks.all().delete()
-        cms_settings.bottom_blocks.all().delete()
+        cms_settings.base_template = 'base_template.html'
+        cms_settings.save()
         for package in cms_settings.packages.installed():
             for entry_point in package.entry_points.all():
                 entry_points.append(entry_point.module)

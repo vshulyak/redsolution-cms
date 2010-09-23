@@ -53,6 +53,11 @@ class BaseMake(object):
         self.postmade = True
 
 class Make(BaseMake):
+    def premake(self):
+        super(Make, self).premake()
+        cms_settings = CMSSettings.objects.get_settings()
+        cms_settings.render_to(os.path.join('..', 'templates', 'base_template.html'), 'redsolutioncms/project/templates/base_template.html', {}, 'w')
+
     def make(self):
         super(Make, self).make()
         cms_settings = CMSSettings.objects.get_settings()
@@ -66,11 +71,15 @@ class Make(BaseMake):
         cms_settings.render_to('urls.py', 'redsolutioncms/project/urls.pyt', {}, 'w')
         cms_settings.render_to('manage.py', 'redsolutioncms/project/manage.pyt', {}, 'w')
 
-        cms_settings.render_to(os.path.join('..', 'templates', 'base.html'), 'redsolutioncms/project/templates/base.html', {}, 'w')
         cms_settings.render_to(os.path.join('..', 'templates', '404.html'), 'redsolutioncms/project/templates/404.html', {}, 'w')
         cms_settings.render_to(os.path.join('..', 'templates', '500.html'), 'redsolutioncms/project/templates/500.html', {}, 'w')
 
         cms_settings.render_to(os.path.join('..', 'media', 'css', 'base.css'), 'redsolutioncms/project/media/css/base.css', {}, 'w')
         cms_settings.render_to(os.path.join('..', 'media', 'css', 'style.css'), 'redsolutioncms/project/media/css/style.css', {}, 'w')
+
+    def postmake(self):
+        super(Make, self).postmake()
+        cms_settings = CMSSettings.objects.get_settings()
+        cms_settings.render_to(os.path.join('..', 'templates', 'base.html'), 'redsolutioncms/project/templates/base.html', {}, 'w')
 
 make = Make()
