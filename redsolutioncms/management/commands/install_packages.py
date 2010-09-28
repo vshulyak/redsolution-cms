@@ -5,6 +5,7 @@ from redsolutioncms.models import CMSSettings, CMSCreatedModel, \
 import os
 from redsolutioncms.packages import install
 from redsolutioncms.importpath import importpath
+from redsolutioncms.loader import home_dir
 
 def uninstall_packages():
     '''
@@ -36,8 +37,7 @@ def load_packages():
     # prepare modules...
     modules_to_download = [{'name': package.package, 'version': package.version, }
         for package in selected_packages]
-    workset = install(modules_to_download,
-        os.path.join(os.path.dirname(cms_settings.cms_dir), 'eggs'))
+    workset = install(modules_to_download, os.path.join(home_dir, 'eggs'))
     # Now fetch entry points and import modules
     for package in selected_packages:
         distr = workset.by_key[package.package]

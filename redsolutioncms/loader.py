@@ -8,6 +8,7 @@ from optparse import OptionParser
 
 # Home dir defined here!
 home_dir = join(os.getenv('HOME'), '.redsolutioncms')
+project_dir = os.getcwd()
 
 def install_in_home(flush=True):
     '''Copy nessesary files to home folder''' 
@@ -53,7 +54,7 @@ if __name__ == '__main__':
         help="Continue installation, doesn't delete old files", default=False)
     
     (options, args) = parser.parse_args()
-    
+    # TODO: Find installed CMS automatically and ask user, does he want to delete old files
     
     if not options.continue_install:
         print '1. Copying files to home dir'
