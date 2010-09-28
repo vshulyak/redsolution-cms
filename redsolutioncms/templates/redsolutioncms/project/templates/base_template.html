@@ -1,0 +1,38 @@
+{% load redsolutioncms_tags %}{% raw %}{% block html %}<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+{% block head %}
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    {% block seo %}
+        <meta name="keywords" content="{% block keywords %}{% endblock %}" />
+        <meta name="description" content="{% block description %}{% endblock %}" />
+        <title>{% block title %}{% endblock %}</title>
+    {% endblock seo %}
+    {% block css %}
+        <link rel="stylesheet" type="text/css" media="screen" href="/media/css/style.css" />
+        <link rel="shortcut icon" href="/media/img/favicon.ico" />
+    {% endblock css %}
+    {% block js %}
+    {% endblock js %}
+{% endblock head %}
+</head>
+<body>
+{% block body %}
+    <div id="header-block">{% block header %}{% endblock header %}</div>
+    <div id="middle-block">
+    {% block middle %}
+        <div id="left-block">{% block left %}{% endblock left %}</div>
+        <div id="center-block">
+        {% block center %}
+            <h1 id="content-title">{% block content_title %}{% endblock %}</h1>
+            <div id="content-block">{% block content %}{% endblock %}</div>
+        {% endblock center %}
+        </div>
+        <div id="right-block">{% block right %}{% endblock right %}</div>
+    {% endblock middle %}
+    </div>
+    <div id="footer-block">{% block footer %}{% endblock footer %}</div>
+{% endblock body %}
+</body>
+</html>
+{% endblock html %}{% endraw %}

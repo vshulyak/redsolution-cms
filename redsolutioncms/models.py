@@ -131,48 +131,6 @@ class CMSEntryPoint(models.Model):
     def __unicode__(self):
         return 'Entry point %s' % self.module
 
-class CMSHeadBlock(models.Model):
-    settings = models.ForeignKey(CMSSettings, related_name='head_blocks')
-    html = models.TextField(verbose_name=_('Html to be inserted'))
-
-    def __unicode__(self):
-        return self.html
-
-class CMSTopBlock(models.Model):
-    settings = models.ForeignKey(CMSSettings, related_name='top_blocks')
-    html = models.TextField(verbose_name=_('Html to be inserted'))
-
-    def __unicode__(self):
-        return self.html
-
-class CMSLeftBlock(models.Model):
-    settings = models.ForeignKey(CMSSettings, related_name='left_blocks')
-    html = models.TextField(verbose_name=_('Html to be inserted'))
-
-    def __unicode__(self):
-        return self.html
-
-class CMSCenterBlock(models.Model):
-    settings = models.ForeignKey(CMSSettings, related_name='center_blocks')
-    html = models.TextField(verbose_name=_('Html to be inserted'))
-
-    def __unicode__(self):
-        return self.html
-
-class CMSRightBlock(models.Model):
-    settings = models.ForeignKey(CMSSettings, related_name='right_blocks')
-    html = models.TextField(verbose_name=_('Html to be inserted'))
-
-    def __unicode__(self):
-        return self.html
-
-class CMSBottomBlock(models.Model):
-    settings = models.ForeignKey(CMSSettings, related_name='bottom_blocks')
-    html = models.TextField(verbose_name=_('Html to be inserted'))
-
-    def __unicode__(self):
-        return self.html
-
 class CMSCreatedModel(models.Model):
     name = models.CharField(verbose_name=_('Name'), max_length=100, unique=True)
 

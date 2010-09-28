@@ -99,12 +99,8 @@ def custom(request):
     cms_settings = CMSSettings.objects.get_settings()
     if request.method == 'POST':
         entry_points = ['redsolutioncms']
-        cms_settings.head_blocks.all().delete()
-        cms_settings.top_blocks.all().delete()
-        cms_settings.left_blocks.all().delete()
-        cms_settings.center_blocks.all().delete()
-        cms_settings.right_blocks.all().delete()
-        cms_settings.bottom_blocks.all().delete()
+        cms_settings.base_template = 'base_template.html'
+        cms_settings.save()
         for package in cms_settings.packages.installed():
             for entry_point in package.entry_points.all():
                 entry_points.append(entry_point.module)

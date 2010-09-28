@@ -31,3 +31,11 @@ def raw(parser, token):
         elif token.token_type == TOKEN_TEXT:
             data += token.contents
     parser.unclosed_block_tag([ENDRAW])
+
+@register.simple_tag
+def start_block():
+    return u'{%'
+
+@register.simple_tag
+def end_block():
+    return u'%}'
