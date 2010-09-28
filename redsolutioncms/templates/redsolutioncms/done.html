@@ -4,12 +4,12 @@
 {% block content %}
 <p>{% trans 'Now to create super user please call:' %}</p>
 <pre>
-cd {{ cms_settings.project_dir }}
+cd {{ project_dir }}
 {{ django }} createsuperuser
 </pre>
 <p>{% trans 'Then run project:' %}</p>
 <pre>
-cd {{ cms_settings.project_dir }}
+cd {{ project_dir }}
 {{ django }} runserver 127.0.0.1:8001
 </pre>
 <p>{% trans 'Then your project will be available at: ' %}<a href="http://127.0.0.1:8001">http://127.0.0.1:8001</a></p>

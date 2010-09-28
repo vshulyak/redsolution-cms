@@ -4,6 +4,9 @@ INSTALLED_APPS += [{% for package in cms_settings.packages.installed %}{% for en
     '{{ entry_point.module }}',{% endfor %}{% endfor %}
 ]
 
+
+
+
 {% comment %}
 CURRENT_HASH = '{{ hash }}'
 {% if prev_hash %}PREV_HASH = '{{ prev_hash }}'

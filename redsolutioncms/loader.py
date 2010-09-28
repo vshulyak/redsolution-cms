@@ -32,29 +32,44 @@ def run_cmd(cmd, cmd_dict=None):
 
 def process_cmd_string(cmd, cmd_dict=None):
     if cmd_dict is None:
-        cmd_dict = {
-            'python': sys.executable,
-            'bootstrap': join(home_dir, 'bootstrap.py'),
-            'buildout': join(home_dir, 'bin/buildout'),
-            'django': join(home_dir, 'bin/django'),
-        }
+        cmd_dict = {}
+    buildout_cfg = join(home_dir, 'buildout.cfg')
+    default_dict = {
+        'python': sys.executable,
+        'bootstrap': join(home_dir, 'bootstrap.py -c %s' % buildout_cfg),
+        'buildout': join(home_dir, 'bin', 'buildout -c %s' % buildout_cfg),
+        'django': join(home_dir, 'bin', 'django'),
+    }
+    cmd_dict.update(default_dict)
     return cmd % cmd_dict
 
 def run_in_home(cmd):
     # run python boostrap.py from home installation dir 
     cwd = os.getcwd()
-    os.chdir(home_dir)
+#    os.chdir(home_dir)
     subprocess.call(cmd, shell=True)
-    os.chdir(cwd)
+#    os.chdir(cwd)
 
 
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('-c', '--continue', action='store_true', dest='continue_install',
         help="Continue installation, doesn't delete old files", default=False)
+    parser.add_option('-t', '--test', action='store_true', dest='test',
+        help="Test variables", default=False)
     
     (options, args) = parser.parse_args()
     # TODO: Find installed CMS automatically and ask user, does he want to delete old files
+    
+    if options.test:
+        print 'Test mode'
+        print 'home_dir=%s' % home_dir
+        print 'project_dir=%s' % project_dir
+        print process_cmd_string('python: %(python)s')
+        print process_cmd_string('bootstrap: %(bootstrap)s')
+        print process_cmd_string('bulidout: %(buildout)s')
+        print process_cmd_string('django: %(django)s')
+        sys.exit(0)
     
     if not options.continue_install:
         print '1. Copying files to home dir'

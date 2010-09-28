@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from redsolutioncms.forms import CMSPackagesForm, UserCreationForm
 from redsolutioncms.importpath import importpath
-from redsolutioncms.loader import home_dir, process_cmd_string
+from redsolutioncms.loader import home_dir, process_cmd_string, project_dir
 from redsolutioncms.make import AlreadyMadeException
 from redsolutioncms.models import CMSSettings, CMSEntryPoint, CMSCreatedModel, \
     ProcessTask
@@ -71,7 +71,7 @@ def apps(request):
 
 def load(request):
     """
-    Show progress indicator, fetch packages from index site.
+    Show wait circle loader, fetch packages from index site.
     Template has AJAX checker, so user will be redirected to next step automatically.
     Saves installation information for packages.
     Makes settings.py, urls.py, manage.py with installed setup-packages.
@@ -90,32 +90,6 @@ def load(request):
         'start_task_id':task.id,
         'title': _('Downloading packages'),
     }, context_instance=RequestContext(request))
-
-def restart(request):
-    """
-    User can`t see it. It will be called by javascript.
-    Rewrite manage.py for current server, so server will be restarted.
-    """
-    task = ProcessTask.objects.create(task='bin/django kill_runserver',
-        lock=True, wait=True)
-    # Who repeated this code twice?
-    print 'A-HA! try to install packages in restart function!'
-#    ProcessTask.objects.create(task='bin/django install_packages', wait=True)
-#    ProcessTask.objects.create(task='bin/django change_settings', wait=True)
-#    ProcessTask.objects.create(task='python redsolutioncms/manage.py syncdb --noinput', wait=True)
-    ProcessTask.objects.create(task='python redsolutioncms/manage.py runserver --noreload')
-    task.lock = False
-    task.save()
-    return HttpResponse()
-
-def started(request, task_id):
-    """
-    User can`t see it. It will be called by javascript.
-    Used to check, whether server is available after restart.
-    """
-    task = ProcessTask.objects.get(id=task_id)
-    if task.process_finished:
-        return HttpResponse()
 
 def custom(request):
     """
@@ -164,47 +138,52 @@ def custom(request):
         'cms_settings': cms_settings,
     }, context_instance=RequestContext(request))
 
-def cancel_lock(request, task_id):
-    task = ProcessTask.objects.get(id=task_id)
-    task.lock = False
-    task.save()
-    return HttpResponse()
-
 def build(request):
     cms_settings = CMSSettings.objects.get_settings()
     task = ProcessTask.objects.create(
         task=process_cmd_string('%(django)s kill_runserver'),
         lock=True, wait=True)
-    ProcessTask.objects.create(
-        task=process_cmd_string('%(python)s bootstrap.py'),
-        wait=True)
-    ProcessTask.objects.create(
-        task=process_cmd_string('%(python)s -c develop.cfg'),
-        wait=True)
     
-    # Here's a problem. We should chdir to NEW PROJECT DIR, not home_dir
-    # So, I comment out this, I'll fix it soon 
-    # TODO: OMG FIX ME AS SOON AS POSSIBLE
-#    django_name = os.path.join(home_dir, 'bin', 'django')
-#    
-#    ProcessTask.objects.create(
-#        task=process_cmd_string('%(django)s syncdb --noinput'), wait=True)
-#    ProcessTask.objects.create(
-#        task='%s runserver --noreload 127.0.0.1:8001' % django_name)
-#    ProcessTask.objects.create(task='bin/django runserver --noreload')
+    project_params = {
+        'project_bootstrap': os.path.join(project_dir, 'bootstrap.py'),
+        'project_buildout': os.path.join(project_dir, 'bin', 'buildout'),
+        'project_django': os.path.join(project_dir, 'bin', 'django'),            
+    }
+
+    print 'BARBARBAR'
+    print project_dir
+    print process_cmd_string('%(python)s %(project_bootstrap)s', project_params)
+    print process_cmd_string('%(python)s %(project_buildout)s -c develop.cfg', project_params)
+    print process_cmd_string('%(project_django)s syncdb --noinput', project_params)
+    print process_cmd_string('%(project_django)s runserver 8001 --noreload', project_params)
+    print process_cmd_string('%(django)s runserver --noreload')
+
+    ProcessTask.objects.create(
+        task=process_cmd_string('%(python)s %(project_bootstrap)s', project_params),
+        wait=True)
+    ProcessTask.objects.create(
+        task=process_cmd_string('%(python)s %(project_buildout)s -c develop.cfg', project_params),
+        wait=True)
+    ProcessTask.objects.create(
+        task=process_cmd_string('%(project_django)s syncdb --noinput', project_params),
+        wait=True)
+    ProcessTask.objects.create(
+        task=process_cmd_string('%(project_django)s runserver 8001 --noreload', 
+        project_params))
+    ProcessTask.objects.create(
+        task=process_cmd_string('%(django)s runserver --noreload'))
 
     return render_to_response('redsolutioncms/wait.html',
         {'task_id': task.id, 'redirect_to': reverse('create_superuser'),
             'start_task_id':task.id},
          context_instance=RequestContext(request))
 
-
 def create_superuser(request):
     cms_settings = CMSSettings.objects.get_settings()
     if request.method == 'POST':
         form = UserCreationForm(data=request.POST, files=request.FILES)
         if form.is_valid():
-            django_name = os.path.join(cms_settings.project_dir, 'bin', 'django')
+            django_name = os.path.join(project_dir, 'bin', 'django')
             if os.sys.platform == 'win32':
                 # TODO: do something
                 return HttpResponseRedirect(reverse('done'))
@@ -233,9 +212,9 @@ def create_superuser(request):
         form = UserCreationForm()
     return render_to_response('redsolutioncms/build.html', {
         'cms_settings': cms_settings,
-        'bootstrap': os.path.join(cms_settings.project_dir, 'bootstrap.py'),
-        'buildout': os.path.join(cms_settings.project_dir, 'bin', 'buildout'),
-        'django': os.path.join(cms_settings.project_dir, 'bin', 'django'),
+        'bootstrap': os.path.join(project_dir, 'bootstrap.py'),
+        'buildout': os.path.join(project_dir, 'bin', 'buildout'),
+        'django': os.path.join(project_dir, 'bin', 'django'),
         'form': form,
     }, context_instance=RequestContext(request))
 
@@ -243,5 +222,32 @@ def done(request):
     cms_settings = CMSSettings.objects.get_settings()
     return render_to_response('redsolutioncms/done.html', {
         'cms_settings': cms_settings,
-        'django': os.path.join(cms_settings.project_dir, 'bin', 'django'),
+        'project_dir': project_dir,
+        'django': os.path.join(project_dir, 'bin', 'django'),
     }, context_instance=RequestContext(request))
+
+def restart(request):
+    """
+    Ajax view. Restarts runserver
+    """
+    task = ProcessTask.objects.create(task=process_cmd_string('%(django)s kill_runserver'),
+        lock=True, wait=True)
+    ProcessTask.objects.create(task=process_cmd_string('%(django)s runserver --noreload'))
+    task.lock = False
+    task.save()
+    return HttpResponse()
+
+def started(request, task_id):
+    """
+    User can`t see it. It will be called by javascript.
+    Used to check, whether server is available after restart.
+    """
+    task = ProcessTask.objects.get(id=task_id)
+    if task.process_finished:
+        return HttpResponse()
+
+def cancel_lock(request, task_id):
+    task = ProcessTask.objects.get(id=task_id)
+    task.lock = False
+    task.save()
+    return HttpResponse()

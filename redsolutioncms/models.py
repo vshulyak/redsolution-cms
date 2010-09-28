@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_syncdb
-from redsolutioncms.loader import home_dir
+from redsolutioncms.loader import home_dir, project_dir
 
 class BaseSettingsManager(models.Manager):
     def get_settings(self):
@@ -61,7 +61,7 @@ class CMSSettings(BaseSettings):
         """
         if isinstance(file_name, (tuple, list)):
             file_name = join(*file_name)
-        file_name = join(self.project_dir, self.project_name, file_name)
+        file_name = join(project_dir, self.project_name, file_name)
         try:
             os.makedirs(dirname(file_name))
         except OSError:
@@ -82,12 +82,12 @@ class CMSSettings(BaseSettings):
 
     @property
     def project_dir(self):
-        raise DeprecationWarning('Project dir is deprecated attribute. Use redsolutioncms.home_dir instead')
-        return home_dir
+        raise DeprecationWarning('Project dir is deprecated attribute. Use redsolutioncms.loader.project_dir instead')
+        return project_dir
 
     @property
     def temp_dir(self):
-        raise DeprecationWarning('Project dir is deprecated attribute. Use redsolutioncms.home_dir instead')
+        raise DeprecationWarning('Project dir is deprecated attribute. Use redsolutioncms.loader.home_dir instead')
         return home_dir
 
 class PackageManager(models.Manager):
