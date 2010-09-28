@@ -150,13 +150,6 @@ def build(request):
         'project_django': os.path.join(project_dir, 'bin', 'django'),            
     }
 
-    print 'BARBARBAR'
-    print project_dir
-    print process_cmd_string('%(python)s %(project_bootstrap)s', project_params)
-    print process_cmd_string('%(python)s %(project_buildout)s -c develop.cfg', project_params)
-    print process_cmd_string('%(project_django)s syncdb --noinput', project_params)
-    print process_cmd_string('%(project_django)s runserver 8001 --noreload', project_params)
-    print process_cmd_string('%(django)s runserver --noreload')
 
     ProcessTask.objects.create(
         task=process_cmd_string('%(python)s %(project_bootstrap)s', project_params),

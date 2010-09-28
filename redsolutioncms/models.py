@@ -82,12 +82,14 @@ class CMSSettings(BaseSettings):
 
     @property
     def project_dir(self):
-        raise DeprecationWarning('Project dir is deprecated attribute. Use redsolutioncms.loader.project_dir instead')
+        import warnings
+        warnings.warn('Project dir is deprecated attribute. Use redsolutioncms.loader.project_dir instead')
         return project_dir
 
     @property
     def temp_dir(self):
-        raise DeprecationWarning('Project dir is deprecated attribute. Use redsolutioncms.loader.home_dir instead')
+        import warnings
+        warnings.warn('Project dir is deprecated attribute. Use redsolutioncms.loader.home_dir instead')
         return home_dir
 
 class PackageManager(models.Manager):
