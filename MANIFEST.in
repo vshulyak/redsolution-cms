@@ -1,0 +1,3 @@
+recursive-include redsolutioncms/home *
+recursive-include redsolutioncms *.pyt *.cfg *.html *.js *.css 
+exclude *.orig *.pyc

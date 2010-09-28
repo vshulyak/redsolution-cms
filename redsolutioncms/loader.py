@@ -5,6 +5,8 @@ import sys
 import subprocess
 from os.path import join, dirname
 from optparse import OptionParser
+import redsolutioncms
+
 
 # Home dir defined here!
 home_dir = join(os.getenv('HOME'), '.redsolutioncms')
@@ -21,7 +23,7 @@ def install_in_home(flush=True):
             except:
                 print 'Can not write into home dir: %s. Check permissions' % home_dir
                 raise
-        shutil.copytree(join(dirname(__file__), 'home'), home_dir)
+        shutil.copytree(join(dirname(redsolutioncms.__file__), 'home'), home_dir)
     else:
         raise NotImplementedError('Not defined yet')
 
