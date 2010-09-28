@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_syncdb
+from redsolutioncms.loader import home_dir
 
 class BaseSettingsManager(models.Manager):
     def get_settings(self):
@@ -29,7 +30,6 @@ class CMSSettings(BaseSettings):
     ]
 
     initialized = models.BooleanField(verbose_name=_('CMS was initialized'), default=False)
-    cms_dir = models.CharField(verbose_name=_('CMS dir'), max_length=255, default=lambda: abspath(dirname(__file__)))
     project_name = models.CharField(verbose_name=_('Project name'), max_length=50, default='example')
     database_engine = models.CharField(verbose_name=_('Database engine'), max_length=50, choices=DATABASE_ENGINES, default='sqlite3')
     database_name = models.CharField(verbose_name=_('Database name'), max_length=50, default='example.sqlite')
@@ -42,12 +42,6 @@ class CMSSettings(BaseSettings):
     # work with custom index, like this:
     # package_index = 'http://127.0.0.1:8008/simple'
     package_index = None
-    temp_dir = models.CharField(verbose_name=_('CMS temporaqry dir'), max_length=255)
-
-    def __init__(self, *args, **kwds):
-        super(CMSSettings, self).__init__(*args, **kwds)
-        from tempfile import mkdtemp
-        self.temp_dir = mkdtemp(prefix='redsolution_cms')
 
     def render_to(self, file_name, template_name, dictionary=None, mode='a+'):
         """
@@ -88,8 +82,13 @@ class CMSSettings(BaseSettings):
 
     @property
     def project_dir(self):
-        return join(abspath(dirname(dirname(__file__))), self.project_name)
+        raise DeprecationWarning('Project dir is deprecated attribute. Use redsolutioncms.home_dir instead')
+        return home_dir
 
+    @property
+    def temp_dir(self):
+        raise DeprecationWarning('Project dir is deprecated attribute. Use redsolutioncms.home_dir instead')
+        return home_dir
 
 class PackageManager(models.Manager):
     def installed(self):

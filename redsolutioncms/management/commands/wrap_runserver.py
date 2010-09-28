@@ -4,11 +4,12 @@ from redsolutioncms.models import ProcessTask
 import subprocess
 import time
 import os, signal
+from redsolutioncms.loader import home_dir, process_cmd_string
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        ProcessTask.objects.create(task='python redsolutioncms/manage.py runserver --noreload')
+        ProcessTask.objects.create(task=process_cmd_string('%(python)s %(django)s runserver --noreload'))
         self.wrapper()
 
     def wrapper(self):

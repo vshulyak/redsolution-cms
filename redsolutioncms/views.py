@@ -13,6 +13,7 @@ from redsolutioncms.models import CMSSettings, CMSEntryPoint, \
 from redsolutioncms.packages import search_index, install
 import os
 from django.utils.translation import ugettext_lazy as _
+from redsolutioncms.loader import home_dir, process_cmd_string
 
 CONFIG_FILES = ['manage', 'settings', 'urls', ]
 
@@ -42,7 +43,7 @@ def index(request):
     cms_settings = CMSSettings.objects.get_settings()
     cms_settings.initialized = True
     cms_settings.save()
-    cms_settings_class = modelform_factory(CMSSettings, exclude=['cms_dir', 'project_dir', 'initialized'])
+    cms_settings_class = modelform_factory(CMSSettings, exclude=['initialized'])
     if request.method == 'POST':
         form = cms_settings_class(data=request.POST, files=request.FILES, instance=cms_settings)
         if form.is_valid():
@@ -82,10 +83,10 @@ def load(request):
     """
     task = ProcessTask.objects.create(task='bin/django kill_runserver',
         lock=True, wait=True)
-    ProcessTask.objects.create(task='bin/django install_packages', wait=True)
-    ProcessTask.objects.create(task='bin/django change_settings', wait=True)
-    ProcessTask.objects.create(task='python redsolutioncms/manage.py syncdb --noinput', wait=True)
-    ProcessTask.objects.create(task='python redsolutioncms/manage.py runserver --noreload')
+    ProcessTask.objects.create(task=process_cmd_string('%(django)s install_packages'), wait=True)
+    ProcessTask.objects.create(task=process_cmd_string('%(django)s change_settings'), wait=True)
+    ProcessTask.objects.create(task=process_cmd_string('%(django)s syncdb --noinput'), wait=True)
+    ProcessTask.objects.create(task=process_cmd_string('%(django)s runserver --noreload'))
     return render_to_response('redsolutioncms/wait.html', {
         'task_id':task.id,
         'redirect_to': reverse('custom'),
@@ -100,9 +101,11 @@ def restart(request):
     """
     task = ProcessTask.objects.create(task='bin/django kill_runserver',
         lock=True, wait=True)
-    ProcessTask.objects.create(task='bin/django install_packages', wait=True)
-    ProcessTask.objects.create(task='bin/django change_settings', wait=True)
-    ProcessTask.objects.create(task='python redsolutioncms/manage.py syncdb --noinput', wait=True)
+    # Who repeated this code twice?
+    print 'A-HA! try to install packages in restart function!'
+#    ProcessTask.objects.create(task='bin/django install_packages', wait=True)
+#    ProcessTask.objects.create(task='bin/django change_settings', wait=True)
+#    ProcessTask.objects.create(task='python redsolutioncms/manage.py syncdb --noinput', wait=True)
     ProcessTask.objects.create(task='python redsolutioncms/manage.py runserver --noreload')
     task.lock = False
     task.save()
@@ -172,22 +175,26 @@ def cancel_lock(request, task_id):
 
 def build(request):
     cms_settings = CMSSettings.objects.get_settings()
-    task = ProcessTask.objects.create(task='bin/django kill_runserver',
+    task = ProcessTask.objects.create(
+        task=process_cmd_string('%(django)s kill_runserver'),
         lock=True, wait=True)
-    bootstrap_name = os.path.join(cms_settings.project_dir, 'bootstrap.py')
-    buildout_cfg_name = os.path.join(cms_settings.project_dir, 'buildout.cfg')
     ProcessTask.objects.create(
-        task='python %s -c %s' % (bootstrap_name, buildout_cfg_name),
+        task=process_cmd_string('%(python)s bootstrap.py'),
         wait=True)
-    buildout_name = os.path.join(cms_settings.project_dir, 'bin', 'buildout')
     ProcessTask.objects.create(
-        task='%s -c %s' % (buildout_name, buildout_cfg_name), wait=True)
-    django_name = os.path.join(cms_settings.project_dir, 'bin', 'django')
-    ProcessTask.objects.create(
-        task='%s syncdb --noinput' % django_name, wait=True)
-    ProcessTask.objects.create(
-        task='%s runserver --noreload 127.0.0.1:8001' % django_name)
-    ProcessTask.objects.create(task='bin/django runserver --noreload')
+        task=process_cmd_string('%(python)s -c develop.cfg'),
+        wait=True)
+    
+    # Here's a problem. We should chdir to NEW PROJECT DIR, not home_dir
+    # So, I comment out this, I'll fix it soon 
+    # TODO: OMG FIX ME AS SOON AS POSSIBLE
+#    django_name = os.path.join(home_dir, 'bin', 'django')
+#    
+#    ProcessTask.objects.create(
+#        task=process_cmd_string('%(django)s syncdb --noinput'), wait=True)
+#    ProcessTask.objects.create(
+#        task='%s runserver --noreload 127.0.0.1:8001' % django_name)
+#    ProcessTask.objects.create(task='bin/django runserver --noreload')
 
     return render_to_response('redsolutioncms/wait.html',
         {'task_id': task.id, 'redirect_to': reverse('create_superuser'),
@@ -206,6 +213,7 @@ def create_superuser(request):
                 return HttpResponseRedirect(reverse('done'))
             else:
                 import pexpect
+                # TODO: Wrong dir again! Agrhhh!!!
                 child = pexpect.spawn('python %s createsuperuser' % django_name,
                     timeout=3)
                 child.expect("Username.*")
