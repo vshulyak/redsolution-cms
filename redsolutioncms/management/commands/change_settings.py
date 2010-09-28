@@ -9,7 +9,7 @@ import signal
 import sys
 import time
 
-CONFIG_FILES = ['manage', 'settings', 'urls', ]
+CONFIG_FILES = ['extrapath', 'settings', 'urls', ]
 
 class Command(BaseCommand):
 

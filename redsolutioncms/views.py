@@ -5,15 +5,15 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from django.utils.translation import ugettext_lazy as _
 from redsolutioncms.forms import CMSPackagesForm, UserCreationForm
 from redsolutioncms.importpath import importpath
+from redsolutioncms.loader import home_dir, process_cmd_string
 from redsolutioncms.make import AlreadyMadeException
-from redsolutioncms.models import CMSSettings, CMSEntryPoint, \
-    CMSCreatedModel, ProcessTask
+from redsolutioncms.models import CMSSettings, CMSEntryPoint, CMSCreatedModel, \
+    ProcessTask
 from redsolutioncms.packages import search_index, install
 import os
-from django.utils.translation import ugettext_lazy as _
-from redsolutioncms.loader import home_dir, process_cmd_string
 
 CONFIG_FILES = ['manage', 'settings', 'urls', ]
 
@@ -36,30 +36,26 @@ def list_packages():
 
 def index(request):
     """
-    User can set base settings.
-    Shows base settings.
-    Saves base settings.
+    Shows greetings form, base settings form: project name, database settings, etc.
     """
     cms_settings = CMSSettings.objects.get_settings()
     cms_settings.initialized = True
     cms_settings.save()
-    cms_settings_class = modelform_factory(CMSSettings, exclude=['initialized'])
+    SettingsForm = modelform_factory(CMSSettings, exclude=['initialized'])
     if request.method == 'POST':
-        form = cms_settings_class(data=request.POST, files=request.FILES, instance=cms_settings)
+        form = SettingsForm(data=request.POST, files=request.FILES, instance=cms_settings)
         if form.is_valid():
             form.save(commit=True)
             return HttpResponseRedirect(reverse('apps'))
     else:
-        form = cms_settings_class(instance=cms_settings)
+        form = SettingsForm(instance=cms_settings)
     return render_to_response('redsolutioncms/index.html', {
         'form': form,
     }, context_instance=RequestContext(request))
 
 def apps(request):
     """
-    User can select packages.
-    Fetches list of available packages. 
-    Saves settings.
+    Second step. Shows available packages listing.
     """
     list_packages()
     if request.method == 'POST':
@@ -75,13 +71,14 @@ def apps(request):
 
 def load(request):
     """
-    User can wait.
-    Fetches packages. 
+    Show progress indicator, fetch packages from index site.
+    Template has AJAX checker, so user will be redirected to next step automatically.
     Saves installation information for packages.
     Makes settings.py, urls.py, manage.py with installed setup-packages.
     Syncdb for setup-packages.
     """
-    task = ProcessTask.objects.create(task='bin/django kill_runserver',
+    task = ProcessTask.objects.create(
+        task=process_cmd_string('%(django)s kill_runserver'),
         lock=True, wait=True)
     ProcessTask.objects.create(task=process_cmd_string('%(django)s install_packages'), wait=True)
     ProcessTask.objects.create(task=process_cmd_string('%(django)s change_settings'), wait=True)

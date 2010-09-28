@@ -36,4 +36,7 @@ urlpatterns += patterns(
         {'packages': ('django.conf',)}, name='admin_jsi18n'),
 )
 
-#from urls_additional import *
+try:
+    from urls_additional import *
+except ImportError:
+    print 'Can not import urls_additional!'

@@ -84,6 +84,12 @@ DOWNLOAD_EGGS_TO = 'eggs'
 DOWNLOAD_REQUIREMENTS_TO = 'parts'
 
 
+# import extra path for new plugins
+try:
+    from extrapath_additional import *
+except ImportError:
+    print 'Can not import extrapath_additional!'
+
 try:
     from settings_additional import *
 except ImportError:
