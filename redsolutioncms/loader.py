@@ -3,7 +3,8 @@ import os
 import shutil
 import sys
 import subprocess
-from os.path import join, dirname
+from os import remove, listdir
+from os.path import join, dirname, exists
 from optparse import OptionParser
 import redsolutioncms
 
@@ -12,20 +13,24 @@ import redsolutioncms
 home_dir = join(os.getenv('HOME'), '.redsolutioncms')
 project_dir = os.getcwd()
 
-def install_in_home(flush=True):
+def install_in_home():
     '''Copy nessesary files to home folder''' 
-    
-    if flush:
-        # check target dir doesn't exists
-        if os.path.exists(home_dir):
-            try:
-                shutil.rmtree(home_dir)
-            except:
-                print 'Can not write into home dir: %s. Check permissions' % home_dir
-                raise
-        shutil.copytree(join(dirname(redsolutioncms.__file__), 'home'), home_dir)
+    # check target dir doesn't exists
+    if exists(home_dir):
+        # Delete downloaded libraries
+        if exists(join(home_dir, 'eggs')):
+            shutil.rmtree(join(home_dir, 'eggs'))
+        # Delete all files copied from home
+        for filename in listdir(join(dirname(redsolutioncms.__file__), 'home')):
+            path = join(home_dir, filename)
+            if exists(path):
+                remove(path)
     else:
-        raise NotImplementedError('Not defined yet')
+        os.mkdir(home_dir)
+    
+    for filename in listdir(join(dirname(redsolutioncms.__file__), 'home')):
+        src = join(dirname(redsolutioncms.__file__), 'home', filename)
+        shutil.copy(src, home_dir)
 
 def run_cmd(cmd, cmd_dict=None):
     # I splitted this function in two for API usage in CMS task system

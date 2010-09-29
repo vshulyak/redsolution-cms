@@ -1,6 +1,8 @@
 # Django settings for redsolutioncms project.
 
 import os
+from redsolutioncms.loader import home_dir
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -12,7 +14,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = 'cms.sqlite'
+DATABASE_NAME = os.path.join(home_dir, 'cms.sqlite')
 DATABASE_USER = ''
 DATABASE_PASSWORD = ''
 DATABASE_HOST = ''
