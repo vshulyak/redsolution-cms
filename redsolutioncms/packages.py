@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from xmlrpc_urllib2_transport import ProxyTransport
 from django.utils.translation import ugettext as _
+from django.conf import settings
 from zc.buildout import easy_install
 import xmlrpclib
 import os
@@ -31,14 +32,13 @@ def easy_install_package(package_spec):
     except ImportError:
         from ez_setup import main
     try:
-        return main(['--install-dir=%s' % eggs_path, '-i %s' % cms_settings.package_index,
+        return main(['--install-dir=%s' % eggs_path, '-i %s' % settings.PACKAGE_INDEX,
             package_spec])
     except SystemExit:
         pass
 
 def search_index(query):
-    cms_settings = CMSSettings.objects.get_settings()
-    if not cms_settings.package_index or cms_settings.package_index == 'http://pypi.python.org/simple/':
+    if not settings.PACKAGE_INDEX or settings.PACKAGE_INDEX == 'http://pypi.python.org/simple/':
         return search_pypi_xmlrpc(query)
     else:
         # Work with /simple/ index
@@ -46,7 +46,7 @@ def search_index(query):
         proxy_handler = urllib2.ProxyHandler()
         opener = urllib2.build_opener(proxy_handler)
         packages = []
-        for line in opener.open(cms_settings.package_index).readlines():
+        for line in opener.open(settings.PACKAGE_INDEX).readlines():
             # Example:
             # <a href="/simple/redsolutioncms.django-model-url/"/>redsolutioncms.django-model-url</a><br />
             match = re.search('>([\W\w]*)<\/a', line)
@@ -54,25 +54,28 @@ def search_index(query):
             if match:
                 # get versions ...
                 package_name = match.groups()[0]
-                url = cms_settings.package_index + '%s/' % package_name
+                url = settings.PACKAGE_INDEX + '%s/' % package_name
                 versions = set()
                 for version_line in opener.open(url).readlines():
+                    # Example:
+                    # <a href="/media/dists/redsolutioncms.django-seo-0.2.0.tar.gz#md5=3bb1437373cc1ce46a216674db75ffa6">
+                    # redsolutioncms.django-seo-0.2.0.tar.gz</a><br /> 
                     version_match = re.search('>([\W\w]*)<\/a', version_line)
                     if version_match:
                         # 3rd regexp, find version string in link body
                         # *.tar.gz packages
                         targz_version_match = re.search(
-                            '%s-([\d\.\w]+).tar.gz' % package_name, version_match.groups()[0])
+                            '%s-([\d\.\w]+)\.tar\.gz' % package_name, version_match.groups()[0])
                         if targz_version_match:
                             versions.add(targz_version_match.groups()[0])
                         # *.zip packages
                         zip_version_match = re.search(
-                            '%s-([\d\.\w]+).zip' % package_name, version_match.groups()[0])
+                            '%s-([\d\.\w]+)\.zip' % package_name, version_match.groups()[0])
                         if zip_version_match:
                             versions.add(zip_version_match.groups()[0])
                         # python eggs
                         egg_version_match = re.search(
-                            '%s-([\d\.\w]+).py\d.\d.egg' % package_name, version_match.groups()[0])
+                            '%s-([\d\.\w]+)\.py\d\.\d\.egg' % package_name, version_match.groups()[0])
                         if egg_version_match:
                             versions.add(egg_version_match.groups()[0])
 
@@ -80,8 +83,8 @@ def search_index(query):
                 package['summary'] = _('No description')
                 if versions:
                     package['version'] = versions.pop()
-
-                packages.append(package)
+                    # Do not append packages without versions
+                    packages.append(package)
 
         return filter(lambda package: query in package['name'], packages)
 
@@ -108,7 +111,7 @@ def install(modules, path='parts'):
         os.makedirs(path)
 
     return easy_install.install(['%s==%s' % (module_['name'], module_['version'])
-        for module_ in modules], path)
+        for module_ in modules], path, index=settings.PACKAGE_INDEX)
 
 def test():
     print 'Searching module mptt'

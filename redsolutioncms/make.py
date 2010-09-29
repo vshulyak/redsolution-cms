@@ -1,6 +1,7 @@
 import os
 
 from redsolutioncms.models import CMSSettings
+from django.conf import settings
 
 class AlreadyMadeException(Exception):
     """
@@ -61,7 +62,7 @@ class Make(BaseMake):
     def make(self):
         super(Make, self).make()
         cms_settings = CMSSettings.objects.get_settings()
-        cms_settings.render_to(['..', 'buildout.cfg'], 'redsolutioncms/project/buildout.cfg', {}, 'w')
+        cms_settings.render_to(['..', 'buildout.cfg'], 'redsolutioncms/project/buildout.cfg', {'index': settings.PACKAGE_INDEX}, 'w')
         cms_settings.render_to(['..', 'develop.cfg'], 'redsolutioncms/project/develop.cfg', {}, 'w')
         cms_settings.render_to(['..', 'bootstrap.py'], 'redsolutioncms/project/bootstrap.pyt', {}, 'w')
         cms_settings.render_to('__init__.py', 'redsolutioncms/project/__init__.pyt', {}, 'w')
@@ -70,6 +71,7 @@ class Make(BaseMake):
         cms_settings.render_to('settings.py', 'redsolutioncms/project/settings.pyt', {}, 'w')
         cms_settings.render_to('urls.py', 'redsolutioncms/project/urls.pyt', {}, 'w')
         cms_settings.render_to('manage.py', 'redsolutioncms/project/manage.pyt', {}, 'w')
+        # TODO: Add .gitignore
 
         cms_settings.render_to(os.path.join('..', 'templates', '404.html'), 'redsolutioncms/project/templates/404.html', {}, 'w')
         cms_settings.render_to(os.path.join('..', 'templates', '500.html'), 'redsolutioncms/project/templates/500.html', {}, 'w')

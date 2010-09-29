@@ -82,8 +82,11 @@ INSTALLED_APPS = [
     'redsolutioncms',
 ]
 
-DOWNLOAD_EGGS_TO = 'eggs'
-DOWNLOAD_REQUIREMENTS_TO = 'parts'
+# set package_index to None, if you want to work with default PYPI
+# or set to /simple interface of custom package index to 
+# work with custom index, like this:
+# PACKAGE_INDEX = 'http://127.0.0.1:8008/simple'
+PACKAGE_INDEX = 'http://127.0.0.1:8008/simple/'
 
 
 # import extra path for new plugins
