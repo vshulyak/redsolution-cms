@@ -25,6 +25,7 @@ $(document).ready(function(){
     </p>
     <table id="apps">
         {% for field in form %}
+          {% if not field.is_hidden %}
             <tr>
                 <td>
                     <div class="check">{{ field }}{{ field.label_tag }}</div>
@@ -32,8 +33,18 @@ $(document).ready(function(){
                     {% if field.errors %}<div class="errors_text">{{ field.errors }}</div>{% endif %}
                 </td>
             </tr>
+            {% endif %}
         {% endfor %}
     </table>
+    <div class="templates">
+      <h2>{% trans 'Site templates' %}</h2>
+      {{ form.template.errors }}
+      {% for template in cms_settings.packages.templates %}
+        <input id="template_{{ forloop.counter }}" type="radio" name="template" value="{{ template }}" />
+        <label for="template_{{ forloop.counter }}">{{ template }}</label>
+      {% endfor %}
+    </div>
+    
     <input type="button" value="{% trans 'Back' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url index %}';"/>
     <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
 </form>

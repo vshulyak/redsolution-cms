@@ -90,6 +90,25 @@ def install(modules, path='parts'):
     return easy_install.install(['%s==%s' % (module_['name'], module_['version'])
         for module_ in modules], path, index=settings.PACKAGE_INDEX)
 
+def load_package_list():
+    """
+    Creates objects in CMSPackages model for all modules at PYPI
+    """
+    cms_settings = CMSSettings.objects.get_settings()
+    all_packages = search_index('redsolutioncms')
+
+    # Flush old apps?
+    cms_settings.packages.all().delete()
+    for package in all_packages:
+        cms_settings.packages.create(
+            selected=False,
+            package=package['name'],
+            version=package['version'],
+            verbose_name=package['name'].replace('django-', '').replace('redsolutioncms.', ''),
+            description=package['summary'],
+            template='redsolutioncms.template' in package['name'],
+        )
+
 def test():
     print 'Searching module mptt'
     modules = search_index('mptt')

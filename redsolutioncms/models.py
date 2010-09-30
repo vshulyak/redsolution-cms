@@ -88,9 +88,15 @@ class CMSSettings(BaseSettings):
         return home_dir
 
 class PackageManager(models.Manager):
+
     def installed(self):
         return self.get_query_set().filter(installed=True)
 
+    def modules(self):
+        return self.get_query_set().filter(template=False)
+
+    def templates(self):
+        return self.get_query_set().filter(template=True)
 
 class CMSPackage(models.Model):
     class Meta:
@@ -106,6 +112,8 @@ class CMSPackage(models.Model):
     description = models.TextField(verbose_name=_('Description'))
     path = models.CharField(verbose_name=_('Installed to path'), max_length=255, blank=True, null=True)
     installed = models.BooleanField(verbose_name=_('Was successfully installed'), default=False)
+
+    template = models.BooleanField(verbose_name=_('Package is template'), default=False)
 
     objects = PackageManager()
 

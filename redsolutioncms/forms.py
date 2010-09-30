@@ -3,20 +3,31 @@ from django.utils.translation import ugettext_lazy as _
 from redsolutioncms.models import CMSSettings
 
 class CMSPackagesForm(forms.Form):
+    template = forms.CharField(label=_('Template for site'), max_length=100,
+        widget=forms.HiddenInput)
+    
     def __init__(self, *args, **kwargs):
         super(CMSPackagesForm, self).__init__(*args, **kwargs)
 
         cms_settings = CMSSettings.objects.get_settings()
-        for package in cms_settings.packages.all():
+        for package in cms_settings.packages.modules():
             self.fields['package_%d' % package.id] = forms.BooleanField(
                 required=False, label=package.verbose_name, initial=package.selected,
                 help_text=package.description)
-
+    
+#    TODO: Make sure that user selected at least one module
+#    def clean(self):
+#        pass
+    
     def save(self):
         cms_settings = CMSSettings.objects.get_settings()
-        for package in cms_settings.packages.all():
+        for package in cms_settings.packages.modules():
             package.selected = self.cleaned_data['package_%d' % package.id]
             package.save()
+        # select template
+        template_package = cms_settings.packages.get(package=self.cleaned_data['template'])
+        template_package.selected = True
+        template_package.save()
 
 class UserCreationForm(forms.Form):
     username = forms.RegexField(label=_("Username"), max_length=30, regex=r'^\w+$',

@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
@@ -12,28 +12,11 @@ from redsolutioncms.loader import home_dir, process_cmd_string, project_dir
 from redsolutioncms.make import AlreadyMadeException
 from redsolutioncms.models import CMSSettings, CMSEntryPoint, CMSCreatedModel, \
     ProcessTask
-from redsolutioncms.packages import search_index, install
+from redsolutioncms.packages import load_package_list
 import os
 
 CONFIG_FILES = ['manage', 'settings', 'urls', ]
 
-def list_packages():
-    """
-    Creates objects in CMSPackages model for all modules at PYPI
-    """
-    cms_settings = CMSSettings.objects.get_settings()
-    all_packages = search_index('redsolutioncms')
-
-    # Flush old apps?
-    cms_settings.packages.all().delete()
-    for package in all_packages:
-        cms_settings.packages.create(
-            selected=False,
-            package=package['name'],
-            version=package['version'],
-            verbose_name=package['name'].replace('django-', '').replace('redsolutioncms.', ''),
-            description=package['summary']
-        )
 
 def index(request):
     """
@@ -58,7 +41,7 @@ def apps(request):
     """
     Second step. Shows available packages listing.
     """
-    list_packages()
+    load_package_list()
     if request.method == 'POST':
         form = CMSPackagesForm(request.POST, request.FILES)
         if form.is_valid():
@@ -68,6 +51,7 @@ def apps(request):
         form = CMSPackagesForm()
     return render_to_response('redsolutioncms/apps.html', {
         'form': form,
+        'cms_settings': CMSSettings.objects.get_settings()
     }, context_instance=RequestContext(request))
 
 def load(request):
@@ -232,12 +216,14 @@ def started(request, task_id):
     User can`t see it. It will be called by javascript.
     Used to check, whether server is available after restart.
     """
-    task = ProcessTask.objects.get(id=task_id)
+    task = get_object_or_404(ProcessTask, id=task_id)
     if task.process_finished:
         return HttpResponse()
+    else:
+        return HttpResponseNotFound()
 
 def cancel_lock(request, task_id):
-    task = ProcessTask.objects.get(id=task_id)
+    task = get_object_or_404(ProcessTask, id=task_id)
     task.lock = False
     task.save()
     return HttpResponse()
