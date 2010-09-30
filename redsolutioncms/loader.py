@@ -25,6 +25,8 @@ def install_in_home():
             path = join(home_dir, filename)
             if exists(path):
                 remove(path)
+        if exists(join(home_dir, 'cms.sqlite')):
+            remove(join(home_dir, 'cms.sqlite'))
     else:
         os.mkdir(home_dir)
     
@@ -81,10 +83,10 @@ def main():
     if not options.continue_install:
         print '1. Copying files to home dir'
         install_in_home()
-    print '2. Bootstraping'
-    run_cmd('%(python)s %(bootstrap)s')
-    print '3. Building'
-    run_cmd('%(python)s %(buildout)s')
+        print '2. Bootstraping'
+        run_cmd('%(python)s %(bootstrap)s')
+        print '3. Building'
+        run_cmd('%(python)s %(buildout)s')
     print '4. Syncdb'
     run_cmd('%(python)s %(django)s syncdb --noinput')
     print '5. Run wrapper'
