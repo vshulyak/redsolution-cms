@@ -58,7 +58,7 @@ def run_in_home(cmd):
 #    os.chdir(cwd)
 
 
-if __name__ == '__main__':
+def main():
     parser = OptionParser()
     parser.add_option('-c', '--continue', action='store_true', dest='continue_install',
         help="Continue installation, doesn't delete old files", default=False)
@@ -89,3 +89,6 @@ if __name__ == '__main__':
     run_cmd('%(python)s %(django)s syncdb --noinput')
     print '5. Run wrapper'
     run_cmd('%(python)s %(django)s wrap_runserver')
+
+if __name__ == '__main__':
+    main()

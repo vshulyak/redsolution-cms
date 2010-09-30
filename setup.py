@@ -35,5 +35,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
 #    long_description=open('README').read(),
-    scripts = ['redsolutioncms/loader.py'],
+    entry_points = {
+        'console_scripts': ['redsolutioncms=redsolutioncms.loader:main'],
+    },
 )
