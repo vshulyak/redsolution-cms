@@ -82,11 +82,11 @@ INSTALLED_APPS = [
     'redsolutioncms',
 ]
 
-# set package_index to None, if you want to work with default PYPI
+# set CUSTOM_PACKAGE_INDEX to None, if you want to work with default PYPI
 # or set to /simple interface of custom package index to 
 # work with custom index, like this:
-# PACKAGE_INDEX = 'http://127.0.0.1:8008/simple'
-PACKAGE_INDEX = None
+# CUSTOM_PACKAGE_INDEX = 'http://127.0.0.1:8008/simple'
+CUSTOM_PACKAGE_INDEX = None
 
 
 # import extra path for new plugins

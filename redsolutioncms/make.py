@@ -62,7 +62,7 @@ class Make(BaseMake):
     def make(self):
         super(Make, self).make()
         cms_settings = CMSSettings.objects.get_settings()
-        cms_settings.render_to(['..', 'buildout.cfg'], 'redsolutioncms/project/buildout.cfg', {'index': settings.PACKAGE_INDEX}, 'w')
+        cms_settings.render_to(['..', 'buildout.cfg'], 'redsolutioncms/project/buildout.cfg', {'index': settings.CUSTOM_PACKAGE_INDEX}, 'w')
         cms_settings.render_to(['..', 'develop.cfg'], 'redsolutioncms/project/develop.cfg', {}, 'w')
         cms_settings.render_to(['..', 'bootstrap.py'], 'redsolutioncms/project/bootstrap.pyt', {}, 'w')
         cms_settings.render_to('__init__.py', 'redsolutioncms/project/__init__.pyt', {}, 'w')

@@ -15,7 +15,7 @@ def search_pypi_xmlrpc(query):
     return client.search({'name': query})
 
 def search_index(query):
-    if not settings.PACKAGE_INDEX or settings.PACKAGE_INDEX == 'http://pypi.python.org/simple/':
+    if not settings.CUSTOM_PACKAGE_INDEX or settings.CUSTOM_PACKAGE_INDEX == 'http://pypi.python.org/simple/':
         return search_pypi_xmlrpc(query)
     else:
         # Work with /simple/ index
@@ -23,7 +23,7 @@ def search_index(query):
         proxy_handler = urllib2.ProxyHandler()
         opener = urllib2.build_opener(proxy_handler)
         packages = []
-        for line in opener.open(settings.PACKAGE_INDEX).readlines():
+        for line in opener.open(settings.CUSTOM_PACKAGE_INDEX).readlines():
             # Example:
             # <a href="/simple/redsolutioncms.django-model-url/"/>redsolutioncms.django-model-url</a><br />
             match = re.search('>([\W\w]*)<\/a', line)
@@ -31,7 +31,7 @@ def search_index(query):
             if match:
                 # get versions ...
                 package_name = match.groups()[0]
-                url = settings.PACKAGE_INDEX + '%s/' % package_name
+                url = settings.CUSTOM_PACKAGE_INDEX + '%s/' % package_name
                 versions = set()
                 for version_line in opener.open(url).readlines():
                     # Example:
@@ -88,7 +88,7 @@ def install(modules, path='parts'):
         os.makedirs(path)
 
     return easy_install.install(['%s==%s' % (module_['name'], module_['version'])
-        for module_ in modules], path, index=settings.PACKAGE_INDEX)
+        for module_ in modules], path, index=settings.CUSTOM_PACKAGE_INDEX)
 
 def load_package_list():
     """
