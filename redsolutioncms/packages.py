@@ -23,45 +23,48 @@ def search_index(query):
         proxy_handler = urllib2.ProxyHandler()
         opener = urllib2.build_opener(proxy_handler)
         packages = []
+        link_pattern = re.compile('.*<a.*href=[\'"](?P<href>.*)[\'"].*>(?P<text>[\W\w]*)</a>.*')
         for line in opener.open(settings.CUSTOM_PACKAGE_INDEX).readlines():
             # Example:
-            # <a href="/simple/redsolutioncms.django-model-url/"/>redsolutioncms.django-model-url</a><br />
-            match = re.search('>([\W\w]*)<\/a', line)
-            package = {}
+            # <a href="/simple/redsolutioncms.django-model-url/">redsolutioncms.django-model-url</a><br />
+            match = re.match(link_pattern, line)
             if match:
-                # get versions ...
-                package_name = match.groups()[0]
-                url = settings.CUSTOM_PACKAGE_INDEX + '%s/' % package_name
-                versions = set()
-                for version_line in opener.open(url).readlines():
-                    # Example:
-                    # <a href="/media/dists/redsolutioncms.django-seo-0.2.0.tar.gz#md5=3bb1437373cc1ce46a216674db75ffa6">
-                    # redsolutioncms.django-seo-0.2.0.tar.gz</a><br /> 
-                    version_match = re.search('>([\W\w]*)<\/a', version_line)
-                    if version_match:
-                        # 3rd regexp, find version string in link body
-                        # *.tar.gz packages
-                        targz_version_match = re.search(
-                            '%s-([\d\.\w]+)\.tar\.gz' % package_name, version_match.groups()[0])
-                        if targz_version_match:
-                            versions.add(targz_version_match.groups()[0])
-                        # *.zip packages
-                        zip_version_match = re.search(
-                            '%s-([\d\.\w]+)\.zip' % package_name, version_match.groups()[0])
-                        if zip_version_match:
-                            versions.add(zip_version_match.groups()[0])
-                        # python eggs
-                        egg_version_match = re.search(
-                            '%s-([\d\.\w]+)\.py\d\.\d\.egg' % package_name, version_match.groups()[0])
-                        if egg_version_match:
-                            versions.add(egg_version_match.groups()[0])
-
-                package['name'] = package_name
-                package['summary'] = _('No description')
-                if versions:
-                    package['version'] = versions.pop()
-                    # Do not append packages without versions
-                    packages.append(package)
+                href, text = match.groups()
+                if query in text:
+                    package = {}
+                    package['name'] = text
+                    package['summary'] = _('No description')
+                    
+                    # Go and find out package versions and screenshots
+                    url = settings.CUSTOM_PACKAGE_INDEX + '/%s/' % package['name']
+                    versions = set()
+                    
+                    for hyperlink in opener.open(url).readlines():
+                        # Example:
+                        # <a href="/media/dists/redsolutioncms.django-seo-0.2.0.tar.gz#md5=3bb1437373cc1ce46a216674db75ffa6">
+                        # redsolutioncms.django-seo-0.2.0.tar.gz</a><br />
+                        match = re.match(link_pattern, hyperlink)
+                        if match:
+                            href, text = match.groups()
+                            print href, text
+                            version_match = re.match(
+                                '.*%s-(?P<version>[\d\.\w]+)(?P<extension>\.tar\.gz|\.zip|\.py\d\.\d\.egg)'
+                                % package['name'], href)
+                            if version_match:
+                                versions.add(version_match.groupdict()['version'])
+                            screenshot_match = re.match('(?P<filepath>.+)(?P<extension>\.png|\.jpg|\.gif)', href)
+                            if screenshot_match:
+                                # If image hosts on PYPI (relative link)
+                                if 'http://' not in href:
+                                    index_root = settings.CUSTOM_PACKAGE_INDEX.replace('/simple', '')
+                                    href = index_root + href
+                                    
+                                package['screenshot'] = href
+    
+                    if versions:
+                        package['version'] = versions.pop()
+                        # Do not append packages without versions
+                        packages.append(package)
 
         return filter(lambda package: query in package['name'], packages)
 
@@ -107,6 +110,7 @@ def load_package_list():
             verbose_name=package['name'].replace('django-', '').replace('redsolutioncms.', ''),
             description=package['summary'],
             template='redsolutioncms.template' in package['name'],
+            screenshot=package.get('screenshot'),
         )
 
 def test():

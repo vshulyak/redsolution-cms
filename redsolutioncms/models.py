@@ -114,6 +114,7 @@ class CMSPackage(models.Model):
     installed = models.BooleanField(verbose_name=_('Was successfully installed'), default=False)
 
     template = models.BooleanField(verbose_name=_('Package is template'), default=False)
+    screenshot = models.URLField(verbose_name=_('Screenshot preview URL'), null=True)
 
     objects = PackageManager()
 

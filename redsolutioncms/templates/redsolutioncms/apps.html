@@ -41,7 +41,11 @@ $(document).ready(function(){
       {{ form.template.errors }}
       {% for template in cms_settings.packages.templates %}
         <input id="template_{{ forloop.counter }}" type="radio" name="template" value="{{ template }}" />
-        <label for="template_{{ forloop.counter }}">{{ template }}</label>
+        <label for="template_{{ forloop.counter }}">
+          {% if template.screenshot %}
+            <img width="200px" height="200px"  alt='{{ template }} screenshot' src="{{ template.screenshot }}" />
+          {% endif %}
+          {{ template }}</label><br />
       {% endfor %}
     </div>
     
