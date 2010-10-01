@@ -69,12 +69,12 @@ def load(request):
     Syncdb for setup-packages.
     """
     task = ProcessTask.objects.create(
-        task=process_cmd_string('%(django)s kill_runserver'),
+        task=process_cmd_string('"%(django)s" kill_runserver'),
         lock=True, wait=True)
-    ProcessTask.objects.create(task=process_cmd_string('%(django)s install_packages'), wait=True)
-    ProcessTask.objects.create(task=process_cmd_string('%(django)s change_settings'), wait=True)
-    ProcessTask.objects.create(task=process_cmd_string('%(django)s syncdb --noinput'), wait=True)
-    ProcessTask.objects.create(task=process_cmd_string('%(django)s runserver --noreload'))
+    ProcessTask.objects.create(task=process_cmd_string('"%(django)s" install_packages'), wait=True)
+    ProcessTask.objects.create(task=process_cmd_string('"%(django)s" change_settings'), wait=True)
+    ProcessTask.objects.create(task=process_cmd_string('"%(django)s" syncdb --noinput'), wait=True)
+    ProcessTask.objects.create(task=process_cmd_string('"%(django)s" runserver --noreload'))
     return render_to_response('redsolutioncms/wait.html', {
         'task_id':task.id,
         'redirect_to': reverse('custom'),
@@ -128,7 +128,7 @@ def custom(request):
 def build(request):
     cms_settings = CMSSettings.objects.get_settings()
     task = ProcessTask.objects.create(
-        task=process_cmd_string('%(django)s kill_runserver'),
+        task=process_cmd_string('"%(django)s" kill_runserver'),
         lock=True, wait=True)
     
     project_params = {
@@ -139,19 +139,19 @@ def build(request):
 
 
     ProcessTask.objects.create(
-        task=process_cmd_string('%(python)s %(project_bootstrap)s', project_params),
+        task=process_cmd_string('"%(python)s" "%(project_bootstrap)s" -c "%(buildout_cfg)s"', project_params),
         wait=True)
     ProcessTask.objects.create(
-        task=process_cmd_string('%(python)s %(project_buildout)s -c develop.cfg', project_params),
+        task=process_cmd_string('"%(python)s" "%(project_buildout)s" -c "%(buildout_cfg)s"', project_params),
         wait=True)
     ProcessTask.objects.create(
-        task=process_cmd_string('%(project_django)s syncdb --noinput', project_params),
+        task=process_cmd_string('"%(project_django)s" syncdb --noinput', project_params),
         wait=True)
     ProcessTask.objects.create(
-        task=process_cmd_string('%(project_django)s runserver 8001 --noreload', 
+        task=process_cmd_string('"%(project_django)s" runserver 8001 --noreload', 
         project_params))
     ProcessTask.objects.create(
-        task=process_cmd_string('%(django)s runserver --noreload'))
+        task=process_cmd_string('"%(django)s" runserver --noreload'))
 
     return render_to_response('redsolutioncms/wait.html',
         {'task_id': task.id, 'redirect_to': reverse('create_superuser'),
@@ -210,9 +210,9 @@ def restart(request):
     """
     Ajax view. Restarts runserver
     """
-    task = ProcessTask.objects.create(task=process_cmd_string('%(django)s kill_runserver'),
+    task = ProcessTask.objects.create(task=process_cmd_string('"%(django)s" kill_runserver'),
         lock=True, wait=True)
-    ProcessTask.objects.create(task=process_cmd_string('%(django)s runserver --noreload'))
+    ProcessTask.objects.create(task=process_cmd_string('"%(django)s" runserver --noreload'))
     task.lock = False
     task.save()
     return HttpResponse()

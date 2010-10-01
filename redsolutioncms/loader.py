@@ -42,11 +42,11 @@ def run_cmd(cmd, cmd_dict=None):
 def process_cmd_string(cmd, cmd_dict=None):
     if cmd_dict is None:
         cmd_dict = {}
-    buildout_cfg = join(home_dir, 'buildout.cfg')
     default_dict = {
         'python': sys.executable,
-        'bootstrap': join(home_dir, 'bootstrap.py -c %s' % buildout_cfg),
-        'buildout': join(home_dir, 'bin', 'buildout -c %s' % buildout_cfg),
+        'buildout_cfg': join(home_dir, 'buildout.cfg'),
+        'bootstrap': join(home_dir, 'bootstrap.py'),
+        'buildout': join(home_dir, 'bin', 'buildout'),
         'django': join(home_dir, 'bin', 'django'),
     }
     cmd_dict.update(default_dict)
@@ -75,6 +75,7 @@ def main():
         print 'home_dir=%s' % home_dir
         print 'project_dir=%s' % project_dir
         print process_cmd_string('python: %(python)s')
+        print process_cmd_string('buildout_cfg: %(buildout_cfg)s')
         print process_cmd_string('bootstrap: %(bootstrap)s')
         print process_cmd_string('bulidout: %(buildout)s')
         print process_cmd_string('django: %(django)s')
@@ -84,13 +85,13 @@ def main():
         print '1. Copying files to home dir'
         install_in_home()
         print '2. Bootstraping'
-        run_cmd('%(python)s %(bootstrap)s')
+        run_cmd('"%(python)s" "%(bootstrap)s" -c "%(buildout_cfg)s"')
         print '3. Building'
-        run_cmd('%(python)s %(buildout)s')
+        run_cmd('"%(python)s" "%(buildout)s" -c "%(buildout_cfg)s"')
     print '4. Syncdb'
-    run_cmd('%(python)s %(django)s syncdb --noinput')
+    run_cmd('"%(python)s" "%(django)s" syncdb --noinput')
     print '5. Run wrapper'
-    run_cmd('%(python)s %(django)s wrap_runserver')
+    run_cmd('"%(python)s" "%(django)s" wrap_runserver')
 
 if __name__ == '__main__':
     main()
