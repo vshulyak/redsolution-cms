@@ -41,7 +41,13 @@ def apps(request):
     """
     Second step. Shows available packages listing.
     """
-    load_package_list()
+    from urllib2 import HTTPError
+    try:
+        load_package_list()
+    except HTTPError:
+        return render_to_response('redsolutioncms/error.html', {
+            'error': _('Htttp problem with index server'),
+        })
     if request.method == 'POST':
         form = CMSPackagesForm(request.POST, request.FILES)
         if form.is_valid():

@@ -1,0 +1,13 @@
+{% extends "redsolutioncms/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2>{% trans 'SUDDENLY!' %}</h2>
+<p>
+{% trans "Suddenly, you see an error in CMS. This situation souldn't appears if everything going fine." %}
+<br />
+{% trans 'So, something going wrong' %}:</p>
+<ul class="errorlist">
+    <li>{{ error }}</li>
+</div>
+{% endblock %}
