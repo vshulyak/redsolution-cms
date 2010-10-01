@@ -133,16 +133,17 @@ def build(request):
     
     project_params = {
         'project_bootstrap': os.path.join(project_dir, 'bootstrap.py'),
+        'project_buildout_cfg': os.path.join(project_dir, 'buildout.cfg'),
         'project_buildout': os.path.join(project_dir, 'bin', 'buildout'),
         'project_django': os.path.join(project_dir, 'bin', 'django'),            
     }
 
 
     ProcessTask.objects.create(
-        task=process_cmd_string('"%(python)s" "%(project_bootstrap)s" -c "%(buildout_cfg)s"', project_params),
+        task=process_cmd_string('"%(python)s" "%(project_bootstrap)s" -c "%(project_buildout_cfg)s"', project_params),
         wait=True)
     ProcessTask.objects.create(
-        task=process_cmd_string('"%(python)s" "%(project_buildout)s" -c "%(buildout_cfg)s"', project_params),
+        task=process_cmd_string('"%(project_buildout)s" -c "%(project_buildout_cfg)s"', project_params),
         wait=True)
     ProcessTask.objects.create(
         task=process_cmd_string('"%(project_django)s" syncdb --noinput', project_params),

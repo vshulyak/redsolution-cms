@@ -10,7 +10,10 @@ import redsolutioncms
 
 
 # Home dir defined here!
-home_dir = join(os.getenv('HOME'), '.redsolutioncms')
+if os.sys.platform == 'win32':
+    home_dir = join(os.getenv('USERPROFILE'), '.redsolutioncms')
+else:
+    home_dir = join(os.getenv('HOME'), '.redsolutioncms')
 project_dir = os.getcwd()
 
 def install_in_home():
@@ -56,7 +59,7 @@ def run_in_home(cmd):
     # run python boostrap.py from home installation dir 
     cwd = os.getcwd()
 #    os.chdir(home_dir)
-    subprocess.call(cmd, shell=True)
+    subprocess.call(cmd, shell=(os.sys.platform != 'win32'))
 #    os.chdir(cwd)
 
 
@@ -87,11 +90,11 @@ def main():
         print '2. Bootstraping'
         run_cmd('"%(python)s" "%(bootstrap)s" -c "%(buildout_cfg)s"')
         print '3. Building'
-        run_cmd('"%(python)s" "%(buildout)s" -c "%(buildout_cfg)s"')
+        run_cmd('"%(buildout)s" -c "%(buildout_cfg)s"')
     print '4. Syncdb'
-    run_cmd('"%(python)s" "%(django)s" syncdb --noinput')
+    run_cmd('"%(django)s" syncdb --noinput')
     print '5. Run wrapper'
-    run_cmd('"%(python)s" "%(django)s" wrap_runserver')
+    run_cmd('"%(django)s" wrap_runserver')
 
 if __name__ == '__main__':
     main()
