@@ -9,65 +9,80 @@ from redsolutioncms.models import CMSSettings
 import urllib2
 import re
 
+PYPI_INDEX = 'http://pypi.python.org/simple'
+
 
 def search_pypi_xmlrpc(query):
     client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi', transport=ProxyTransport())
     return client.search({'name': query})
 
+def get_package_info(package_name, package_index_url=PYPI_INDEX):
+    proxy_handler = urllib2.ProxyHandler()
+    opener = urllib2.build_opener(proxy_handler)
+    link_pattern = re.compile('.*<a.*href=[\'"](?P<href>.*?)[\'"].*>(?P<text>[\W\w]*)</a>.*')
+
+    package = {}
+    package['name'] = package_name
+    package['summary'] = _('No description')
+    # Go and find out package versions and screenshots
+    url = package_index_url + '/%s/' % package_name
+    versions = set()
+    for hyperlink in opener.open(url).readlines():
+        # Example:
+        # <a href="/media/dists/redsolutioncms.django-seo-0.2.0.tar.gz#md5=3bb1437373cc1ce46a216674db75ffa6">
+        # redsolutioncms.django-seo-0.2.0.tar.gz</a><br />
+        match = re.match(link_pattern, hyperlink)
+        if match:
+            href, text = match.groups()
+            print '-----------'
+            print 'original=', hyperlink
+            print 'href=', href
+            print 'text=', text
+            version_match = re.match(
+                '.*%s-(?P<version>[\d\.\w]+)(?P<extension>\.tar\.gz|\.zip|\.py\d\.\d\.egg)' % package['name'], href)
+            if version_match:
+                versions.add(version_match.groupdict()['version'])
+            screenshot_match = re.match('(?P<filepath>.+)(?P<extension>\.png|\.jpg|\.gif)', href)
+            if screenshot_match:
+                # If image hosts on PYPI (relative link)
+                if 'http://' not in href:
+                    index_root = package_index_url.replace('/simple', '')
+                    href = index_root + href
+                package['screenshot'] = href
+
+    if versions:
+        package['version'] = versions.pop()
+        # Do not append packages without versions
+        return package
+
 def search_index(query):
-    if not settings.CUSTOM_PACKAGE_INDEX or settings.CUSTOM_PACKAGE_INDEX == 'http://pypi.python.org/simple/':
-        return search_pypi_xmlrpc(query)
-    else:
+    packages = []
+    if getattr(settings, 'CUSTOM_PACKAGE_INDEX', None):
         # Work with /simple/ index
         # http proxy issue
         proxy_handler = urllib2.ProxyHandler()
         opener = urllib2.build_opener(proxy_handler)
-        packages = []
-        link_pattern = re.compile('.*<a.*href=[\'"](?P<href>.*)[\'"].*>(?P<text>[\W\w]*)</a>.*')
+        query_pattern = re.compile(
+            '.*<a.*href=[\'"](?P<href>.*?)[\'"].*>(?P<text>[\w\.\-]*%s[\w\.\-]*)</a>.*'
+             % query)
+
         for line in opener.open(settings.CUSTOM_PACKAGE_INDEX).readlines():
             # Example:
             # <a href="/simple/redsolutioncms.django-model-url/">redsolutioncms.django-model-url</a><br />
-            match = re.match(link_pattern, line)
+            match = re.match(query_pattern, line)
             if match:
                 href, text = match.groups()
-                if query in text:
-                    package = {}
-                    package['name'] = text
-                    package['summary'] = _('No description')
-                    
-                    # Go and find out package versions and screenshots
-                    url = settings.CUSTOM_PACKAGE_INDEX + '/%s/' % package['name']
-                    versions = set()
-                    
-                    for hyperlink in opener.open(url).readlines():
-                        # Example:
-                        # <a href="/media/dists/redsolutioncms.django-seo-0.2.0.tar.gz#md5=3bb1437373cc1ce46a216674db75ffa6">
-                        # redsolutioncms.django-seo-0.2.0.tar.gz</a><br />
-                        match = re.match(link_pattern, hyperlink)
-                        if match:
-                            href, text = match.groups()
-                            print href, text
-                            version_match = re.match(
-                                '.*%s-(?P<version>[\d\.\w]+)(?P<extension>\.tar\.gz|\.zip|\.py\d\.\d\.egg)'
-                                % package['name'], href)
-                            if version_match:
-                                versions.add(version_match.groupdict()['version'])
-                            screenshot_match = re.match('(?P<filepath>.+)(?P<extension>\.png|\.jpg|\.gif)', href)
-                            if screenshot_match:
-                                # If image hosts on PYPI (relative link)
-                                if 'http://' not in href:
-                                    index_root = settings.CUSTOM_PACKAGE_INDEX.replace('/simple', '')
-                                    href = index_root + href
-                                    
-                                package['screenshot'] = href
-    
-                    if versions:
-                        package['version'] = versions.pop()
-                        # Do not append packages without versions
-                        packages.append(package)
+                package = get_package_info(text, settings.CUSTOM_PACKAGE_INDEX)
+                if package:
+                    packages.append(package)
+    else:
+        packages = search_pypi_xmlrpc(query)
+        for package in packages:
+            info = get_package_info(package['name'], PYPI_INDEX)
+            if info and info.get('screenshot'):
+                package['screenshot'] = info['screenshot']
 
-        return filter(lambda package: query in package['name'], packages)
-
+    return packages
 
 def install(modules, path='parts'):
     '''
