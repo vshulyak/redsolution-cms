@@ -34,10 +34,6 @@ def get_package_info(package_name, package_index_url=PYPI_INDEX):
         match = re.match(link_pattern, hyperlink)
         if match:
             href, text = match.groups()
-            print '-----------'
-            print 'original=', hyperlink
-            print 'href=', href
-            print 'text=', text
             version_match = re.match(
                 '.*%s-(?P<version>[\d\.\w]+)(?P<extension>\.tar\.gz|\.zip|\.py\d\.\d\.egg)' % package['name'], href)
             if version_match:
@@ -106,7 +102,7 @@ def install(modules, path='parts'):
         os.makedirs(path)
 
     return easy_install.install(['%s==%s' % (module_['name'], module_['version'])
-        for module_ in modules], path, index=settings.CUSTOM_PACKAGE_INDEX)
+        for module_ in modules], path, index=getattr(settings, 'CUSTOM_PACKAGE_INDEX', None))
 
 def load_package_list():
     """
