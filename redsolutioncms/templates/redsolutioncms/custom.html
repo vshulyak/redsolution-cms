@@ -15,9 +15,9 @@
             </tr>
         {% endfor %}
     </table>
-    <a href="{% url apps %}" class="button-link floated-button">{% trans 'Back' %}</a>
     
     {{ frontpage_form.as_p }}
+    <a href="{% url apps %}" class="button-link floated-button">{% trans 'Back' %}</a>
     <input type="submit" value="{% trans 'Make' %}" class="input-bg floated-button" />
 </form>
 {% endblock %}

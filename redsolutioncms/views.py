@@ -129,9 +129,11 @@ def custom(request):
                 except AlreadyMadeException:
                     pass
             return HttpResponseRedirect(reverse('build'))
+    else:
+        frontpage_form = FrontpageForm()
     return render_to_response('redsolutioncms/custom.html', {
         'cms_settings': cms_settings,
-        'frontpage_form': FrontpageForm(),
+        'frontpage_form': frontpage_form,
     }, context_instance=RequestContext(request))
 
 def build(request):
