@@ -5,7 +5,7 @@ from redsolutioncms.models import CMSSettings
 class CMSPackagesForm(forms.Form):
     template = forms.CharField(label=_('Template for site'), max_length=100,
         widget=forms.HiddenInput)
-    
+
     def __init__(self, *args, **kwargs):
         super(CMSPackagesForm, self).__init__(*args, **kwargs)
 
@@ -14,11 +14,11 @@ class CMSPackagesForm(forms.Form):
             self.fields['package_%d' % package.id] = forms.BooleanField(
                 required=False, label=package.verbose_name, initial=package.selected,
                 help_text=package.description)
-    
+
 #    TODO: Make sure that user selected at least one module
 #    def clean(self):
 #        pass
-    
+
     def save(self):
         cms_settings = CMSSettings.objects.get_settings()
         for package in cms_settings.packages.modules():
@@ -28,6 +28,27 @@ class CMSPackagesForm(forms.Form):
         template_package = cms_settings.packages.get(package=self.cleaned_data['template'])
         template_package.selected = True
         template_package.save()
+
+
+class FrontpageForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(FrontpageForm, self).__init__(*args, **kwargs)
+        self.fields['frontpage'] = forms.ChoiceField(
+            label=_('Choose frontpage handler'),
+            choices=self.get_fronpage_handlers(),
+        )
+
+    def get_fronpage_handlers(self):
+        installed_packages = CMSSettings.objects.get_settings().packages.installed()
+        handlers = []
+        for package in installed_packages:
+            for entry_point in package.entry_points.frontpage_handlers():
+                handlers.append((entry_point.module, package.verbose_name),)
+        return handlers
+
+    def get_frontpage_handler_id(self):
+        return self.cleaned_data['frontpage']
 
 class UserCreationForm(forms.Form):
     username = forms.RegexField(label=_("Username"), max_length=30, regex=r'^\w+$',

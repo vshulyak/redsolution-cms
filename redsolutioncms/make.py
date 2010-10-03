@@ -14,12 +14,18 @@ class BaseMake(object):
     You MUST call super method before any action in overridden functions.
     Functions can raise ``AlreadyMadeException`` if function was already called. 
     """
+    # In customizing apps view user has selected frontpage handler.
+    # this variable can be set to True in that view
+    frontpage = None
 
     def __init__(self):
         """
         Create make object.
         """
         self.flush()
+
+    def make_frontpage_handler(self):
+        self.frontpage = True
 
     def flush(self):
         """

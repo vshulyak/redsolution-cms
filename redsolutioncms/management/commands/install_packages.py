@@ -54,16 +54,26 @@ def load_packages():
                 except ImportError:
                     installed = False
                     break
+                # Interactive setup feature
                 try:
                     importpath(entry_point.module_name + '.urls')
                 except ImportError:
                     has_urls = False
                 else:
                     has_urls = True
+                # Frontpage handler feature
+                try:
+                    importpath(entry_point.module_name + '.frontpage_handler')
+                except ImportError:
+                    frontpage_handler = False
+                else:
+                    frontpage_handler = True
+
                 CMSEntryPoint.objects.create(
                     package=package,
                     module=entry_point.module_name,
-                    has_urls=has_urls)
+                    has_urls=has_urls,
+                    frontpage_handler=frontpage_handler)
 
         package.installed = installed
         package.save()

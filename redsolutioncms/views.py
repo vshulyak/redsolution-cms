@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
-from redsolutioncms.forms import CMSPackagesForm, UserCreationForm
+from redsolutioncms.forms import CMSPackagesForm, UserCreationForm, FrontpageForm
 from redsolutioncms.importpath import importpath
 from redsolutioncms.loader import home_dir, process_cmd_string, project_dir
 from redsolutioncms.make import AlreadyMadeException
@@ -92,37 +92,46 @@ def custom(request):
         entry_points = ['redsolutioncms']
         cms_settings.base_template = 'base_template.html'
         cms_settings.save()
-        for package in cms_settings.packages.installed():
-            for entry_point in package.entry_points.all():
-                entry_points.append(entry_point.module)
-        make_objects = []
-        for entry_point in entry_points:
-            try:
-                make_object = importpath('.'.join([entry_point, 'make', 'make']))
-            except ImportError, error:
-                print 'Entry point %s has no make object.' % entry_point
-                continue
-            make_objects.append(make_object)
-        for make_object in make_objects:
-            make_object.flush()
-        for make_object in make_objects:
-            try:
-                make_object.premake()
-            except AlreadyMadeException:
-                pass
-        for make_object in make_objects:
-            try:
-                make_object.make()
-            except AlreadyMadeException:
-                pass
-        for make_object in make_objects:
-            try:
-                make_object.postmake()
-            except AlreadyMadeException:
-                pass
-        return HttpResponseRedirect(reverse('build'))
+        # handle frontpage
+        frontpage_form = FrontpageForm(request.POST)
+        if frontpage_form.is_valid():
+            frontpage = frontpage_form.get_frontpage_handler_id()
+            for package in cms_settings.packages.installed():
+                for entry_point in package.entry_points.all():
+                    entry_points.append(entry_point.module)
+            make_objects = []
+            for entry_point in entry_points:
+                try:
+                    make_object = importpath('.'.join([entry_point, 'make', 'make']))
+                except ImportError, error:
+                    print 'Entry point %s has no make object.' % entry_point
+                    continue
+                else:
+                    if entry_point == frontpage:
+                        make_object.make_frontpage_handler()
+                    make_objects.append(make_object)
+
+            for make_object in make_objects:
+                make_object.flush()
+            for make_object in make_objects:
+                try:
+                    make_object.premake()
+                except AlreadyMadeException:
+                    pass
+            for make_object in make_objects:
+                try:
+                    make_object.make()
+                except AlreadyMadeException:
+                    pass
+            for make_object in make_objects:
+                try:
+                    make_object.postmake()
+                except AlreadyMadeException:
+                    pass
+            return HttpResponseRedirect(reverse('build'))
     return render_to_response('redsolutioncms/custom.html', {
         'cms_settings': cms_settings,
+        'frontpage_form': FrontpageForm(),
     }, context_instance=RequestContext(request))
 
 def build(request):
@@ -130,12 +139,12 @@ def build(request):
     task = ProcessTask.objects.create(
         task=process_cmd_string('"%(django)s" kill_runserver'),
         lock=True, wait=True)
-    
+
     project_params = {
         'project_bootstrap': os.path.join(project_dir, 'bootstrap.py'),
         'project_buildout_cfg': os.path.join(project_dir, 'buildout.cfg'),
         'project_buildout': os.path.join(project_dir, 'bin', 'buildout'),
-        'project_django': os.path.join(project_dir, 'bin', 'django'),            
+        'project_django': os.path.join(project_dir, 'bin', 'django'),
     }
 
 
@@ -149,7 +158,7 @@ def build(request):
         task=process_cmd_string('"%(project_django)s" syncdb --noinput', project_params),
         wait=True)
     ProcessTask.objects.create(
-        task=process_cmd_string('"%(project_django)s" runserver 8001 --noreload', 
+        task=process_cmd_string('"%(project_django)s" runserver 8001 --noreload',
         project_params))
     ProcessTask.objects.create(
         task=process_cmd_string('"%(django)s" runserver --noreload'))

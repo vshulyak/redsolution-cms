@@ -125,10 +125,14 @@ class EntryPointManager(models.Manager):
     def has_urls(self):
         return self.get_query_set().filter(has_urls=True)
 
+    def frontpage_handlers(self):
+        return self.get_query_set().filter(frontpage_handler=True)
+
 class CMSEntryPoint(models.Model):
     package = models.ForeignKey(CMSPackage, related_name='entry_points')
     module = models.CharField(verbose_name=_('Module name'), max_length=255)
     has_urls = models.BooleanField(verbose_name=_('Has urls'))
+    frontpage_handler = models.BooleanField(verbose_name=_('Can handle frontpage'))
 
     objects = EntryPointManager()
 
