@@ -25,7 +25,8 @@ def index(request):
     cms_settings = CMSSettings.objects.get_settings()
     cms_settings.initialized = True
     cms_settings.save()
-    SettingsForm = modelform_factory(CMSSettings, exclude=['initialized', 'frontpage_handler'])
+    SettingsForm = modelform_factory(CMSSettings, exclude=['initialized',
+        'frontpage_handler', 'base_template'])
     if request.method == 'POST':
         form = SettingsForm(data=request.POST, files=request.FILES, instance=cms_settings)
         if form.is_valid():
