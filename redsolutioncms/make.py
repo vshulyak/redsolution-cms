@@ -2,6 +2,8 @@ import os
 
 from redsolutioncms.models import CMSSettings
 from django.conf import settings
+from random import choice
+
 
 class AlreadyMadeException(Exception):
     """
@@ -71,7 +73,9 @@ class Make(BaseMake):
         cms_settings.render_to('__init__.py', 'redsolutioncms/project/__init__.pyt', {}, 'w')
         cms_settings.render_to('development.py', 'redsolutioncms/project/development.pyt', {}, 'w')
         cms_settings.render_to('production.py', 'redsolutioncms/project/production.pyt', {}, 'w')
-        cms_settings.render_to('settings.py', 'redsolutioncms/project/settings.pyt', {}, 'w')
+        cms_settings.render_to('settings.py', 'redsolutioncms/project/settings.pyt', {
+            'secret': ''.join([choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
+        }, 'w')
         cms_settings.render_to('urls.py', 'redsolutioncms/project/urls.pyt', {}, 'w')
         cms_settings.render_to('manage.py', 'redsolutioncms/project/manage.pyt', {}, 'w')
         # TODO: Add .gitignore

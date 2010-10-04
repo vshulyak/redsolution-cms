@@ -39,7 +39,7 @@ UPLOAD_URL = MEDIA_URL + UPLOAD_DIR
 
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 
-SECRET_KEY = 'i*1gdd^(gvx70fb0d5*6!q7^a7r^)=mf)ip+i07%v*lj+=ir@l' # Fix me
+SECRET_KEY = {{ secret }}
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
