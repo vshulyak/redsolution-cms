@@ -10,8 +10,7 @@ handler500
 admin.autodiscover()
 urlpatterns = patterns('')
 
-sitemaps = {
-}
+sitemaps = {}
 
 if settings.DEBUG:
     pass
@@ -23,5 +22,8 @@ urlpatterns += patterns('',
 
 urlpatterns += patterns('',
     (r'^admin/', include(admin.site.urls)),
-    (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
 )
+
+#------------------------------------------------------------------------------
+#                       Custom applicaitons urls
+#------------------------------------------------------------------------------
