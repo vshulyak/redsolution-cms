@@ -23,6 +23,5 @@ urlpatterns += patterns('',
 
 urlpatterns += patterns('',
     (r'^admin/', include(admin.site.urls)),
-    (r'^robots.txt$', 'django.views.generic.simple.direct_to_template', {'template': 'robots.txt', 'mimetype': 'text/plain'}),
     (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
 )
