@@ -25,7 +25,7 @@ def index(request):
     cms_settings = CMSSettings.objects.get_settings()
     cms_settings.initialized = True
     cms_settings.save()
-    SettingsForm = modelform_factory(CMSSettings, exclude=['initialized'])
+    SettingsForm = modelform_factory(CMSSettings, exclude=['initialized', 'frontpage_handler'])
     if request.method == 'POST':
         form = SettingsForm(data=request.POST, files=request.FILES, instance=cms_settings)
         if form.is_valid():
@@ -95,7 +95,7 @@ def custom(request):
         # handle frontpage
         frontpage_form = FrontpageForm(request.POST)
         if frontpage_form.is_valid():
-            frontpage = frontpage_form.get_frontpage_handler_id()
+            frontpage_form.save()
             for package in cms_settings.packages.installed():
                 for entry_point in package.entry_points.all():
                     entry_points.append(entry_point.module)
@@ -107,8 +107,6 @@ def custom(request):
                     print 'Entry point %s has no make object.' % entry_point
                     continue
                 else:
-                    if entry_point == frontpage:
-                        make_object.make_frontpage_handler()
                     make_objects.append(make_object)
 
             for make_object in make_objects:

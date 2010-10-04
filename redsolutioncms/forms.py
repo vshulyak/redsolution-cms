@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from redsolutioncms.models import CMSSettings
+from redsolutioncms.models import CMSSettings, CMSEntryPoint
 
 class CMSPackagesForm(forms.Form):
     template = forms.CharField(label=_('Template for site'), max_length=100,
@@ -47,9 +47,13 @@ class FrontpageForm(forms.Form):
                 handlers.append((entry_point.module, package.verbose_name),)
         return handlers
 
-    def get_frontpage_handler_id(self):
-        return self.cleaned_data['frontpage']
-
+    def save(self):
+        '''Write frontpage setting to global CMS settings'''
+        entry_point = CMSEntryPoint.objects.get(module=self.cleaned_data['frontpage'])
+        cms_settings = CMSSettings.objects.get_settings()
+        cms_settings.frontpage_handler = entry_point
+        cms_settings.save()
+    
 class UserCreationForm(forms.Form):
     username = forms.RegexField(label=_("Username"), max_length=30, regex=r'^\w+$',
         help_text=_("Required. 30 characters or fewer. Alphanumeric characters only (letters, digits and underscores)."),

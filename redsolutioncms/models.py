@@ -37,7 +37,8 @@ class CMSSettings(BaseSettings):
     database_password = models.CharField(verbose_name=_('Database password'), max_length=50, blank=True, default='')
     database_host = models.CharField(verbose_name=_('Database host'), max_length=50, blank=True, default='')
     database_port = models.IntegerField(verbose_name=_('Database port'), blank=True, null=True)
-
+    frontpage_handler = models.ForeignKey('CMSEntryPoint', related_name='settings', null=True)
+    
     def render_to(self, file_name, template_name, dictionary=None, mode='a+'):
         """
         ``file_name`` is relative path to destination file.
