@@ -90,5 +90,6 @@ class Make(BaseMake):
         super(Make, self).postmake()
         cms_settings = CMSSettings.objects.get_settings()
         cms_settings.render_to(os.path.join('..', 'templates', 'base.html'), 'redsolutioncms/project/templates/base.html', {}, 'w')
+        cms_settings.render_to('urls.py', 'redsolutioncms/project/sitemaps.pyt')
 
 make = Make()
