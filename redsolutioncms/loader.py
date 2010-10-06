@@ -30,9 +30,13 @@ def install_in_home():
                 remove(path)
         if exists(join(home_dir, 'cms.sqlite')):
             remove(join(home_dir, 'cms.sqlite'))
+        # delete *.pyc files
+        for filename in listdir(home_dir):
+            if '.pyc' in filename:
+                remove(join(home_dir, filename))
     else:
         os.mkdir(home_dir)
-    
+
     for filename in listdir(join(dirname(redsolutioncms.__file__), 'home')):
         src = join(dirname(redsolutioncms.__file__), 'home', filename)
         shutil.copy(src, home_dir)
