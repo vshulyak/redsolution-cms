@@ -32,7 +32,7 @@ class CMSSettings(BaseSettings):
     initialized = models.BooleanField(verbose_name=_('CMS was initialized'), default=False)
     project_name = models.CharField(verbose_name=_('Project name'), max_length=50, default='myproject')
     database_engine = models.CharField(verbose_name=_('Database engine'), max_length=50, choices=DATABASE_ENGINES, default='sqlite3')
-    database_name = models.CharField(verbose_name=_('Database name'), max_length=50, default='example.sqlite')
+    database_name = models.CharField(verbose_name=_('Database name'), max_length=50, default='myproject.sqlite')
     database_user = models.CharField(verbose_name=_('Database user'), max_length=50, blank=True, default='')
     database_password = models.CharField(verbose_name=_('Database password'), max_length=50, blank=True, default='')
     database_host = models.CharField(verbose_name=_('Database host'), max_length=50, blank=True, default='')
