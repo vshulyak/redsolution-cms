@@ -101,6 +101,7 @@ def install(modules, path='parts'):
     if not os.path.exists(path):
         os.makedirs(path)
 
+    # TODO: If traceback risen here, installation of the all package list fails
     return easy_install.install(['%s==%s' % (module_['name'], module_['version'])
         for module_ in modules], path, index=getattr(settings, 'CUSTOM_PACKAGE_INDEX', None))
 
