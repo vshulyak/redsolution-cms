@@ -14,5 +14,6 @@ python {{ bootstrap }}
     </pre>
     <input type="button" value="{% trans 'Back' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url custom %}';"/>
     <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
+    <input type="button" value="{% trans 'Skip' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url done %}';"/>
 </form>
 {% endblock %}
