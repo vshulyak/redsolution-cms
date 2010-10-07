@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-07 00:45+0600\n"
+"POT-Creation-Date: 2010-10-08 00:56+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: IVAN GROMOV <SRC@REDSOLUTION.RU>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,8 +42,7 @@ msgstr "Имя пользователя"
 msgid ""
 "Required. 30 characters or fewer. Alphanumeric characters only (letters, "
 "digits and underscores)."
-msgstr ""
-"Обязательно ввести не более 30 символов (латиница, цифры и подчерки) "
+msgstr "Обязательно ввести не более 30 символов (латиница, цифры и подчерки) "
 
 #: forms.py:60
 msgid "This value must contain only letters, numbers and underscores."
@@ -197,7 +196,9 @@ msgstr "Это имя пользователя уже занято"
 msgid "Home"
 msgstr "Домой"
 
-#: templates/admin/change_form.html:19
+#: templates/admin/change_form.html:19 templates/redsolutioncms/apps.html:24
+#: templates/redsolutioncms/custom.html:7 templates/redsolutioncms/done.html:7
+#: templates/redsolutioncms/index.html:7
 msgid "Application list"
 msgstr "Список модулей"
 
@@ -211,9 +212,8 @@ msgid_plural "Please correct the errors below."
 msgstr[0] "Пожалуйста, исправьте следующую ошибку"
 msgstr[1] "Пожалуйста, исправьте следующие ошибки"
 
-#: templates/admin/change_form.html:51 templates/redsolutioncms/apps.html:52
-#: templates/redsolutioncms/build.html:15
-#: templates/redsolutioncms/custom.html:20
+#: templates/admin/change_form.html:51 templates/redsolutioncms/apps.html:62
+#: templates/redsolutioncms/custom.html:30
 msgid "Back"
 msgstr "Назад"
 
@@ -221,51 +221,82 @@ msgstr "Назад"
 msgid "Save"
 msgstr "Сохранить"
 
-#: templates/redsolutioncms/apps.html:40
+#: templates/redsolutioncms/apps.html:23
+#: templates/redsolutioncms/custom.html:6 templates/redsolutioncms/done.html:6
+#: templates/redsolutioncms/index.html:6
+msgid "Start"
+msgstr "Пуск"
+
+#: templates/redsolutioncms/apps.html:25
+#: templates/redsolutioncms/custom.html:8 templates/redsolutioncms/done.html:8
+#: templates/redsolutioncms/index.html:8
+#, fuzzy
+msgid "Site configuration"
+msgstr "Подтверждение пароля"
+
+#: templates/redsolutioncms/apps.html:26
+#: templates/redsolutioncms/custom.html:9 templates/redsolutioncms/done.html:9
+#: templates/redsolutioncms/index.html:9
+msgid "Creating superuser"
+msgstr "Создание администратора"
+
+#: templates/redsolutioncms/apps.html:33
+#, fuzzy
+msgid "Select"
+msgstr "Выбрать"
+
+#: templates/redsolutioncms/apps.html:33
+msgid "all"
+msgstr "все"
+
+#: templates/redsolutioncms/apps.html:34
+msgid "none"
+msgstr "ни одного"
+
+#: templates/redsolutioncms/apps.html:50
 msgid "Site templates"
 msgstr "Шаблоны сайтов"
 
-#: templates/redsolutioncms/apps.html:53
-#: templates/redsolutioncms/build.html:16
-#: templates/redsolutioncms/index.html:9
+#: templates/redsolutioncms/apps.html:63
+#: templates/redsolutioncms/index.html:18
 msgid "Next"
 msgstr "Далее"
 
-#: templates/redsolutioncms/build.html:9
-msgid "Now we ready to initialize your project. To do it we will execute:"
-msgstr "Теперь всё готово для старта проекта. Чтобы сделать это, выполните:"
-
-#: templates/redsolutioncms/custom.html:7
+#: templates/redsolutioncms/custom.html:17
 msgid "Packages"
 msgstr "Пакеты"
 
-#: templates/redsolutioncms/custom.html:7
+#: templates/redsolutioncms/custom.html:17
 msgid "Settings"
 msgstr "Настройки"
 
-#: templates/redsolutioncms/custom.html:13
+#: templates/redsolutioncms/custom.html:23
 msgid "Settings for"
 msgstr "Настройки для"
 
-#: templates/redsolutioncms/custom.html:21
+#: templates/redsolutioncms/custom.html:31
 msgid "Make"
 msgstr "Собрать"
 
-#: templates/redsolutioncms/done.html:5
+#: templates/redsolutioncms/done.html:15
 msgid "Now to create super user please call:"
 msgstr "Для создания учётной записи администратора выполните:"
 
-#: templates/redsolutioncms/done.html:10
+#: templates/redsolutioncms/done.html:20
 msgid "Then run project:"
 msgstr "Затем запустите проект:"
 
-#: templates/redsolutioncms/done.html:15
+#: templates/redsolutioncms/done.html:25
 msgid "Then your project will be available at: "
 msgstr "Ваш проект будет доступен по адресу: "
 
-#: templates/redsolutioncms/done.html:16
+#: templates/redsolutioncms/done.html:26
 msgid "Your admin will be available at: "
 msgstr "Административный раздел будет доступен по адресу: "
+
+#: templates/redsolutioncms/done.html:29
+msgid "Go to admin your site"
+msgstr "Перейти к работе с сайтом"
 
 #: templates/redsolutioncms/error.html:5
 msgid "SUDDENLY!"
@@ -276,14 +307,18 @@ msgid ""
 "Suddenly, you see an error in CMS. This situation souldn't appears if "
 "everything going fine."
 msgstr ""
-"Внезапно, вы встретились с ошибкой в CMS. Эта ситуация не должна была возникнуть"
-"если бы всё работало хорошо"
+"Внезапно, вы встретились с ошибкой в CMS. Эта ситуация не должна была "
+"возникнуть, если бы всё работало хорошо"
 
 #: templates/redsolutioncms/error.html:9
 msgid "So, something going wrong"
 msgstr "Стало быть, что-то не так"
 
-#: templates/redsolutioncms/wait.html:33
+#: templates/redsolutioncms/wait.html:6
+msgid "Redirect pending"
+msgstr "Ожидаю перенаправления"
+
+#: templates/redsolutioncms/wait.html:40
 msgid "Wait please..."
 msgstr "Прошу, подождите..."
 
@@ -294,3 +329,6 @@ msgstr "Страница не найдена"
 #: templates/redsolutioncms/project/templates/500.html:8
 msgid "Error"
 msgstr "Ошибка"
+
+#~ msgid "Now we ready to initialize your project. To do it we will execute:"
+#~ msgstr "Теперь всё готово для старта проекта. Чтобы сделать это, выполните:"
