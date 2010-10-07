@@ -18,10 +18,20 @@ $(document).ready(function(){
 
 {% endblock %}
 
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="/">{% trans 'Start' %}</a> » 
+<strong>{% trans 'Application list' %}</strong> »
+{% trans 'Site configuration' %} »
+{% trans 'Creating superuser' %}
+</div>
+{% endblock %}
+
+
 {% block content %}
 <form method="post" enctype="multipart/form-data" action="">
-    <p>Select <a href="#" link="self" id="select_all"> all</a>
-    <a href="#" link="self" id="select_none"> none</a>
+    <p>{% trans 'Select' %} <a href="#" link="self" id="select_all"> {% trans 'all' %}</a>
+    <a href="#" link="self" id="select_none">{% trans 'none' %}</a>
     </p>
     <table id="apps">
         {% for field in form %}

@@ -1,6 +1,15 @@
 {% extends "redsolutioncms/base.html" %}
 {% load i18n %}
 
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="/">{% trans 'Start' %}</a> »
+{% trans 'Application list' %} »
+{% trans 'Site configuration' %} »
+{% trans 'Creating superuser' %}
+</div>
+{% endblock %}
+
 {% block content %}
     <form method="post" enctype="multipart/form-data" action="">
         <table id="start">

@@ -42,10 +42,10 @@ def apps(request):
     """
     Second step. Shows available packages listing.
     """
-    from urllib2 import HTTPError
+    from urllib2 import HTTPError, URLError
     try:
         load_package_list()
-    except HTTPError:
+    except (HTTPError, URLError):
         return render_to_response('redsolutioncms/error.html', {
             'error': _('Htttp problem with index server'),
         })
