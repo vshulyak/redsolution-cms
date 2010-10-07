@@ -1,12 +1,26 @@
 # -*- coding: utf-8 -*-
 import os
-from os.path import abspath, join, dirname
+import shutil
+from os.path import abspath, join, dirname, isdir, isfile, exists
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_syncdb
 from redsolutioncms.loader import home_dir, project_dir
+
+# utility
+def merge_dirs(src, dst):
+    '''Recursive merge directories'''
+    for root, dirs, files in os.walk(src):
+        for file in files:
+            shutil.copy(
+                join(root, file),
+                join(dst, root.replace(src, ''))
+            )
+        for dir in dirs:
+            if not exists(join(dst, root.replace(src, ''), dir)):
+                os.mkdir(join(dst, root.replace(src, ''), dir))
 
 class BaseSettingsManager(models.Manager):
     def get_settings(self):
@@ -69,6 +83,35 @@ class CMSSettings(BaseSettings):
         value = render_to_string(template_name, dictionary)
         value = value.encode('utf-8')
         open(file_name, mode).write(value)
+
+    def copy_to(self, dst, src, merge=False):
+        """
+        If ``src`` is regular file, copy it in ``dst`` file or ``dst`` dir.
+        If ``src`` is directory, ``dst`` must be directory or must not exist.
+        If ``dst`` dir exists, merge or replace it with ``src`` content, 
+        depending on ``merge`` argument
+        
+        Example:
+        cms_settings.copy_to(os.path.join(project_media, 'img'), path_to_images)
+        """
+        print 'copy', src, 'to', dst
+
+        # first, check ``src``
+        if isfile(src):
+            shutil.copy(src, dst)
+        if isdir(src):
+            if exists(dst):
+                if isdir(dst):
+                    if not merge:
+                        shutil.rmtree(dst)
+                        shutil.copytree(src, dst)
+                    else:
+                        merge_dirs(src, dst)
+                else:
+                    raise IOError('Error: ``dst`` is not dir')
+            else:
+                shutil.copytree(src, dst)
+
 
     def package_was_installed(self, package_name):
         return package_name in self.installed_packages

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-08 00:56+0600\n"
+"POT-Creation-Date: 2010-10-08 02:36+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: IVAN GROMOV <SRC@REDSOLUTION.RU>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,115 +64,115 @@ msgstr "Электропочта"
 msgid "The two password fields didn't match."
 msgstr "Два пароля не совпадают"
 
-#: models.py:32
+#: models.py:46
 msgid "CMS was initialized"
 msgstr "CMS инициализирована"
 
-#: models.py:33
+#: models.py:47
 msgid "Project name"
 msgstr "Название проекта"
 
-#: models.py:34
+#: models.py:48
 msgid "Database engine"
 msgstr "База данных"
 
-#: models.py:35
+#: models.py:49
 msgid "Database name"
 msgstr "Имя базы данных"
 
-#: models.py:36
+#: models.py:50
 msgid "Database user"
 msgstr "Имя пользователя базы данных"
 
-#: models.py:37
+#: models.py:51
 msgid "Database password"
 msgstr "Пароль к базе данных"
 
-#: models.py:38
+#: models.py:52
 msgid "Database host"
 msgstr "Хост базы данных"
 
-#: models.py:39
+#: models.py:53
 msgid "Database port"
 msgstr "Порт базы данных"
 
-#: models.py:40
+#: models.py:54
 msgid "Base template"
 msgstr "Базовый шаблон"
 
-#: models.py:110
+#: models.py:153
 msgid "Selected"
 msgstr "Выбран"
 
-#: models.py:111
+#: models.py:154
 msgid "Package"
 msgstr "Пакет"
 
-#: models.py:112
+#: models.py:155
 msgid "Package version"
 msgstr "Версия пакета"
 
-#: models.py:113
+#: models.py:156
 msgid "Verbose name"
 msgstr "Длинное название"
 
-#: models.py:114
+#: models.py:157
 msgid "Description"
 msgstr "Описание"
 
-#: models.py:115
+#: models.py:158
 msgid "Installed to path"
 msgstr "Установлен по пути"
 
-#: models.py:116
+#: models.py:159
 msgid "Was successfully installed"
 msgstr "Успешно установлен(ы)"
 
-#: models.py:118
+#: models.py:161
 msgid "Package is template"
 msgstr "Пакет является шаблоном"
 
-#: models.py:119
+#: models.py:162
 msgid "Screenshot preview URL"
 msgstr "Адрес предпросмотра"
 
-#: models.py:135
+#: models.py:178
 msgid "Module name"
 msgstr "Имя модуля"
 
-#: models.py:136
+#: models.py:179
 msgid "Has urls"
 msgstr "Настраиваемый"
 
-#: models.py:137
+#: models.py:180
 msgid "Can handle frontpage"
 msgstr "Есть обработчик главной страницы"
 
-#: models.py:145
+#: models.py:188
 msgid "Name"
 msgstr "Имя"
 
-#: models.py:151
+#: models.py:194
 msgid "task"
 msgstr "задача"
 
-#: models.py:152
+#: models.py:195
 msgid "process pid"
 msgstr "pid процесса"
 
-#: models.py:153
+#: models.py:196
 msgid "task inactive"
 msgstr "задача неактивна"
 
-#: models.py:154
+#: models.py:197
 msgid "task executed"
 msgstr "задача выполнена"
 
-#: models.py:155
+#: models.py:198
 msgid "process finished"
 msgstr "процесс завершен"
 
-#: models.py:156
+#: models.py:199
 msgid "wait finish"
 msgstr "жду завершения"
 
@@ -197,6 +197,7 @@ msgid "Home"
 msgstr "Домой"
 
 #: templates/admin/change_form.html:19 templates/redsolutioncms/apps.html:24
+#: templates/redsolutioncms/build.html:7
 #: templates/redsolutioncms/custom.html:7 templates/redsolutioncms/done.html:7
 #: templates/redsolutioncms/index.html:7
 msgid "Application list"
@@ -213,6 +214,7 @@ msgstr[0] "Пожалуйста, исправьте следующую ошиб�
 msgstr[1] "Пожалуйста, исправьте следующие ошибки"
 
 #: templates/admin/change_form.html:51 templates/redsolutioncms/apps.html:62
+#: templates/redsolutioncms/build.html:24
 #: templates/redsolutioncms/custom.html:30
 msgid "Back"
 msgstr "Назад"
@@ -221,20 +223,20 @@ msgstr "Назад"
 msgid "Save"
 msgstr "Сохранить"
 
-#: templates/redsolutioncms/apps.html:23
+#: templates/redsolutioncms/apps.html:23 templates/redsolutioncms/build.html:6
 #: templates/redsolutioncms/custom.html:6 templates/redsolutioncms/done.html:6
 #: templates/redsolutioncms/index.html:6
 msgid "Start"
 msgstr "Пуск"
 
-#: templates/redsolutioncms/apps.html:25
+#: templates/redsolutioncms/apps.html:25 templates/redsolutioncms/build.html:8
 #: templates/redsolutioncms/custom.html:8 templates/redsolutioncms/done.html:8
 #: templates/redsolutioncms/index.html:8
 #, fuzzy
 msgid "Site configuration"
-msgstr "Подтверждение пароля"
+msgstr "Настройка сайта"
 
-#: templates/redsolutioncms/apps.html:26
+#: templates/redsolutioncms/apps.html:26 templates/redsolutioncms/build.html:9
 #: templates/redsolutioncms/custom.html:9 templates/redsolutioncms/done.html:9
 #: templates/redsolutioncms/index.html:9
 msgid "Creating superuser"
@@ -258,9 +260,18 @@ msgid "Site templates"
 msgstr "Шаблоны сайтов"
 
 #: templates/redsolutioncms/apps.html:63
+#: templates/redsolutioncms/build.html:25
 #: templates/redsolutioncms/index.html:18
 msgid "Next"
 msgstr "Далее"
+
+#: templates/redsolutioncms/build.html:18
+msgid "Now we ready to initialize your project. To do it we will execute:"
+msgstr "Теперь всё готово для старта проекта. Чтобы сделать это, выполните:"
+
+#: templates/redsolutioncms/build.html:26
+msgid "Skip"
+msgstr "Пропустить"
 
 #: templates/redsolutioncms/custom.html:17
 msgid "Packages"
@@ -329,6 +340,3 @@ msgstr "Страница не найдена"
 #: templates/redsolutioncms/project/templates/500.html:8
 msgid "Error"
 msgstr "Ошибка"
-
-#~ msgid "Now we ready to initialize your project. To do it we will execute:"
-#~ msgstr "Теперь всё готово для старта проекта. Чтобы сделать это, выполните:"
