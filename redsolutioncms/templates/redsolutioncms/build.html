@@ -1,6 +1,15 @@
 {% extends "redsolutioncms/base.html" %}
 {% load i18n %}
 
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="/">{% trans 'Start' %}</a> »
+<a href="{% url apps %}">{% trans 'Application list' %}</a> »
+<a href="{% url custom %}">{% trans 'Site configuration' %}</a> »
+<strong>{% trans 'Creating superuser' %}</strong>
+</div>
+{% endblock %}
+
 {% block content %}
 <form method="post" enctype="multipart/form-data" action="">
     <table>
@@ -14,5 +23,6 @@ python {{ bootstrap }}
     </pre>
     <input type="button" value="{% trans 'Back' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url custom %}';"/>
     <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
+    <input type="button" value="{% trans 'Skip' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url done %}';"/>
 </form>
 {% endblock %}
