@@ -25,7 +25,7 @@ DATABASE_PASSWORD = '{{ cms_settings.database_password }}'
 DATABASE_HOST = '{{ cms_settings.database_host }}'
 DATABASE_PORT = '{{ cms_settings.database_port }}'
 
-TIME_ZONE = 'Asia/Yekaterinburg' # Fix me
+TIME_ZONE = None
 
 LANGUAGE_CODE = 'ru' # Fix me
 

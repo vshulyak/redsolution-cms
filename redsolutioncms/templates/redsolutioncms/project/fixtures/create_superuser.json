@@ -1,0 +1,1 @@
+[{"pk": 1, "model": "auth.user", "fields": {"username": "{{ username }}", "first_name": "", "last_name": "", "is_active": true, "is_superuser": true, "is_staff": true, "last_login": "{{ current_datetime }}", "groups": [], "user_permissions": [], "password": "{{ password }}", "email": "{{ email }}", "date_joined": "{{ current_datetime }}"}}]
