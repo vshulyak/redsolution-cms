@@ -13,14 +13,16 @@ from redsolutioncms.loader import home_dir, project_dir
 def merge_dirs(src, dst):
     '''Recursive merge directories'''
     for root, dirs, files in os.walk(src):
+        rel_path = root.replace(src, '')
+        rel_path = rel_path.lstrip(os.path.sep)
         for file in files:
             shutil.copy(
                 join(root, file),
-                join(dst, root.replace(src, ''))
+                join(dst, rel_path)
             )
         for dir in dirs:
-            if not exists(join(dst, root.replace(src, ''), dir)):
-                os.mkdir(join(dst, root.replace(src, ''), dir))
+            if not exists(join(dst, rel_path, dir)):
+                os.mkdir(join(dst, rel_path, dir))
 
 class BaseSettingsManager(models.Manager):
     def get_settings(self):
