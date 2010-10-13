@@ -45,14 +45,22 @@ class CMSSettings(BaseSettings):
         ('oracle', 'oracle',),
     ]
 
+    project_name = models.CharField(verbose_name=_('Project name'),
+        max_length=50, default='myproject', help_text=_('Invent a project name'))
+    database_engine = models.CharField(verbose_name=_('Database engine'),
+        max_length=50, choices=DATABASE_ENGINES, default='sqlite3')
+    database_name = models.CharField(verbose_name=_('Database name'),
+        max_length=50, default='myproject.sqlite', help_text=_('In case of sqlite3, database filename'))
+    database_user = models.CharField(verbose_name=_('Database user'),
+        max_length=50, blank=True, default='', help_text=_('Not used with sqlite3'))
+    database_password = models.CharField(verbose_name=_('Database password'),
+        max_length=50, blank=True, default='', help_text=_('Not used with sqlite3'))
+    database_host = models.CharField(verbose_name=_('Database host'),
+        max_length=50, blank=True, default='', help_text=_('Not used with sqlite3'))
+    database_port = models.IntegerField(verbose_name=_('Database port'),
+        blank=True, null=True, help_text=_('Not used with sqlite3'))
+    # hidden fields
     initialized = models.BooleanField(verbose_name=_('CMS was initialized'), default=False)
-    project_name = models.CharField(verbose_name=_('Project name'), max_length=50, default='myproject')
-    database_engine = models.CharField(verbose_name=_('Database engine'), max_length=50, choices=DATABASE_ENGINES, default='sqlite3')
-    database_name = models.CharField(verbose_name=_('Database name'), max_length=50, default='myproject.sqlite')
-    database_user = models.CharField(verbose_name=_('Database user'), max_length=50, blank=True, default='')
-    database_password = models.CharField(verbose_name=_('Database password'), max_length=50, blank=True, default='')
-    database_host = models.CharField(verbose_name=_('Database host'), max_length=50, blank=True, default='')
-    database_port = models.IntegerField(verbose_name=_('Database port'), blank=True, null=True)
     base_template = models.CharField(verbose_name=_('Base template'), max_length=50, blank=True, default='')
     frontpage_handler = models.ForeignKey('CMSEntryPoint', related_name='settings', null=True)
 
