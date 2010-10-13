@@ -68,9 +68,6 @@ class Make(BaseMake):
         cms_settings = CMSSettings.objects.get_settings()
         cms_settings.render_to(['..', 'buildout.cfg'], 'redsolutioncms/project/buildout.cfg',
             {'index': getattr(settings, 'CUSTOM_PACKAGE_INDEX', None)}, 'w')
-        cms_settings.render_to(['..', 'develop.cfg'], 'redsolutioncms/project/develop.cfg', {}, 'w')
-        cms_settings.render_to(['..', 'bootstrap.py'], 'redsolutioncms/project/bootstrap.pyt', {}, 'w')
-        cms_settings.render_to('__init__.py', 'redsolutioncms/project/__init__.pyt', {}, 'w')
         cms_settings.render_to('development.py', 'redsolutioncms/project/development.pyt', {}, 'w')
         cms_settings.render_to('production.py', 'redsolutioncms/project/production.pyt', {}, 'w')
         cms_settings.render_to('settings.py', 'redsolutioncms/project/settings.pyt', {
@@ -78,13 +75,35 @@ class Make(BaseMake):
         }, 'w')
         cms_settings.render_to('urls.py', 'redsolutioncms/project/urls.pyt', {}, 'w')
         cms_settings.render_to('manage.py', 'redsolutioncms/project/manage.pyt', {}, 'w')
-        # TODO: Add .gitignore
-
         cms_settings.render_to(os.path.join('..', 'templates', '404.html'), 'redsolutioncms/project/templates/404.html', {}, 'w')
         cms_settings.render_to(os.path.join('..', 'templates', '500.html'), 'redsolutioncms/project/templates/500.html', {}, 'w')
+#===============================================================================
+# Static templates
+#===============================================================================
+        redsolutioncms_templates_dir = os.path.join(os.path.dirname(__file__),
+            'templates', 'redsolutioncms', 'project')
 
-        cms_settings.render_to(os.path.join('..', 'media', 'css', 'base.css'), 'redsolutioncms/project/media/css/base.css', {}, 'w')
-        cms_settings.render_to(os.path.join('..', 'media', 'css', 'style.css'), 'redsolutioncms/project/media/css/style.css', {}, 'w')
+        cms_settings.copy_to(
+            os.path.join(cms_settings.project_dir, 'develop.cfg',),
+            os.path.join(redsolutioncms_templates_dir, 'develop.cfg'),
+        )
+        cms_settings.copy_to(
+            os.path.join(cms_settings.project_dir, 'bootstrap.py',),
+            os.path.join(redsolutioncms_templates_dir, 'bootstrap.pyt'),
+        )
+        cms_settings.copy_to(
+            os.path.join(cms_settings.project_dir, '.gitignore',),
+            os.path.join(redsolutioncms_templates_dir, 'gitignore'),
+        )
+        cms_settings.copy_to(
+            os.path.join(cms_settings.project_dir, cms_settings.project_name, '__init__.py',),
+            os.path.join(redsolutioncms_templates_dir, '__init__.pyt'),
+        )
+        cms_settings.copy_to(
+            os.path.join(cms_settings.project_dir, 'media'),
+            os.path.join(redsolutioncms_templates_dir, 'media'),
+            merge=True
+        )
 
     def postmake(self):
         super(Make, self).postmake()

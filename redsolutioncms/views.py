@@ -166,10 +166,12 @@ def build(request):
     ProcessTask.objects.create(
         task=process_cmd_string('"%(django)s" runserver --noreload'))
 
-    return render_to_response('redsolutioncms/wait.html',
-        {'task_id': task.id, 'redirect_to': reverse('create_superuser'),
-            'start_task_id':task.id},
-         context_instance=RequestContext(request))
+    return render_to_response('redsolutioncms/wait.html', {
+        'task_id': task.id,
+        'redirect_to': reverse('create_superuser'),
+        'start_task_id':task.id,
+        'title': _('Building your site'),
+    }, context_instance=RequestContext(request))
 
 def create_superuser(request):
     cms_settings = CMSSettings.objects.get_settings()
@@ -177,7 +179,7 @@ def create_superuser(request):
         form = UserCreationForm(data=request.POST, files=request.FILES)
         if form.is_valid():
             password = form.cleaned_data['password1']
-            user=User.objects.model(username='generate_password')
+            user = User.objects.model(username='generate_password')
             user.set_password(password)
             current_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             context = {
@@ -192,8 +194,8 @@ def create_superuser(request):
                 'create_superuser.json'), 'w').write(data)
             django_name = os.path.join(project_dir, 'bin', 'django')
             subprocess.Popen([django_name, 'loaddata',
-                os.path.join(project_dir,'create_superuser.json')]).wait()
-            os.remove(os.path.join(project_dir,'create_superuser.json'))
+                os.path.join(project_dir, 'create_superuser.json')]).wait()
+            os.remove(os.path.join(project_dir, 'create_superuser.json'))
             return HttpResponseRedirect(reverse('done'))
     else:
         form = UserCreationForm()

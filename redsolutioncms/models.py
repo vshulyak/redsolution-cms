@@ -96,7 +96,6 @@ class CMSSettings(BaseSettings):
         Example:
         cms_settings.copy_to(os.path.join(project_media, 'img'), path_to_images)
         """
-        print 'copy', src, 'to', dst
 
         # first, check ``src``
         if isfile(src):
