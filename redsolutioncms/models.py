@@ -94,8 +94,10 @@ class CMSSettings(BaseSettings):
         value = value.encode('utf-8')
         open(file_name, mode).write(value)
 
-    def copy_to(self, dst, src, merge=False):
+    def copy_to(self, dst, src, merge=False, mode='wb'):
         """
+        Deprecated. Use ``copy_dir`` or ``copy_file`` instead.
+        Copies directory or file with mergig directories capability.
         If ``src`` is regular file, copy it in ``dst`` file or ``dst`` dir.
         If ``src`` is directory, ``dst`` must be directory or must not exist.
         If ``dst`` dir exists, merge or replace it with ``src`` content, 
@@ -104,22 +106,51 @@ class CMSSettings(BaseSettings):
         Example:
         cms_settings.copy_to(os.path.join(project_media, 'img'), path_to_images)
         """
+        import warnings
+        warnings.warn('Deprecated. Use ``copy_dir`` or ``copy_file`` instead.')
 
         # first, check ``src``
         if isfile(src):
-            shutil.copy(src, dst)
+            self.copy_file(dst, src, mode)
         if isdir(src):
-            if exists(dst):
-                if isdir(dst):
-                    if not merge:
-                        shutil.rmtree(dst)
-                        shutil.copytree(src, dst)
-                    else:
-                        merge_dirs(src, dst)
+            self.copy_dir(dst, src, merge)
+    
+    def copy_file(self, dst, src, mode='wb'):
+        '''
+        Copy or append file content.
+        Mode 'w' is for file rewriting, 'a' for appending to the end of file
+        '''
+        # silently try to make parent dir
+        try:
+            os.makedirs(dirname(dst))
+        except OSError:
+            pass
+        if not exists(dst):
+            shutil.copy(src, dst)
+        else:
+            dst_file = open(dst, mode)
+            src_file = open(src, 'r')
+            dst_file.write(src_file.read())
+            dst_file.close()
+            src_file.close()
+        
+    def copy_dir(self, dst, src, merge):
+        '''
+        Copy whole dir recursively.
+        When merge=True, target directory will not be deleted,
+        othwerwise, it will.
+        '''
+        if exists(dst):
+            if isdir(dst):
+                if not merge:
+                    shutil.rmtree(dst)
+                    shutil.copytree(src, dst)
                 else:
-                    raise IOError('Error: ``dst`` is not dir')
+                    merge_dirs(src, dst)
             else:
-                shutil.copytree(src, dst)
+                raise IOError('Error: ``dst`` is not dir')
+        else:
+            shutil.copytree(src, dst)
 
 
     def package_was_installed(self, package_name):
