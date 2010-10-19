@@ -8,6 +8,7 @@ import os
 from redsolutioncms.models import CMSSettings
 import urllib2
 import re
+from pkg_resources import parse_version
 
 PYPI_INDEX = 'http://pypi.python.org/simple'
 
@@ -51,10 +52,20 @@ def get_package_info(package_name, package_index_url=PYPI_INDEX):
         # Do not append packages without versions
         return package
 
+def add_package(packages, package):
+    if package['name'] in packages:
+        old_package = packages[package['name']]
+        new_version = parse_version(package['version'])
+        old_version = parse_version(old_package['version'])
+        if new_version > old_version:
+            packages[package['name']] = package
+    else:
+        packages.update({package['name']: package})
+
 def search_index(query):
-    packages = []
+    packages = {}
     if getattr(settings, 'CUSTOM_PACKAGE_INDEX', None):
-        # Work with /simple/ index
+        # Work with custom /simple/ index
         # http proxy issue
         proxy_handler = urllib2.ProxyHandler()
         opener = urllib2.build_opener(proxy_handler)
@@ -68,15 +79,16 @@ def search_index(query):
             match = re.match(query_pattern, line)
             if match:
                 href, text = match.groups()
-                package = get_package_info(text, settings.CUSTOM_PACKAGE_INDEX)
-                if package:
-                    packages.append(package)
+                package_info = get_package_info(text, settings.CUSTOM_PACKAGE_INDEX)
+                if package_info:
+                    add_package(packages, package_info)
     else:
-        packages = search_pypi_xmlrpc(query)
-        for package in packages:
-            info = get_package_info(package['name'], PYPI_INDEX)
-            if info and info.get('screenshot'):
-                package['screenshot'] = info['screenshot']
+        # Standard way: working with PYPI
+        for package in search_pypi_xmlrpc(query):
+            package_info = get_package_info(package['name'], PYPI_INDEX)
+            if package_info and package_info.get('screenshot'):
+                package['screenshot'] = package_info['screenshot']
+            add_package(packages, package)
 
     return packages
 
@@ -114,8 +126,8 @@ def load_package_list():
 
     # Flush old apps?
     cms_settings.packages.all().delete()
-    for package in all_packages:
-        cms_settings.packages.create(
+    for package in all_packages.itervalues():
+        cms_package = cms_settings.packages.create(
             selected=False,
             package=package['name'],
             version=package['version'],
