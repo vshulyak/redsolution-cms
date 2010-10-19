@@ -3,7 +3,8 @@ import os
 from redsolutioncms.models import CMSSettings
 from django.conf import settings
 from random import choice
-
+from redsolutioncms.utils import prepare_fixtures
+from redsolutioncms.loader import project_dir
 
 class AlreadyMadeException(Exception):
     """
@@ -62,6 +63,10 @@ class Make(BaseMake):
         super(Make, self).premake()
         cms_settings = CMSSettings.objects.get_settings()
         cms_settings.render_to(os.path.join('..', 'templates', 'base_template.html'), 'redsolutioncms/project/templates/base_template.html', {}, 'w')
+        # reset initial data fixture
+        initial_data_filename = os.path.join(project_dir, 'fixtures', 'initial_data.json')
+        if os.path.exists(initial_data_filename):
+            os.remove(initial_data_filename)
 
     def make(self):
         super(Make, self).make()
@@ -110,5 +115,13 @@ class Make(BaseMake):
         cms_settings = CMSSettings.objects.get_settings()
         cms_settings.render_to(os.path.join('..', 'templates', 'base.html'), 'redsolutioncms/project/templates/base.html', {}, 'w')
         cms_settings.render_to('urls.py', 'redsolutioncms/project/sitemaps.pyt')
+        
+        # process initial data
+        initial_data_filename = os.path.join(project_dir, 'fixtures', 'initial_data.json')
+        if os.path.exists(initial_data_filename):
+            content = open(initial_data_filename).read()
+        fixture_data = prepare_fixtures(content)
+        cms_settings.render_to(['..', 'fixtures', 'initial_data.json'],
+            'redsolutioncms/project/raw_content.txt', {'content': fixture_data}, 'w')        
 
 make = Make()
