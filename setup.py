@@ -3,21 +3,30 @@
 import os
 from setuptools import setup, find_packages
 
+# Utility function to read the README file.  
+# Used for the long_description.  It's nice, because now 1) we have a top level
+# README file and 2) it's easier to type in the README file than to put a raw
+# string in below ...
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    try:
+        return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    except IOError:
+        return ''
 
 setup(
     name="redsolutioncms",
-    version="0.0.1",
-    description=("Django ditributed site management system"),
+    version=__import__('redsolutioncms').__version__,
+    description=read('DESCRIPTION'),
     license="LGPL",
-    keywords="django CMS",
+    keywords="django news",
 
     author="Alexander Ivanov, Ivan Gromov",
     author_email="src@redsolution.ru",
 
     maintainer='Ivan Gromov',
+    maintainer_email='ivan.gromov@redsolution.ru',
 
+    url="http://www.redsoluthioncms.org",
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
@@ -34,8 +43,8 @@ setup(
     install_requires=[],
     include_package_data=True,
     zip_safe=False,
-#    long_description=open('README').read(),
-    entry_points = {
+    long_description=read('README'),
+    entry_points={
         'console_scripts': ['redsolutioncms=redsolutioncms.loader:main'],
-    },
+    }
 )
