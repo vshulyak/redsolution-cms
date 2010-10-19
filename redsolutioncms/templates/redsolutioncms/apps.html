@@ -33,24 +33,27 @@ $(document).ready(function(){
     <p>{% trans 'Select' %} <a href="#" link="self" id="select_all"> {% trans 'all' %}</a>
     <a href="#" link="self" id="select_none">{% trans 'none' %}</a>
     </p>
-    <table id="apps">
-        {% for field in form %}
-          {% if not field.is_hidden %}
+    {% for category in packagesets %}
+      <h2>{{ category.name }}</h2>
+      <table id="apps">
+        {% for package in category.packages %}
             <tr>
                 <td>
-                    <div class="check">{{ field }}{{ field.label_tag }}</div>
-                    {% if field.help_text %}<div class="help_text">{{ field.help_text }}</div>{% endif %}
-                    {% if field.errors %}<div class="errors_text">{{ field.errors }}</div>{% endif %}
+                  {% ifequal category.name 'frontpage' %}
+                    <div class="check"><input type="radio" name="{{ category.name }}" id="id_package_{{ package.id }}" value={{ package.package }} {% if forloop.first %}checked{% endif %}><label for="id_package_{{ package.id }}">{{ package.package }}</label></div>
+                  {% else %}
+                    <div class="check"><input type="checkbox" name="package_{{ package.id }}" id="id_package_{{ package.id }}"><label for="id_package_{{ package.id }}">{{ package.package }}</label></div>
+                  {% endifequal %}
+                    <div class="help_text">{{ package.description }}</div>
                 </td>
             </tr>
-            {% endif %}
         {% endfor %}
     </table>
+    {% endfor %}
     <div class="templates">
       <h2>{% trans 'Site templates' %}</h2>
-      {{ form.template.errors }}
       {% for template in cms_settings.packages.templates %}
-        <input id="template_{{ forloop.counter }}" type="radio" name="template" value="{{ template }}" />
+        <input id="template_{{ forloop.counter }}" type="radio" name="template" value="{{ template }}" {% if forloop.first %}checked{% endif %} />
         <label for="template_{{ forloop.counter }}">
           {% if template.screenshot %}
             <img width="200px" height="200px"  alt='{{ template }} screenshot' src="{{ template.screenshot }}" />

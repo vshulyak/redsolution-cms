@@ -46,6 +46,10 @@ def get_package_info(package_name, package_index_url=PYPI_INDEX):
                     index_root = package_index_url.replace('/simple', '')
                     href = index_root + href
                 package['screenshot'] = href
+            classifier_match = re.match('http\:\/\/djangoworkshop\.com\/classifiers\/([\w\/]+)', href)
+            if classifier_match:
+                # Fetch classifiers from links
+                package['category'] = classifier_match.groups()
 
     if versions:
         package['version'] = versions.pop()
@@ -86,8 +90,11 @@ def search_index(query):
         # Standard way: working with PYPI
         for package in search_pypi_xmlrpc(query):
             package_info = get_package_info(package['name'], PYPI_INDEX)
-            if package_info and package_info.get('screenshot'):
-                package['screenshot'] = package_info['screenshot']
+            if package_info:
+                if package_info.get('screenshot'):
+                    package['screenshot'] = package_info['screenshot']
+                if package_info.get('category'):
+                    package['categories'] = package_info['category']
             add_package(packages, package)
 
     return packages
@@ -136,6 +143,8 @@ def load_package_list():
             template='redsolutioncms.template' in package['name'],
             screenshot=package.get('screenshot'),
         )
+        for category in package.get('categories', []):
+            cms_package.categories.create(name=category)
 
 def test():
     print 'Searching module mptt'

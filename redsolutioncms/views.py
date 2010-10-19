@@ -7,13 +7,12 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
-from redsolutioncms.forms import CMSPackagesForm, UserCreationForm, \
-    FrontpageForm
+from redsolutioncms.forms import UserCreationForm, FrontpageForm
 from redsolutioncms.importpath import importpath
 from redsolutioncms.loader import home_dir, process_cmd_string, project_dir
 from redsolutioncms.make import AlreadyMadeException
 from redsolutioncms.models import CMSSettings, CMSEntryPoint, CMSCreatedModel, \
-    ProcessTask
+    ProcessTask, Category
 from redsolutioncms.packages import load_package_list
 import os, subprocess, datetime
 
@@ -51,15 +50,34 @@ def apps(request):
         return render_to_response('redsolutioncms/error.html', {
             'error': _('Htttp problem with index server'),
         })
+    cms_settings = CMSSettings.objects.get_settings()
     if request.method == 'POST':
-        form = CMSPackagesForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('load'))
-    else:
-        form = CMSPackagesForm()
+        for package in cms_settings.packages.modules():
+            if request.POST.get('package_%d' % package.id):
+                package.selected = True
+            else:
+                package.selected = False
+            package.save()
+        frontpage_package = cms_settings.packages.get(package=request.POST.get('frontpage'))
+        frontpage_package.selected = True
+        frontpage_package.save()                       
+        template_package = cms_settings.packages.get(package=request.POST.get('template'))
+        template_package.selected = True
+        template_package.save()
+        return HttpResponseRedirect(reverse('load'))
+    
+    categories_names = Category.objects.values_list('name', flat=True)
+    categories_names = list(set(categories_names))
+    packagesets = []
+    for name in categories_names:
+        packages = [category.package 
+            for category in Category.objects.filter(name=name)]
+        packagesets.append({'name':category.name, 'packages': packages})
+    packages = [package for package in 
+        cms_settings.packages.modules().filter(categories__isnull=True)]
+    packagesets.append({'name':'Other', 'packages': packages})
     return render_to_response('redsolutioncms/apps.html', {
-        'form': form,
+        'packagesets': packagesets,
         'cms_settings': CMSSettings.objects.get_settings()
     }, context_instance=RequestContext(request))
 

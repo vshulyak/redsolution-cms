@@ -8,7 +8,7 @@ def read(fname):
 
 setup(
     name="redsolutioncms",
-    version="0.0.1",
+    version="0.0.2",
     description=("Django ditributed site management system"),
     license="LGPL",
     keywords="django CMS",

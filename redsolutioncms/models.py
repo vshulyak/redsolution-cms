@@ -206,6 +206,14 @@ class CMSPackage(models.Model):
     def __unicode__(self):
         return self.package
 
+
+class Category(models.Model):
+    '''Category for package'''
+    name = models.CharField(verbose_name=_('Category name'), max_length=255)
+    parent = models.ForeignKey('self', null=True)
+    package = models.ForeignKey('CMSPackage', related_name='categories')
+
+
 class EntryPointManager(models.Manager):
     def has_urls(self):
         return self.get_query_set().filter(has_urls=True)
