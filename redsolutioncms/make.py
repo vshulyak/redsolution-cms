@@ -88,23 +88,23 @@ class Make(BaseMake):
         redsolutioncms_templates_dir = os.path.join(os.path.dirname(__file__),
             'templates', 'redsolutioncms', 'project')
 
-        cms_settings.copy_to(
+        cms_settings.copy_file(
             os.path.join(cms_settings.project_dir, 'develop.cfg',),
             os.path.join(redsolutioncms_templates_dir, 'develop.cfg'),
         )
-        cms_settings.copy_to(
+        cms_settings.copy_file(
             os.path.join(cms_settings.project_dir, 'bootstrap.py',),
             os.path.join(redsolutioncms_templates_dir, 'bootstrap.pyt'),
         )
-        cms_settings.copy_to(
+        cms_settings.copy_file(
             os.path.join(cms_settings.project_dir, '.gitignore',),
             os.path.join(redsolutioncms_templates_dir, 'gitignore'),
         )
-        cms_settings.copy_to(
+        cms_settings.copy_file(
             os.path.join(cms_settings.project_dir, cms_settings.project_name, '__init__.py',),
             os.path.join(redsolutioncms_templates_dir, '__init__.pyt'),
         )
-        cms_settings.copy_to(
+        cms_settings.copy_file(
             os.path.join(cms_settings.project_dir, 'media'),
             os.path.join(redsolutioncms_templates_dir, 'media'),
             merge=True
