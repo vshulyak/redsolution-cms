@@ -1,6 +1,34 @@
 {% extends "redsolutioncms/base.html" %}
 {% load i18n %}
 
+{% block script %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+$('#id_database_engine').bind('change', function(){
+ 
+  var dbname = $('#id_database_name').val();
+  var pattern1 = /(\w+)\.\w+/;
+  var pattern2 = /(\w+)\.sqlite/;
+  
+  if ($(this).val() == 'sqlite3') {
+    if (!(dbname.match(pattern1))) {
+      /* if dbname didn't look like file, add .sqlite extension */  
+      $('#id_database_name').val(dbname + '.sqlite');
+    }
+  } else {
+    /* otherwise, remove sqlite extensnion */
+    if (dbname.match(pattern2)) {
+      $('#id_database_name').val(dbname.match(pattern2)[1]);
+    }
+  }
+  
+});
+});
+</script>
+
+{% endblock %}
+
 {% block breadcrumbs %}
 <div class="breadcrumbs">
 <a href="/">{% trans 'Start' %}</a> »
