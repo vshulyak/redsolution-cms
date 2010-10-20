@@ -39,6 +39,7 @@ def index(request):
         'form': form,
     }, context_instance=RequestContext(request))
 
+import re
 def apps(request):
     """
     Second step. Shows available packages listing.
@@ -51,34 +52,44 @@ def apps(request):
             'error': _('Htttp problem with index server'),
         })
     cms_settings = CMSSettings.objects.get_settings()
+    errors = []
+    checked_applications_id = []
     if request.method == 'POST':
-        for package in cms_settings.packages.modules():
-            if request.POST.get('package_%d' % package.id):
-                package.selected = True
-            else:
-                package.selected = False
-            package.save()
-        frontpage_package = cms_settings.packages.get(package=request.POST.get('frontpage'))
-        frontpage_package.selected = True
-        frontpage_package.save()                       
-        template_package = cms_settings.packages.get(package=request.POST.get('template'))
-        template_package.selected = True
-        template_package.save()
-        return HttpResponseRedirect(reverse('load'))
-    
+#        applications checked by user
+        checked_applications_id = [package.id 
+            for package in cms_settings.packages.modules()
+            if request.POST.get('package_%d' % package.id)]
+#        check frontpage application
+        frontpage_applications = [category.package for category in Category.objects.filter(
+            name='frontpage') if request.POST.get('package_%d' % category.package.id)]
+        if not frontpage_applications:
+            errors.append(_('You must check application with frontpage handler'))
+        if not errors:
+            cms_settings.packages.modules().filter(
+                id__in=checked_applications_id).update(selected=True)
+            cms_settings.packages.modules().exclude(
+                id__in=checked_applications_id).update(selected=False)
+            template_package = cms_settings.packages.get(package=request.POST.get('template'))
+            template_package.selected = True
+            template_package.save()
+            return HttpResponseRedirect(reverse('load'))
+#    forming categories
     categories_names = Category.objects.values_list('name', flat=True)
     categories_names = list(set(categories_names))
     packagesets = []
     for name in categories_names:
-        packages = [category.package 
+        packages = [category.package
             for category in Category.objects.filter(name=name)]
         packagesets.append({'name':category.name, 'packages': packages})
+#    forming category other(applications without category)
     packages = [package for package in 
         cms_settings.packages.modules().filter(categories__isnull=True)]
     packagesets.append({'name':'Other', 'packages': packages})
     return render_to_response('redsolutioncms/apps.html', {
         'packagesets': packagesets,
-        'cms_settings': CMSSettings.objects.get_settings()
+        'cms_settings': CMSSettings.objects.get_settings(),
+        'errors': errors,
+        'checked_applications_id': checked_applications_id
     }, context_instance=RequestContext(request))
 
 def load(request):

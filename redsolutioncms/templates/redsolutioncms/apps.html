@@ -13,6 +13,14 @@ $(document).ready(function(){
 		$(':checkbox').removeAttr('checked');
 		return false;
 	});
+	$('input:checkbox').bind('change', function(event){
+    var status = $(this).attr('checked');
+    console.log(status)
+    var element_class = $(this).attr('class');
+    console.log(element_class);
+    $('.'+element_class).each(function(){
+      $(this).attr('checked', status);});
+  });
 });
 </script>
 
@@ -33,18 +41,21 @@ $(document).ready(function(){
     <p>{% trans 'Select' %} <a href="#" link="self" id="select_all"> {% trans 'all' %}</a>
     <a href="#" link="self" id="select_none">{% trans 'none' %}</a>
     </p>
+    {% if errors %}
+      <ul class="errorlist">
+      {% for error in errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
     {% for category in packagesets %}
       <h2>{{ category.name }}</h2>
       <table id="apps">
         {% for package in category.packages %}
             <tr>
                 <td>
-                  {% ifequal category.name 'frontpage' %}
-                    <div class="check"><input type="radio" name="{{ category.name }}" id="id_package_{{ package.id }}" value={{ package.package }} {% if forloop.first %}checked{% endif %}><label for="id_package_{{ package.id }}">{{ package.package }}</label></div>
-                  {% else %}
-                    <div class="check"><input type="checkbox" name="package_{{ package.id }}" id="id_package_{{ package.id }}"><label for="id_package_{{ package.id }}">{{ package.package }}</label></div>
-                  {% endifequal %}
-                    <div class="help_text">{{ package.description }}</div>
+                  <div class="check"><input type="checkbox" name="package_{{ package.id }}" id="id_package_{{ package.id }}" class="package_{{ package.id }}" {% if package.id in checked_applications_id %}checked{% endif %}><label for="id_package_{{ package.id }}">{{ package.package }}</label></div>
+                  <div class="help_text">{{ package.description }}</div>
                 </td>
             </tr>
         {% endfor %}

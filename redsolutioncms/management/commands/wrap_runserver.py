@@ -67,6 +67,13 @@ class Command(BaseCommand):
                             pass
                         else:
                             os.killpg(os.getpgid(task.pid), signal.SIGINT)
+#                            if not kill
+                            try:
+                                os.kill(task.pid, signal.SIG_DFL)
+                            except OSError:
+                                pass
+                            else:
+                                os.killpg(os.getpgid(task.pid), signal.SIGKILL)
                         task.process_finished = True
                         task.save()
             not_executed_tasks = ProcessTask.objects.filter(
