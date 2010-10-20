@@ -101,4 +101,10 @@ def main():
     run_cmd('"%(django)s" wrap_runserver')
 
 if __name__ == '__main__':
+    # set ENV automatically
+    if 'PYTHONPATH' in os.environ:
+        os.environ['PYTHONPATH'] += os.pathsep() + dirname(__file__)
+    else:
+        os.environ['PYTHONPATH'] = dirname(__file__)
+
     main()
