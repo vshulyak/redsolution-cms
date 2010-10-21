@@ -15,9 +15,7 @@ $(document).ready(function(){
 	});
 	$('input:checkbox').bind('change', function(event){
     var status = $(this).attr('checked');
-    console.log(status)
     var element_class = $(this).attr('class');
-    console.log(element_class);
     $('.'+element_class).each(function(){
       $(this).attr('checked', status);});
   });
