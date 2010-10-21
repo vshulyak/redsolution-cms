@@ -175,7 +175,7 @@ def build(request):
 
     project_params = {
         'project_bootstrap': os.path.join(project_dir, 'bootstrap.py'),
-        'project_buildout_cfg': os.path.join(project_dir, 'buildout.cfg'),
+        'project_buildout_cfg': os.path.join(project_dir, 'develop.cfg'),
         'project_buildout': os.path.join(project_dir, 'bin', 'buildout'),
         'project_django': os.path.join(project_dir, 'bin', 'django'),
     }
