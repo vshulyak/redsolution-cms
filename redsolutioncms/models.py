@@ -94,7 +94,7 @@ class CMSSettings(BaseSettings):
         value = value.encode('utf-8')
         open(file_name, mode).write(value)
 
-    def copy_to(self, dst, src, merge=False, mode='wb'):
+    def copy_to(self, dst, src, merge=True, mode='wb'):
         """
         Deprecated. Use ``copy_dir`` or ``copy_file`` instead.
         Copies directory or file with mergig directories capability.
@@ -134,7 +134,7 @@ class CMSSettings(BaseSettings):
             dst_file.close()
             src_file.close()
         
-    def copy_dir(self, dst, src, merge):
+    def copy_dir(self, dst, src, merge=True):
         '''
         Copy whole dir recursively.
         When merge=True, target directory will not be deleted,

@@ -4,7 +4,31 @@ from redsolutioncms.models import CMSSettings
 from django.conf import settings
 from random import choice
 from redsolutioncms.utils import prepare_fixtures
-from redsolutioncms.loader import project_dir
+from redsolutioncms.loader import project_dir, home_dir
+
+
+def copy_downloads():
+    '''
+    Copies downloads folder from CMS installation to project dir 
+    '''
+    cms_settings = CMSSettings.objects.get_settings()
+    cms_settings.copy_dir(
+        os.path.join(project_dir, 'downloads'),
+        os.path.join(home_dir, 'downloads'),
+    )
+
+def copy_eggs():
+    '''
+    Copies all installed eggs info project dir
+    '''
+    cms_settings = CMSSettings.objects.get_settings()
+    for package in cms_settings.packages.installed():
+        egg_folder = package.path.rsplit(os.path.sep, 1)[1]
+        cms_settings.copy_dir(
+            os.path.join(project_dir, 'eggs', egg_folder),
+            package.path
+        )
+
 
 class AlreadyMadeException(Exception):
     """
@@ -88,40 +112,42 @@ class Make(BaseMake):
         redsolutioncms_templates_dir = os.path.join(os.path.dirname(__file__),
             'templates', 'redsolutioncms', 'project')
 
-        cms_settings.copy_to(
+        cms_settings.copy_file(
             os.path.join(cms_settings.project_dir, 'develop.cfg',),
             os.path.join(redsolutioncms_templates_dir, 'develop.cfg'),
         )
-        cms_settings.copy_to(
+        cms_settings.copy_file(
             os.path.join(cms_settings.project_dir, 'bootstrap.py',),
             os.path.join(redsolutioncms_templates_dir, 'bootstrap.pyt'),
         )
-        cms_settings.copy_to(
+        cms_settings.copy_file(
             os.path.join(cms_settings.project_dir, '.gitignore',),
             os.path.join(redsolutioncms_templates_dir, 'gitignore'),
         )
-        cms_settings.copy_to(
+        cms_settings.copy_file(
             os.path.join(cms_settings.project_dir, cms_settings.project_name, '__init__.py',),
             os.path.join(redsolutioncms_templates_dir, '__init__.pyt'),
         )
-        cms_settings.copy_to(
+        cms_settings.copy_dir(
             os.path.join(cms_settings.project_dir, 'media'),
             os.path.join(redsolutioncms_templates_dir, 'media'),
             merge=True
         )
+        copy_downloads()
+        copy_eggs()
 
     def postmake(self):
         super(Make, self).postmake()
         cms_settings = CMSSettings.objects.get_settings()
         cms_settings.render_to(os.path.join('..', 'templates', 'base.html'), 'redsolutioncms/project/templates/base.html', {}, 'w')
         cms_settings.render_to('urls.py', 'redsolutioncms/project/sitemaps.pyt')
-        
+
         # process initial data
         initial_data_filename = os.path.join(project_dir, 'fixtures', 'initial_data.json')
         if os.path.exists(initial_data_filename):
             content = open(initial_data_filename).read()
         fixture_data = prepare_fixtures(content)
         cms_settings.render_to(['..', 'fixtures', 'initial_data.json'],
-            'redsolutioncms/project/raw_content.txt', {'content': fixture_data}, 'w')        
+            'redsolutioncms/project/raw_content.txt', {'content': fixture_data}, 'w')
 
 make = Make()
