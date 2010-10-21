@@ -16,14 +16,25 @@ $('#id_database_engine').bind('change', function(){
       /* if dbname didn't look like file, add .sqlite extension */  
       $('#id_database_name').val(dbname + '.sqlite');
     }
+    // Disable fields
+    $('#id_database_user').attr('disabled', 'disabled');
+    $('#id_database_password').attr('disabled', 'disabled');
+    $('#id_database_host').attr('disabled', 'disabled');
+    $('#id_database_port').attr('disabled', 'disabled');
   } else {
     /* otherwise, remove sqlite extensnion */
     if (dbname.match(pattern2)) {
       $('#id_database_name').val(dbname.match(pattern2)[1]);
     }
+    // Enabled fields
+    $('#id_database_user').removeAttr('disabled');
+    $('#id_database_password').removeAttr('disabled');
+    $('#id_database_host').removeAttr('disabled');
+    $('#id_database_port').removeAttr('disabled');
   }
   
 });
+$('#id_database_engine').trigger('change');
 });
 </script>
 
