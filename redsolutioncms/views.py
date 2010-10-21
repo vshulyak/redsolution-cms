@@ -255,19 +255,22 @@ def restart(request):
     task.save()
     return HttpResponse()
 
-def started(request, task_id):
+def started(request):
     """
     User can`t see it. It will be called by javascript.
     Used to check, whether server is available after restart.
     """
-    task = get_object_or_404(ProcessTask, id=task_id)
-    if task.process_finished:
-        return HttpResponse()
-    else:
-        return HttpResponseNotFound()
+    if request.method == "POST":
+        task_id = request.POST.get('task_id')
+        task = get_object_or_404(ProcessTask, id=task_id)
+        if task.process_finished:
+            return HttpResponse()
+    return HttpResponseNotFound()
 
-def cancel_lock(request, task_id):
-    task = get_object_or_404(ProcessTask, id=task_id)
-    task.lock = False
-    task.save()
+def cancel_lock(request):
+    if request.method == "POST":
+        task_id = request.POST.get('task_id')
+        task = get_object_or_404(ProcessTask, id=task_id)
+        task.lock = False
+        task.save()
     return HttpResponse()
