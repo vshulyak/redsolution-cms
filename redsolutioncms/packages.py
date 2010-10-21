@@ -46,7 +46,7 @@ def get_package_info(package_name, package_index_url=PYPI_INDEX):
                     index_root = package_index_url.replace('/simple', '')
                     href = index_root + href
                 package['screenshot'] = href
-            classifier_match = re.match('http\:\/\/djangoworkshop\.com\/classifiers\/([\w\/]+)', href)
+            classifier_match = re.match('http\:\/\/www\.redsolutioncms\.org\/classifiers\/([\w\/]+)', href)
             if classifier_match:
                 # Fetch classifiers from links
                 package['category'] = classifier_match.groups()

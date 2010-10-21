@@ -213,6 +213,17 @@ class Category(models.Model):
     parent = models.ForeignKey('self', null=True)
     package = models.ForeignKey('CMSPackage', related_name='categories')
 
+    def verbose_name(self):
+        '''
+        Hardcoded categories names 
+        '''
+        verbose_names = {
+            'frontpage': _('Frontpage handlers'),
+            'content': _('Content plugins'),
+            'utilities': _('Utilities'),
+            'other': _('Other applications'),
+        }
+        return verbose_names.get(self.name, verbose_names['other'])
 
 class EntryPointManager(models.Manager):
     def has_urls(self):

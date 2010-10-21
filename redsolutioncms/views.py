@@ -80,11 +80,12 @@ def apps(request):
     for name in categories_names:
         packages = [category.package
             for category in Category.objects.filter(name=name)]
-        packagesets.append({'name':category.name, 'packages': packages})
+        packagesets.append({'category': category, 'packages': packages})
 #    forming category other(applications without category)
-    packages = [package for package in 
+    packages = [package for package in
         cms_settings.packages.modules().filter(categories__isnull=True)]
-    packagesets.append({'name':'Other', 'packages': packages})
+    if packages:
+        packagesets.append({'name':'Other', 'packages': packages})
     return render_to_response('redsolutioncms/apps.html', {
         'packagesets': packagesets,
         'cms_settings': CMSSettings.objects.get_settings(),

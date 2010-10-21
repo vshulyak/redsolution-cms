@@ -46,10 +46,10 @@ $(document).ready(function(){
       {% endfor %}
       </ul>
     {% endif %}
-    {% for category in packagesets %}
-      <h2>{{ category.name }}</h2>
+    {% for set in packagesets %}
+      <h2>{{ set.category.verbose_name }}</h2>
       <table id="apps">
-        {% for package in category.packages %}
+        {% for package in set.packages %}
             <tr>
                 <td>
                   <div class="check"><input type="checkbox" name="package_{{ package.id }}" id="id_package_{{ package.id }}" class="package_{{ package.id }}" {% if package.id in checked_applications_id %}checked{% endif %}><label for="id_package_{{ package.id }}">{{ package.package }}</label></div>
