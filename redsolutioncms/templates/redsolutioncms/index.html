@@ -32,6 +32,22 @@ $('#id_database_engine').bind('change', function(){
     $('#id_database_host').removeAttr('disabled');
     $('#id_database_port').removeAttr('disabled');
   }
+  // Set default values for database
+    switch ($(this).val()){
+      case 'postgresql':
+      case 'postgresql_psycopg2':
+          $('#id_database_port').attr('value', '5432');
+          break;
+      case 'mysql':
+          $('#id_database_port').attr('value', '3306');
+          break;
+      case 'sqlite3':
+          $('#id_database_user').attr('value', '');
+          $('#id_database_password').attr('value', '');
+          $('#id_database_host').attr('value', '');
+          $('#id_database_port').attr('value', '');
+          break;
+    }
   
 });
 $('#id_database_engine').trigger('change');

@@ -42,7 +42,6 @@ class CMSSettings(BaseSettings):
         ('postgresql', 'postgresql',),
         ('mysql', 'mysql',),
         ('sqlite3', 'sqlite3',),
-        ('oracle', 'oracle',),
     ]
 
     project_name = models.CharField(verbose_name=_('Project name'),
