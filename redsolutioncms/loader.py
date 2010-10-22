@@ -102,6 +102,10 @@ def main():
 
 if __name__ == '__main__':
     # set path automatically
-    sys.path[0:0] = [abspath(dirname(dirname(__file__))),]
-
+    cms_path = dirname(dirname(abspath(__file__)))
+    sys.path[0:0] = [cms_path, ]
+    if 'PYTHONPATH' in os.environ:
+        os.environ['PYTHONPATH'] = cms_path
+    else:
+        os.environ['PYTHONPATH'] = os.path.pathsep + cms_path
     main()
