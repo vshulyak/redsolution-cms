@@ -4,9 +4,8 @@ import shutil
 import sys
 import subprocess
 from os import remove, listdir
-from os.path import join, dirname, exists
+from os.path import join, dirname, exists, abspath
 from optparse import OptionParser
-import redsolutioncms
 
 
 # Home dir defined here!
@@ -19,6 +18,7 @@ project_dir = os.getcwd()
 def install_in_home():
     '''Copy nessesary files to home folder''' 
     # check target dir doesn't exists
+    import redsolutioncms
     if exists(home_dir):
         # Delete downloaded libraries
         if exists(join(home_dir, 'eggs')):
@@ -101,10 +101,7 @@ def main():
     run_cmd('"%(django)s" wrap_runserver')
 
 if __name__ == '__main__':
-    # set ENV automatically
-    if 'PYTHONPATH' in os.environ:
-        os.environ['PYTHONPATH'] += os.pathsep() + dirname(__file__)
-    else:
-        os.environ['PYTHONPATH'] = dirname(__file__)
+    # set path automatically
+    sys.path[0:0] = [abspath(dirname(dirname(__file__))),]
 
     main()
