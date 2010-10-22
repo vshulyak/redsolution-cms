@@ -102,6 +102,6 @@ def main():
 
 if __name__ == '__main__':
     # set path automatically
-    sys.path[0:0] = [abspath(dirname(dirname(__file__))),]
+    sys.path[0:0] = [dirname(dirname(abspath(__file__))),]
 
     main()
