@@ -29,6 +29,33 @@ class ProxyTransport(xmlrpclib.Transport):
     
     A. Ellerton 2006-07-06
     """
+#    redefine parse_response and _parse_response(taken from python 2.6)
+#    to work with python 2.7
+
+    def parse_response(self, file):
+        # compatibility interface
+        return self._parse_response(file, None)
+
+    def _parse_response(self, file, sock):
+        # read response from input file/socket, and parse it
+
+        p, u = self.getparser()
+
+        while 1:
+            if sock:
+                response = sock.recv(1024)
+            else:
+                response = file.read(1024)
+            if not response:
+                break
+            if self.verbose:
+                print "body:", repr(response)
+            p.feed(response)
+
+        file.close()
+        p.close()
+
+        return u.close()
 
     def request(self, host, handler, request_body, verbose):
         import urllib2
