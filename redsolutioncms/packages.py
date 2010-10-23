@@ -97,6 +97,10 @@ def search_index(query):
                     package['categories'] = package_info['category']
             add_package(packages, package)
 
+    try:
+        packages.pop('redsolutioncms')
+    except KeyError:
+        pass
     return packages
 
 def install(modules, path='parts'):
