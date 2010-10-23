@@ -50,6 +50,9 @@ $('#id_database_engine').bind('change', function(){
     }
   
 });
+$('#id_project_name').bind('change', function(){
+  $('#id_domain').val($(this).val() + '.com');
+});
 $('#id_database_engine').trigger('change');
 });
 </script>

@@ -46,6 +46,8 @@ class CMSSettings(BaseSettings):
 
     project_name = models.CharField(verbose_name=_('Project name'),
         max_length=50, default='myproject', help_text=_('Invent a project name'))
+    domain = models.CharField(verbose_name=_('Desired domain'),
+        max_length=50, default='myproject.com', help_text=_('Enter your site domain for configuration'))
     database_engine = models.CharField(verbose_name=_('Database engine'),
         max_length=50, choices=DATABASE_ENGINES, default='sqlite3')
     database_name = models.CharField(verbose_name=_('Database name'),
@@ -150,19 +152,6 @@ class CMSSettings(BaseSettings):
                 raise IOError('Error: ``dst`` is not dir')
         else:
             shutil.copytree(src, dst)
-
-    def get_primary_domain(self):
-        '''Get host from django-server-config or propose project_name.com'''
-        if 'redsolutioncms.django-server-config' in self.installed_packages:
-            try:
-                from config.redsolution_setup.models import ConfigSettings
-            except ImportError:
-                pass
-            else:
-                config_settings = ConfigSettings.objects.get_settings()
-                return config_settings.sites.all()[0].site
-        else:
-            return self.project_name + '.com'
 
     def package_was_installed(self, package_name):
         return package_name in self.installed_packages
