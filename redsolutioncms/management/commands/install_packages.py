@@ -81,7 +81,7 @@ def load_packages():
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        import time
-        time.sleep(10)
+#        import time
+#        time.sleep(10)
         uninstall_packages()
         load_packages()
