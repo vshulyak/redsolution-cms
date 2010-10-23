@@ -151,6 +151,18 @@ class CMSSettings(BaseSettings):
         else:
             shutil.copytree(src, dst)
 
+    def get_primary_domain(self):
+        '''Get host from django-server-config or propose project_name.com'''
+        if 'redsolutioncms.django-server-config' in self.installed_packages:
+            try:
+                from config.redsolution_setup.models import ConfigSettings
+            except ImportError:
+                pass
+            else:
+                config_settings = ConfigSettings.objects.get_settings()
+                return config_settings.sites.all()[0].site
+        else:
+            return self.project_name + '.com'
 
     def package_was_installed(self, package_name):
         return package_name in self.installed_packages
