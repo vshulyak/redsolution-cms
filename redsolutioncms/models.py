@@ -189,10 +189,10 @@ class PackageManager(models.Manager):
         return self.get_query_set().filter(installed=True)
 
     def modules(self):
-        return self.get_query_set().filter(template=False)
+        return self.get_query_set().exclude(category__name='templates')
 
     def templates(self):
-        return self.get_query_set().filter(template=True)
+        return self.get_query_set().filter(category__name='templates')
 
 class CMSPackage(models.Model):
     class Meta:
@@ -208,8 +208,8 @@ class CMSPackage(models.Model):
     description = models.TextField(verbose_name=_('Description'))
     path = models.CharField(verbose_name=_('Installed to path'), max_length=255, blank=True, null=True)
     installed = models.BooleanField(verbose_name=_('Was successfully installed'), default=False)
+    category = models.ForeignKey('Category', null=True, related_name='packages')
 
-    template = models.BooleanField(verbose_name=_('Package is template'), default=False)
     screenshot = models.URLField(verbose_name=_('Screenshot preview URL'), null=True)
 
     objects = PackageManager()
@@ -217,12 +217,28 @@ class CMSPackage(models.Model):
     def __unicode__(self):
         return self.package
 
+class CategoryManager(models.Manager):
+
+    def templates(self):
+        return self.get_query_set().filter(name='templates')
+
+    def required(self):
+        return self.get_query_set().filter(required=True)
+
 
 class Category(models.Model):
     '''Category for package'''
+
+    class Meta:
+        ordering = ['-required', 'id']
+
+    settings = models.ForeignKey(CMSSettings, related_name='categories')
     name = models.CharField(verbose_name=_('Category name'), max_length=255)
     parent = models.ForeignKey('self', null=True)
-    package = models.ForeignKey('CMSPackage', related_name='categories')
+    required = models.BooleanField(verbose_name=_('Mandatory category'), default=False)
+
+    def __unicode__(self):
+        return self.name
 
     def verbose_name(self):
         '''

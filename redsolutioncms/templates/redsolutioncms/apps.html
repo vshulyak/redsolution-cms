@@ -13,12 +13,12 @@ $(document).ready(function(){
 		$(':checkbox').removeAttr('checked');
 		return false;
 	});
-	$('input:checkbox').bind('change', function(event){
-    var status = $(this).attr('checked');
-    var element_class = $(this).attr('class');
-    $('.'+element_class).each(function(){
-      $(this).attr('checked', status);});
-  });
+	// $('input:checkbox').bind('change', function(event){
+	//     var status = $(this).attr('checked');
+	//     var element_class = $(this).attr('class');
+	//     $('.'+element_class).each(function(){
+	//       $(this).attr('checked', status);});
+	//   });
 });
 </script>
 

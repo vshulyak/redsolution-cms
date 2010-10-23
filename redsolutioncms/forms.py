@@ -25,7 +25,58 @@ class FrontpageForm(forms.Form):
         cms_settings = CMSSettings.objects.get_settings()
         cms_settings.frontpage_handler = entry_point
         cms_settings.save()
-    
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['id']
+
+    def __init__(self, *args, **kwds):
+        super(CategoryForm, self).__init__(*args, **kwds)
+        category = self.instance
+        if category.name == 'templates':
+            self.fields['template'] = forms.ChoiceField(
+                label=_('Template'),
+                widget=forms.RadioSelect,
+                choices=[(package.id, package.verbose_name) for package in category.packages.all()],
+                required=False
+            )
+        else:
+            for package in category.packages.all():
+                self.fields['package_%s' % package.id] = forms.BooleanField(
+                    label=_(package.verbose_name), required=False)
+
+    def clean(self):
+        if self.instance.name == 'templates':
+            template_id = self.cleaned_data.get('template', '')
+            if not self.instance.packages.filter(id__in=template_id).count():
+                raise forms.ValidationError(_('You must select only one package from this category'))
+        else:
+            packages = self.cleaned_data.keys()
+            packages.remove('id')
+            package_ids = [p.replace('package_', '') for p in packages
+                if self.cleaned_data[p]]
+            if self.instance.required:
+                if not self.instance.packages.filter(id__in=package_ids).count():
+                    raise forms.ValidationError(_('You must select at least one package from this category'))
+        return self.cleaned_data
+
+    def save(self, *args, **kwds):
+        if self.instance.name == 'templates':
+            package_ids = [self.cleaned_data.get('template', ''), ]
+        else:
+            packages = self.cleaned_data.keys()
+            packages.remove('id')
+            package_ids = [p.replace('package_', '') for p in packages
+                if self.cleaned_data[p]]
+        # select:
+        self.instance.packages.filter(id__in=package_ids).update(selected=True)
+        # unselect others:
+        self.instance.packages.exclude(id__in=package_ids).update(selected=False)
+        super(CategoryForm, self).save(*args, **kwds)
+
+
 class UserCreationForm(forms.Form):
     username = forms.RegexField(label=_("Username"), max_length=30, regex=r'^\w+$',
         help_text=_("Required. 30 characters or fewer. Alphanumeric characters only (letters, digits and underscores)."),

@@ -5,7 +5,7 @@ from django.conf import settings
 from zc.buildout import easy_install
 import xmlrpclib
 import os
-from redsolutioncms.models import CMSSettings
+from redsolutioncms.models import CMSSettings, Category
 import urllib2
 import re
 from pkg_resources import parse_version
@@ -139,6 +139,12 @@ def load_package_list():
 
     # Flush old apps?
     cms_settings.packages.all().delete()
+    cms_settings.categories.all().delete()
+    # fill database again
+    # create required catagories
+    Category.objects.create(name='frontpage', required=True, settings=cms_settings)
+    Category.objects.create(name='templates', required=True, settings=cms_settings)
+
     for package in all_packages.itervalues():
         cms_package = cms_settings.packages.create(
             selected=False,
@@ -146,11 +152,19 @@ def load_package_list():
             version=package['version'],
             verbose_name=package['name'].replace('django-', '').replace('redsolutioncms.', ''),
             description=package['summary'],
-            template='redsolutioncms.template' in package['name'],
             screenshot=package.get('screenshot'),
         )
-        for category in package.get('categories', []):
-            cms_package.categories.create(name=category)
+        # fill cms_settings foreign key
+        cms_settings.packages.add(cms_package)
+        if package.get('categories'):
+            for category in package['categories']:
+                category_obj, created = Category.objects.get_or_create(
+                    name=category, settings=cms_settings)
+                category_obj.packages.add(cms_package)
+        else:
+            other_category, created = Category.objects.get_or_create(
+                name='other', settings=cms_settings)
+            other_category.packages.add(cms_package)
 
 def test():
     print 'Searching module mptt'
