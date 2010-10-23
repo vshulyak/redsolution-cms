@@ -39,13 +39,13 @@ class CategoryForm(forms.ModelForm):
             self.fields['template'] = forms.ChoiceField(
                 label=_('Template'),
                 widget=forms.RadioSelect,
-                choices=[(package.id, package.verbose_name) for package in category.packages.all()],
-                required=False
+                choices=[(package.id, package.screenshot) for package in category.packages.all()],
+                required=False,
             )
         else:
             for package in category.packages.all():
                 self.fields['package_%s' % package.id] = forms.BooleanField(
-                    label=_(package.verbose_name), required=False)
+                    label=_(package.verbose_name), required=False, help_text=_(package.description))
 
     def clean(self):
         if self.instance.name == 'templates':

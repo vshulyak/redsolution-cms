@@ -19,6 +19,14 @@ $(document).ready(function(){
 	//     $('.'+element_class).each(function(){
 	//       $(this).attr('checked', status);});
 	//   });
+	$('.screenshots label').each(function(){
+	  if ($(this).find('input:radio').length) {
+	    var text = $(this).text();
+	    var input = $(this).find('input:radio');
+	    $(this).text('');
+	    $(this).append(input).append('<img src="' + text + '" />');
+	  }
+	});
 });
 </script>
 
@@ -38,39 +46,19 @@ $(document).ready(function(){
 <form method="post" enctype="multipart/form-data" action="">
     <p>{% trans 'Select' %} <a href="#" link="self" id="select_all"> {% trans 'all' %}</a>
     <a href="#" link="self" id="select_none">{% trans 'none' %}</a>
-    </p>
-    {% if errors %}
-      <ul class="errorlist">
-      {% for error in errors %}
-        <li>{{ error }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-    {% for set in packagesets %}
-      <h2>{{ set.category.verbose_name }}</h2>
-      <table id="apps">
-        {% for package in set.packages %}
-            <tr>
-                <td>
-                  <div class="check"><input type="checkbox" name="package_{{ package.id }}" id="id_package_{{ package.id }}" class="package_{{ package.id }}" {% if package.id in checked_applications_id %}checked{% endif %}><label for="id_package_{{ package.id }}">{{ package.package }}</label></div>
-                  <div class="help_text">{{ package.description }}</div>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
+    {{ formset.management_form }}
+    {% for form in formset.forms %}
+      <h2>{{ form.instance.verbose_name }}</h2>
+      {% if form.instance.name == 'templates' %}
+          <table class="screenshots">
+            {{ form.as_table }}  
+          </table>
+      {% else %}
+          <table>
+            {{ form.as_table }}
+          </table>
+      {% endif %}
     {% endfor %}
-    <div class="templates">
-      <h2>{% trans 'Site templates' %}</h2>
-      {% for template in cms_settings.packages.templates %}
-        <input id="template_{{ forloop.counter }}" type="radio" name="template" value="{{ template }}" {% if forloop.first %}checked{% endif %} />
-        <label for="template_{{ forloop.counter }}">
-          {% if template.screenshot %}
-            <img width="200px" height="200px"  alt='{{ template }} screenshot' src="{{ template.screenshot }}" />
-          {% endif %}
-          {{ template }}</label><br />
-      {% endfor %}
-    </div>
-    
     <input type="button" value="{% trans 'Back' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url index %}';"/>
     <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
 </form>

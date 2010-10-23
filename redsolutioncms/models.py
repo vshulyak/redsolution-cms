@@ -248,9 +248,10 @@ class Category(models.Model):
             'frontpage': _('Frontpage handlers'),
             'content': _('Content plugins'),
             'utilities': _('Utilities'),
+            'templates': _('Templates for site'),
             'other': _('Other applications'),
         }
-        return verbose_names.get(self.name, verbose_names['other'])
+        return verbose_names.get(self.name, self.name)
 
 class EntryPointManager(models.Manager):
     def has_urls(self):
