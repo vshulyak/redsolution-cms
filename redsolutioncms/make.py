@@ -87,10 +87,6 @@ class Make(BaseMake):
         super(Make, self).premake()
         cms_settings = CMSSettings.objects.get_settings()
         cms_settings.render_to(os.path.join('..', 'templates', 'base_template.html'), 'redsolutioncms/project/templates/base_template.html', {}, 'w')
-        # reset initial data fixture
-        initial_data_filename = os.path.join(project_dir, 'fixtures', 'initial_data.json')
-        if os.path.exists(initial_data_filename):
-            os.remove(initial_data_filename)
 
     def make(self):
         super(Make, self).make()
@@ -106,6 +102,9 @@ class Make(BaseMake):
         cms_settings.render_to('manage.py', 'redsolutioncms/project/manage.pyt', {}, 'w')
         cms_settings.render_to(os.path.join('..', 'templates', '404.html'), 'redsolutioncms/project/templates/404.html', {}, 'w')
         cms_settings.render_to(os.path.join('..', 'templates', '500.html'), 'redsolutioncms/project/templates/500.html', {}, 'w')
+
+        cms_settings.render_to(os.path.join('..', 'fixtures', 'initial_data.json'),
+            'redsolutioncms/project/fixtures/initial_data.json', {}, 'w')
 #===============================================================================
 # Static templates
 #===============================================================================
