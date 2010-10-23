@@ -23,7 +23,11 @@ DATABASE_NAME = '{{ cms_settings.database_name }}'
 DATABASE_USER = '{{ cms_settings.database_user }}'
 DATABASE_PASSWORD = '{{ cms_settings.database_password }}'
 DATABASE_HOST = '{{ cms_settings.database_host }}'
+{% if cms_settings.database_port %}
 DATABASE_PORT = '{{ cms_settings.database_port }}'
+{% else %}
+DATABASE_PORT = ''
+{% endif %}
 
 TIME_ZONE = None
 
