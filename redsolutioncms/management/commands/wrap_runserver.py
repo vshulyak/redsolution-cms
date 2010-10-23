@@ -10,6 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         ProcessTask.objects.create(task=process_cmd_string('"%(django)s" runserver --noreload'))
+        ProcessTask.objects.create(task=process_cmd_string('"%(django)s" open_browser'))
         self.wrapper()
 
     def wrapper(self):
