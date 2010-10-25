@@ -12,20 +12,25 @@
 
 
 {% block content %}
-<p>{% trans 'Now to create super user please call:' %}</p>
+<h2>{% trans 'Everything ready for start now' %}</h2>
+
+<h3>{% trans "Now project is ready. You're welcome to check it out" %}</h3>
+    
+<a class="button-link floated-button" href="http://127.0.0.1:8001/admin/">
+  {% trans 'Admin your site' %}
+</a>
+<a class="button-link floated-button" href="http://127.0.0.1:8001/">
+  {% trans 'View content' %}
+</a>
+
+<div class="clear" />
+<h3>{% trans 'After all, you can run development version of your site manually' %}</h3>
+<p>{% trans "To do this, run in console" %}</p>
 <pre>
-cd {{ project_dir }}
-{{ django }} createsuperuser
-</pre>
-<p>{% trans 'Then run project:' %}</p>
-<pre>
-cd {{ project_dir }}
-{{ django }} runserver 127.0.0.1:8001
+{{ django }} runserver 8001
 </pre>
 <p>{% trans 'Then your project will be available at: ' %}<a href="http://127.0.0.1:8001">http://127.0.0.1:8001</a></p>
 <p>{% trans 'Your admin will be available at: ' %}<a href="http://127.0.0.1:8001/admin/">http://127.0.0.1:8001/admin/</a></p>
 
-<a class="button-link floated-button" href="http://127.0.0.1:8001/admin/">
-  {% trans 'Go to admin your site' %}
-</a>
+
 {% endblock %}
