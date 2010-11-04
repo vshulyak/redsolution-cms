@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {% trans 'Django site admin' %}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+  <div class="logo">
+    <div class="logo-top">
+      <a href="http://redsolutioncms.org/">
+        <span class="red">red</span><span class="solution">solution</span>
+      </a>
+    </div>
+    <div class="logo-bottom"><a href="http://redsolutioncms.org/">content management system</a></div>
+  </div>
+</h1>
+{% endblock %}
+
+{% block footer %}
+  <div class='footer'>
+    {% comment %}
+      <div class="django_logo">
+        <a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/badges/djangomade124x25_grey.gif" border="0" alt="Made with Django." title="Made with Django." /></a>
+      </div>
+    {% endcomment %}
+  </div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

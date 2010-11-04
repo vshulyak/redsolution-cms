@@ -30,7 +30,7 @@ def index(request):
     if request.method == 'POST':
         form = SettingsForm(data=request.POST, files=request.FILES, instance=cms_settings)
         if form.is_valid():
-            form.save(commit=True)
+            form.save()
             return HttpResponseRedirect(reverse('apps'))
     else:
         form = SettingsForm(instance=cms_settings)

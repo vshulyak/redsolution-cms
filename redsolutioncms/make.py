@@ -132,6 +132,11 @@ class Make(BaseMake):
             os.path.join(redsolutioncms_templates_dir, 'media'),
             merge=True
         )
+        cms_settings.copy_dir(
+            os.path.join(cms_settings.project_dir, 'templates/admin/'),
+            os.path.join(redsolutioncms_templates_dir, 'templates/admin'),
+            merge=True
+        )
         copy_downloads()
         copy_eggs()
 
