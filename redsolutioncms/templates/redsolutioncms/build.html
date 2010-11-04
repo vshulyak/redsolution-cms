@@ -5,24 +5,23 @@
 <div class="breadcrumbs">
 <a href="/">{% trans 'Start' %}</a> »
 <a href="{% url apps %}">{% trans 'Application list' %}</a> »
-<a href="{% url custom %}">{% trans 'Сonfiguration' %}</a> »
+<a href="{% url custom %}">{% trans 'Site config' %}</a> »
 <strong>{% trans 'Creating superuser' %}</strong>
 </div>
 {% endblock %}
 
 {% block content %}
+<h2>{% trans "Now I'm gonna to create superuser for your site" %}</h2>
 <form method="post" enctype="multipart/form-data" action="">
     <table>
     {{ form }}
     </table>
-    <p>{% trans 'Now we ready to initialize your project. To do it we will execute:' %}</p>
+    <p>{% trans 'To create superuser manually, run in console' %}</p>
     <pre>
-python {{ bootstrap }}
-{{ buildout }} -c develop.cfg
-{{ django }} syncdb --noinput
+{{ django }} createsuperuser
     </pre>
     <input type="button" value="{% trans 'Back' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url custom %}';"/>
-    <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
     <input type="button" value="{% trans 'Skip' %}" class="input-bg floated-button" onclick="javascript:document.location='{% url done %}';"/>
+    <input type="submit" value="{% trans 'Next' %}" class="input-bg floated-button" />
 </form>
 {% endblock %}

@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('-u', '--url', action='store', type='string',
-            dest='url', default='http://localhost:8000'),
+            dest='url', default='http://127.0.0.1:8000'),
         make_option('-d', '--delay', action='store', type='int',
             dest='delay', default=3),
     )
