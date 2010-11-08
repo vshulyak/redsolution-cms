@@ -1,35 +1,283 @@
 @import url('base.css');
 
-#header-block {
-    width: 100%;
-    background: #ECE;
-    padding: 1%;
+body, html {
+	height: 100%;
+}
+.sticky-wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -80px; /* the bottom margin is the negative value of the footer's height */
+}
+.footer, .push {
+  height: 80px; /* .push must be the same height as .footer */
 }
 
-#left-block {
-    width: 20%;
-    background: #CEE;
+/*
+
+Sticky Footer by Ryan Fait
+http://ryanfait.com/
+
+*/
+
+/* Global styles */
+
+.centered {
+    text-align: center;
+}
+
+.lefted {
+  text-align: left;
+}
+
+.righted {
+    text-align: right;
+}
+
+.small {
+  font-size: small;
+}
+
+.bolded {
+  font-weight: bold;
+}
+
+.grey {
+  color: #CCC;
+}
+
+.white {
+  color: white;
+}
+
+.black {
+  color: black;
+}
+
+pre {
+  background: #F1EBEB;
+  padding: 10px; 
+}
+
+tt {
+  background: #FFEAEA;  
+}
+
+/* here comes webdesign! */
+#header {
+  width: 100%;
+  background: #bc1b1b url('/media/img/menu-bg-repeatable.png') repeat-y center;
+  border-bottom: 5px solid #e02525; 
+}
+
+.logo a {
+  color: white;
+  text-shadow: 0px 2px 3px #545454;
+  text-decoration: none;
+  outline: none;
+}
+
+.logo .red{
+    color: white;
+}
+
+.logo .solution {
+    color: black;
+}
+
+.logo a:link, .logo a:hover, .logo a:visited, .logo a:active {
+  text-decoration: none;
+}  
+
+.logo-top {
+  margin-top: 10px;
+  margin-bottom: -7px;    
+  font-size: 38px;
+}
+.logo .logo-bottom {
+  font-size: 14px;
+  padding: 0;
+}
+
+.menu ul {
+  height: 70px;
+  margin: 0;
+  padding: 0;
+}
+
+.menu ul li {
+  list-style: none;
+  margin: 0;
+  display: inline;
+  float: left;
+}
+
+.menu ul li a {
+  color: white;
+  line-height: 70px;
+  padding: 0 20px;
+  display: block;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+
+.menu ul li a:hover {
+  text-decoration: underline;
+  background-color: #e02525;
+  box-shadow: 0px 0px 15px #e02525;
+  -moz-box-shadow: 0px 0px 15px #e02525;
+  -webkit-box-shadow: 0px 0px 15px #e02525;
+}
+
+#breadcrumbs ul li {
+    list-style: none;
+    display: inline;
+}
+
+#breadcrumbs {
+  float: left;
+  margin-top: 5px;
+}
+
+#breadcrumbs ul, #breadcrumbs ul li {
+  margin-left: 0px;
+  margin-bottom: 0px;
+}
+
+.center_wrapper {
+  background: url('/media/img/body-background.png') top repeat-x;
+  width: 100%;
+  min-height: 400px;
+}
+
+#content-title {
+  margin-top: 35px;
+}
+
+.block-right .pony {
+  padding-top: 90px;
+  background: url('/media/img/pony.png') no-repeat right 5px;
+  min-height:100px;
+}
+
+.block-right .pony h1 {
+  margin-top: 0px;
+}
+
+.block-right .toc {
+  margin-top: 90px;
+  background-color: #f8ecec;
+  padding: 10px;
+}
+
+.block-right .toc h1 {
+  background: url('/media/img/content-header-bg.png') no-repeat center left;
+  padding-left: 35px;
+  font-size: 23px;
+}
+
+.block-right .toc li {
+  list-style: square;
+}
+
+.news-date {
+  font-size: small;
+  color: #666; 
+}
+
+.rst .toc {
+  float: right;
+  display: inline;
+  width: 200px;
+  margin: 0px 10px;
+  padding: 10px;
+  background-color: #F8ECEC; 
+}
+
+.footer {
+  background: #f1f1f1;
+  border-top: 5px solid #f4f4f4;
+  padding: 10px 0px;
+  height: 55px;
+}
+
+/**** POTATOP at frontpage *****/
+ul.potatop-items  {
+    margin-left: 0px;
+}
+
+.potatop-items li {
+    list-style: none;
+    margin: 3px 0px;
+    padding: 5px;
+}
+
+.potatop-items li.active {
+    background: #FDD;
+}
+
+.potatop-items li.selected {
+    background: #FDF;
+}
+
+.potatop-items .hidden_content {
+    display: none;
+}
+
+.potatop-items img {
     float: left;
-    padding: 1%;
 }
 
-#center-block {
-    width: 54%;
-    background: #CEC;
-    float: left;
-    padding: 1%;
+.potatop-items .title {
+    color: #666;
+}
+.potatop-items h3 {
+    margin: 0px;
+    font-size:18px;
+}
+.potatop-items p {
+    font-size: 12px;
+    margin: 0px;
+    line-height:17px;
 }
 
-#right-block {
-    width: 20%;
-    background: #EEC;
-    float: left;
-    padding: 1%;
+.potatop-frame {
+    position: relative;
+    height: 490px;
+    margin-top:10px;
 }
 
-#footer-block {
-    width: 100%;
-    background: #CCE;
-    clear: both;
-    padding: 1%;
+.potatop-frame .description {
+    background-color:rgba(10, 20, 30, 0.3);
+    color:white;
+    left:4px;
+    padding:5px;
+    position:absolute;
+    bottom:6px;
+    width:590px;
+}
+
+.modules-list a img  {
+    vertical-align: middle;
+    border:  none;    
+}
+
+.modules-list ul, .modules-list ul li {
+    margin-left: 0;
+    list-style: none;
+}
+
+.modules-list h3 {
+    font-size: 18px;
+    margin: 5px 0 0 0;
+    border-bottom: 1px dashed #CCC; 
+}
+
+.modules-list p {
+    font-size:12px;
+    line-height:17px;
+    margin:0;
+    display: none;
 }

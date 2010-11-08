@@ -24,7 +24,7 @@
     {% for app in app_list %}
         <div class="module">
         <table summary="{% blocktrans with app.name as name %}Models available in the {{ name }} application.{% endblocktrans %}">
-        <caption><a href="{{ app.app_url }}" class="section">{% blocktrans with app.name as name %}{{ name }}{% endblocktrans %}</a></caption>
+        <caption><a href="{{ app.app_url }}" class="section">{% trans app.name %}</a></caption>
         {% for model in app.models %}
             <tr>
             {% if model.perms.change %}
@@ -57,8 +57,9 @@
 
 {% block sidebar %}
 <div id="content-related">
-    <h2><a href="/" >{% trans 'Go to site' %}</a></h2>
     <div class="module" id="recent-actions-module">
+        <h2>{% trans 'Links' %}</h2>
+            <h3><a href="/">{% trans 'View site' %}</a></h3>
         <h2>{% trans 'Recent Actions' %}</h2>
         <h3>{% trans 'My Actions' %}</h3>
             {% load log %}

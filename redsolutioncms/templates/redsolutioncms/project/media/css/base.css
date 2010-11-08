@@ -1,0 +1,141 @@
+/* reset */
+* * { margin: 0; padding: 0; }
+
+body {
+	font-family: Arial,Helvetica,Clean,sans-serif;
+	font-size: 16px;
+	padding: 0; 
+	margin: 0;
+	background: #fff;
+	color: #333;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: normal;
+	line-height: normal;
+	margin: 12px 0;
+}
+
+h1 {
+	font-size: 28px;
+	color: #000;
+}
+
+h2 {
+	font-size: 26px;
+	color: #222;
+}
+
+h3 {
+	font-size: 24px;
+	color: #444;
+}
+
+h4 {
+	font-size: 22px;
+	color: #8a8a8a;
+	margin: 13px 0;
+}
+
+h5 {
+	font-size: 20px;
+	color: #9f9f9f;
+	margin: 13px 0;
+}
+
+h6 {
+	font-size: 18px;
+	color: #b8b8b8;
+	margin: 13px 0;
+}
+
+p {
+	margin: 10px 0;
+	line-height: 23px;
+}
+
+ul, ol {
+	margin: 10px 0 10px 24px; 
+	padding: 0;
+}
+
+ul { list-style: disc outside none; }
+ol { list-style: decimal outside none; }
+
+li {
+	margin: 0 0 0 10px;
+	padding: 0;
+}
+
+a:hover { 
+	color: #FF0000; 
+	text-decoration: none;
+}
+
+a:visited {
+	color: #8B0000;
+}
+
+a { color: #CF0000; text-decoration: underline; }
+
+blockquote {
+	background: #f5f5ea;
+	margin: 16px 0 16px 32px;
+	padding: 8px 10px;
+	border-left: 4px solid #e1e1c1;
+}
+
+pre {
+	font-family: "Courier New", monospace;
+	width: 100%;
+	margin: 12px 0;
+}
+
+q {
+	quotes: "\00AB" "\00BB"; /* setting quotes-characters */
+	font-style: italic;
+}
+
+table {
+    border: 1px solid #444;
+    border-collapse: collapse;
+    margin: 16px 0;
+    padding: 0;
+}
+
+td, th {
+    border: 1px solid #444;
+    padding: 4px 5px;
+    border-spacing: 0;
+}
+
+caption {
+	caption-side: bottom; /* or 'top'. IE6 doesn't understand 
+							 caption-side and set <caption> on 
+							 top as default */
+	font-style: italic;
+}
+
+del {
+    color: #aa0000;
+    text-decoration: line-through;
+}
+
+ins {
+    text-decoration: underline;
+}
+
+sub, sup { font-size: 7px; }
+
+img { 
+	margin: 4px;
+	border: none;
+}
+
+address { 
+	margin: 2px 0;
+	padding: 0;
+	font-style: normal;
+	color: #666;
+	font-size: 9px;
+}

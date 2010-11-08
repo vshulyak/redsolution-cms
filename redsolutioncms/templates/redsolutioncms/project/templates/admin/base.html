@@ -16,6 +16,7 @@
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 
 <!-- Container -->
+ <div class="sticky-wrapper">
 <div id="container">
 
     {% if not is_popup %}
@@ -76,6 +77,11 @@
     {% block footer %}<div id="footer"></div>{% endblock %}
 </div>
 <!-- END Container -->
+<div class="push"></div>
+</div>
 
+<div class="sticky-footer">
+<a href="http://www.djangoproject.com/"><img src="http://media.djangoproject.com/img/badges/djangosite100x25_grey.gif" border="0" alt="A Django site." title="A Django site." /></a>
+</div>
 </body>
 </html>
