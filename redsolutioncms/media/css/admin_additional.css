@@ -25,8 +25,9 @@
     color: black;
 }
 
-.logo a{
+.logo a {
   text-decoration:None !important;
+  padding-left: 10px;
 }
 
 .django_logo{
