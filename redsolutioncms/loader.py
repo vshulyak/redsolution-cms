@@ -15,6 +15,8 @@ if os.sys.platform == 'win32':
 else:
     home_dir = join(os.getenv('HOME'), '.redsolutioncms')
 project_dir = os.getcwd()
+project_dir = project_dir.decode(sys.getfilesystemencoding())
+home_dir = home_dir.decode(sys.getfilesystemencoding())
 
 def install_in_home():
     '''Copy nessesary files to home folder''' 
